@@ -1,0 +1,119 @@
+[gd_scene load_steps=14 format=3 uid="uid://cax4rbxu3xl4m"]
+
+[ext_resource type="Texture2D" uid="uid://doubbmdvls630" path="res://backgrounds/torstensimon-doors-6742044_640.jpg" id="1_d1od2"]
+[ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="1_qssp3"]
+[ext_resource type="Script" uid="uid://ct2y0jf52ptvo" path="res://scripts/cat_hub.gd" id="2_w6xti"]
+[ext_resource type="AudioStream" uid="uid://4rpjw24p04m6" path="res://sfx/meow_1.mp3" id="4_hlsmc"]
+[ext_resource type="AudioStream" uid="uid://cx14stefxmavf" path="res://sfx/meow_2.mp3" id="5_3wyi3"]
+[ext_resource type="AudioStream" uid="uid://cvclwqippv1kg" path="res://sfx/meow_3.mp3" id="6_441x5"]
+[ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="7_441x5"]
+[ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="8_2hkft"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qssp3"]
+radius = 25.342098
+
+[sub_resource type="Animation" id="Animation_lcd1r"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_qssp3")]
+}
+
+[sub_resource type="Animation" id="Animation_4oyfp"]
+resource_name = "walk"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("7_441x5"), ExtResource("1_qssp3"), ExtResource("8_2hkft"), ExtResource("1_qssp3")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
+_data = {
+&"RESET": SubResource("Animation_lcd1r"),
+&"walk": SubResource("Animation_4oyfp")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hlsmc"]
+size = Vector2(33.39708, 21.190468)
+
+[node name="Hub" type="Node2D"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_d1od2")
+
+[node name="Cat" type="CharacterBody2D" parent="."]
+position = Vector2(526, 459)
+scale = Vector2(3, 3)
+script = ExtResource("2_w6xti")
+
+[node name="Sprite2D" type="Sprite2D" parent="Cat"]
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("1_qssp3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
+shape = SubResource("CircleShape2D_qssp3")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
+libraries = {
+&"": SubResource("AnimationLibrary_s6eg2")
+}
+autoplay = "RESET"
+
+[node name="SFX" type="Node" parent="Cat"]
+
+[node name="Meow1" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("4_hlsmc")
+
+[node name="Meow2" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("5_3wyi3")
+
+[node name="Meow3" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("6_441x5")
+
+[node name="MeowHappy" type="AudioStreamPlayer" parent="Cat/SFX"]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2(572.2, 639.00006)
+scale = Vector2(35.559998, 8.400002)
+shape = SubResource("RectangleShape2D_hlsmc")
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(806, -297)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+position = Vector2(572.2, 639.00006)
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_hlsmc")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(-797, -350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(572.2, 639.00006)
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_hlsmc")
