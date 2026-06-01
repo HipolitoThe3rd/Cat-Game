@@ -1,10 +1,13 @@
-[gd_scene load_steps=16 format=3 uid="uid://btdexsm00bj22"]
+[gd_scene load_steps=19 format=3 uid="uid://btdexsm00bj22"]
 
 [ext_resource type="Script" uid="uid://d1agtod50bily" path="res://scripts/bath.gd" id="1_drku7"]
 [ext_resource type="Texture2D" uid="uid://1yl0pkp0y23r" path="res://backgrounds/bath.jpg" id="2_xm1lt"]
+[ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="3_ac3d7"]
 [ext_resource type="Texture2D" uid="uid://d4d7kw5fm0ec2" path="res://sprites/cat_bath_idle.png" id="3_i4q2v"]
 [ext_resource type="Script" uid="uid://b44goybto0h0i" path="res://scripts/cat_bath.gd" id="3_v7xm0"]
+[ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="3_y24qi"]
 [ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="4_i4q2v"]
+[ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="4_mjjlx"]
 [ext_resource type="Texture2D" uid="uid://di4oycah3x3mn" path="res://sprites/Cat_bath_move_1.png" id="4_v38mr"]
 [ext_resource type="Texture2D" uid="uid://dfcposf80ql13" path="res://sprites/Cat_bath_move_0.png" id="5_1rf2a"]
 [ext_resource type="Texture2D" uid="uid://dxlfmhbcnhrmi" path="res://sprites/Cat_bath_sigh_0.png" id="6_ac3d7"]
@@ -59,6 +62,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_idygx"]
 resource_name = "sigh"
+length = 2.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -66,7 +70,7 @@ tracks/0/path = NodePath(".:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.5),
+"times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [ExtResource("6_ac3d7"), ExtResource("7_y24qi")]
@@ -116,13 +120,21 @@ offset_bottom = 34.0
 
 [node name="Audio" type="Node" parent="."]
 
+[node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("3_y24qi")
+
+[node name="ShowerRun" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("4_mjjlx")
+volume_db = -9.0
+
 [node name="Cat" type="CharacterBody2D" parent="."]
 position = Vector2(338, 264)
 scale = Vector2(0.5, 0.5)
 script = ExtResource("3_v7xm0")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cat"]
-texture = ExtResource("3_i4q2v")
+texture = ExtResource("6_ac3d7")
+offset = Vector2(0, -48.3)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
 position = Vector2(0, -54)
@@ -134,6 +146,11 @@ root_node = NodePath("../Sprite2D")
 libraries = {
 &"": SubResource("AnimationLibrary_v7xm0")
 }
+
+[node name="AudioCat" type="Node" parent="Cat"]
+
+[node name="MeowAngry" type="AudioStreamPlayer" parent="Cat/AudioCat"]
+stream = ExtResource("3_ac3d7")
 
 [node name="ShowerheadHitbox" parent="." instance=ExtResource("4_i4q2v")]
 
@@ -157,3 +174,5 @@ position = Vector2(1167, 134)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 scale = Vector2(13.318898, -72.35281)
 shape = SubResource("RectangleShape2D_i4q2v")
+
+[connection signal="animation_finished" from="Cat/AnimationPlayer" to="Cat" method="_on_animation_player_animation_finished"]

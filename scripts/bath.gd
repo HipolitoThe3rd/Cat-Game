@@ -18,6 +18,17 @@ func _process(_delta):
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			#print("Left mouse button is being held down!")
 			Input.set_custom_mouse_cursor(Global.cursor_shower_pour)
+			if $Audio/ShowerToggle.playing == false and $Audio/ShowerRun.playing == false:
+				$Audio/ShowerRun.play()
 		else:
 			Input.set_custom_mouse_cursor(Global.cursor_shower)
+			if $Audio/ShowerRun.playing == true:
+				$Audio/ShowerRun.stop()
 	pb_cleanbar.value = Global.cleanliness
+
+func _input(event):
+	# Check if the event is a mouse button click
+	if event is InputEventMouseButton and (event.pressed or event.is_released()):
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			#print("Left mouse button just pressed/released!")
+			$Audio/ShowerToggle.play()
