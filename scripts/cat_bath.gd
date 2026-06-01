@@ -7,15 +7,29 @@ const DIRTY_COLOR = Color(0.45, 0.40, 0.34, 1.0)
 const CLEAN_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 const WASH_TICK_SECONDS = 1.0
 const WASH_AMOUNT_PER_TICK = 1.0
+const CAT_CRY_INTERVAL_SECONDS = 2.0
 const WALL_LOOKAHEAD = 16.0
 const WALL_BOUNCE_DURATION = 2.0
+const CAT_CRY_STREAMS = [
+	preload("res://sfx/cat_cry/cat_cry_1.wav"),
+	preload("res://sfx/cat_cry/cat_cry_2.wav"),
+	preload("res://sfx/cat_cry/cat_cry_3.wav"),
+	preload("res://sfx/cat_cry/cat_cry_4.wav"),
+	preload("res://sfx/cat_cry/cat_cry_5.wav"),
+	preload("res://sfx/cat_cry/cat_cry_6.wav"),
+	preload("res://sfx/cat_cry/cat_cry_7.wav")
+]
 
 @onready var sprite = $Sprite2D
 @onready var anim_play = $AnimationPlayer
+@onready var audio_cat = $AudioCat
 @onready var shower_area: Area2D = get_node_or_null("../ShowerheadHitbox/Area2D")
 
 var cooldown = 0.0
 var bounce_direction = 0.0
+var cry_timer = 0.0
+var cry_player: AudioStreamPlayer
+var was_being_sprayed = false
 
 signal squeaky_clean()
 
@@ -25,6 +39,9 @@ var wash_tick_timer = 0.0
 
 
 func _ready() -> void:
+	randomize()
+	cry_player = AudioStreamPlayer.new()
+	audio_cat.add_child(cry_player)
 	$AudioCat/MeowAngry.play()
 	if not squeaky_clean.is_connected(_on_squeaky_clean):
 		squeaky_clean.connect(_on_squeaky_clean)
@@ -42,6 +59,8 @@ func _physics_process(delta: float) -> void:
 	var cleanliness_ratio := clamp(Global.cleanliness / 100.0, 0.0, 1.0)
 	var is_pressing_shower := Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 	var is_intersecting_shower := shower_area != null and shower_area.overlaps_body(self)
+	var is_being_sprayed := is_pressing_shower and is_intersecting_shower
+	_update_cry_audio(delta, is_being_sprayed)
 
 	if is_squeaky_clean_state:
 		velocity.x = 0.0
@@ -95,6 +114,33 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+func _update_cry_audio(delta: float, is_being_sprayed: bool) -> void:
+	if not is_being_sprayed:
+		cry_timer = 0.0
+		was_being_sprayed = false
+		return
+
+	if not was_being_sprayed:
+		_play_random_cat_cry()
+		cry_timer = 0.0
+		was_being_sprayed = true
+		return
+
+	cry_timer += delta
+	while cry_timer >= CAT_CRY_INTERVAL_SECONDS:
+		_play_random_cat_cry()
+		cry_timer -= CAT_CRY_INTERVAL_SECONDS
+
+
+func _play_random_cat_cry() -> void:
+	if CAT_CRY_STREAMS.is_empty() or cry_player == null:
+		return
+
+	cry_player.stream = CAT_CRY_STREAMS[randi_range(0, CAT_CRY_STREAMS.size() - 1)]
+	cry_player.play()
+
+
 func _on_squeaky_clean() -> void:
 	if anim_play.current_animation != "sigh" or not anim_play.is_playing():
 		anim_play.play("sigh")
+		$AudioCat/MeowHappy.play()
