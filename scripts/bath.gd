@@ -13,6 +13,8 @@ func _process(_delta):
 	if Global.cleanliness >= 100:
 		# set cursor to default as showerhead is no longer needed
 		Input.set_custom_mouse_cursor(null)
+		if $Audio/ShowerRun.playing == true:
+			$Audio/ShowerRun.stop()
 	else:
 		sh_hitbox.global_position = get_viewport().get_mouse_position()
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -29,6 +31,6 @@ func _process(_delta):
 func _input(event):
 	# Check if the event is a mouse button click
 	if event is InputEventMouseButton and (event.pressed or event.is_released()):
-		if event.button_index == MOUSE_BUTTON_LEFT:
+		if event.button_index == MOUSE_BUTTON_LEFT and Global.cleanliness < 100:
 			#print("Left mouse button just pressed/released!")
 			$Audio/ShowerToggle.play()

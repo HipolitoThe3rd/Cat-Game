@@ -137,10 +137,12 @@ func _play_random_cat_cry() -> void:
 		return
 
 	cry_player.stream = CAT_CRY_STREAMS[randi_range(0, CAT_CRY_STREAMS.size() - 1)]
-	cry_player.play()
+	if Global.cleanliness < 100:
+		cry_player.play()
 
 
 func _on_squeaky_clean() -> void:
 	if anim_play.current_animation != "sigh" or not anim_play.is_playing():
 		anim_play.play("sigh")
-		$AudioCat/MeowHappy.play()
+		if $AudioCat/MeowAngry.playing == true:
+			$AudioCat/MeowAngry.stop()

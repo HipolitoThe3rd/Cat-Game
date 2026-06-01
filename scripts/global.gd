@@ -10,7 +10,7 @@ var mood = 50 # how happy the cat is; 0 is minimum and 100 is maximum
 # Cat mood contributors
 var hunger = 30 # 0 to 100, affects mood and behavior
 var energy = 80 # 0 to 100, decreases with activity
-var cleanliness = 60 # 0 to 100, decreases over time, affects mood
+var cleanliness = 95 # 0 to 100, decreases over time, affects mood
 var entertainment = 50 # 0 to 100, boredom level; too low means bored
 var affection = 40 # 0 to 100, needs player interaction to increase
 var restlessness = 0 # 0 to 100, increases when stationary, affects movement
