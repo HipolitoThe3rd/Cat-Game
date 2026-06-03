@@ -34,3 +34,6 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT and Global.cleanliness < 100:
 			#print("Left mouse button just pressed/released!")
 			$Audio/ShowerToggle.play()
+
+func _on_back_button_button_down() -> void:
+	get_tree().change_scene_to_file("res://scenes/hub.tscn")
