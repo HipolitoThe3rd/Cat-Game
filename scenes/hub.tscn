@@ -117,3 +117,64 @@ position = Vector2(-797, -350)
 position = Vector2(572.2, 639.00006)
 scale = Vector2(13.318898, -72.35281)
 shape = SubResource("RectangleShape2D_hlsmc")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MoodBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 355.0
+offset_top = 587.0
+offset_right = 769.0
+offset_bottom = 614.0
+
+[node name="HungerBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 35.0
+offset_right = 426.0
+offset_bottom = 62.0
+scale = Vector2(0.85, 0.85)
+
+[node name="EnergyBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 75.0
+offset_right = 427.0
+offset_bottom = 102.0
+scale = Vector2(0.85, 0.85)
+
+[node name="CleanlinessBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 21.999939
+offset_top = 123.000015
+offset_right = 435.99994
+offset_bottom = 150.00002
+scale = Vector2(0.85, 0.85)
+
+[node name="EntertainmentBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 394.99997
+offset_top = 36.999996
+offset_right = 809.0
+offset_bottom = 63.999996
+scale = Vector2(0.85, 0.85)
+
+[node name="AffectionBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 395.9999
+offset_top = 75.00001
+offset_right = 809.9999
+offset_bottom = 102.00001
+scale = Vector2(0.85, 0.85)
+
+[node name="BladderBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 397.99988
+offset_top = 123.99999
+offset_right = 811.9999
+offset_bottom = 151.0
+scale = Vector2(0.85, 0.85)

@@ -42,7 +42,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 		Global.energy = max(0, Global.energy - 5)
-		Global.restlessness = 0
+		Global.bladder = max(0, Global.bladder - 2)
 
 	# Update autonomous behavior
 	if is_autonomous and is_on_floor():
@@ -82,19 +82,19 @@ func update_autonomous_behavior(delta: float) -> void:
 		movement_interval = randf_range(1.5, 4.0) if current_direction != 0 else randf_range(2.0, 5.0)
 		movement_timer = movement_interval
 		
-		# More restless cats move more often
-		if Global.restlessness > 70:
+		# Cats with low bladder move more urgently
+		if Global.bladder < 30:
 			movement_timer *= 0.5
 	
 	# Occasionally hop
 	hop_timer -= delta
 	if hop_timer <= 0:
-		# Higher energy and restlessness = more hops
-		var hop_chance = 0.3 if Global.energy > 60 and Global.restlessness > 40 else 0.1
+		# Higher energy and lower bladder = more fidgety hops
+		var hop_chance = 0.3 if Global.energy > 60 and Global.bladder < 60 else 0.1
 		if randf() < hop_chance and is_on_floor():
 			velocity.y = JUMP_VELOCITY * 0.7  # Smaller hop than player jump
 			Global.energy = max(0, Global.energy - 3)
-			Global.restlessness = max(0, Global.restlessness - 10)
+			Global.bladder = max(0, Global.bladder - 1)
 		
 		hop_interval = randf_range(6.0, 12.0)
 		hop_timer = hop_interval
@@ -115,7 +115,11 @@ func update_timers(delta: float) -> void:
 		Global.cleanliness = max(0, Global.cleanliness - 0.2)  # Cat gets dirtier
 		Global.energy = max(0, Global.energy - 0.1)  # Slow energy loss
 		Global.entertainment = max(0, Global.entertainment - 0.15)  # Boredom increases
-		Global.restlessness = min(100, Global.restlessness + 0.2)  # Restlessness increases when idle
+		Global.bladder = max(0, Global.bladder - 0.2)  # Bladder slowly drains over time
+
+		if Global.bladder <= 0:
+			Global.cleanliness = max(0, Global.cleanliness - 30)
+			Global.bladder = 100
 		
 		stat_decay_timer = 1.0
 
@@ -179,14 +183,12 @@ func pet_cat() -> void:
 	Global.affection = min(100, Global.affection + 15)
 	Global.entertainment = min(100, Global.entertainment + 10)
 	Global.mood = min(100, Global.mood + 10)
-	Global.restlessness = max(0, Global.restlessness - 20)
 
 
 func play_with_cat() -> void:
 	Global.entertainment = 100
 	Global.energy = max(0, Global.energy - 20)
 	Global.affection = min(100, Global.affection + 5)
-	Global.restlessness = max(0, Global.restlessness - 30)
 
 
 func bathe_cat() -> void:

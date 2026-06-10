@@ -13,7 +13,7 @@ var energy = 80 # 0 to 100, decreases with activity
 var cleanliness = 95 # 0 to 100, decreases over time, affects mood
 var entertainment = 50 # 0 to 100, boredom level; too low means bored
 var affection = 40 # 0 to 100, needs player interaction to increase
-var restlessness = 0 # 0 to 100, increases when stationary, affects movement
+var bladder = 100 # 0 to 100, decreases over time/activity; at 0 cat soils itself and resets to 100
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
