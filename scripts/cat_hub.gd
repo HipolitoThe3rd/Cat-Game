@@ -111,7 +111,7 @@ func update_timers(delta: float) -> void:
 	stat_decay_timer -= delta
 	if stat_decay_timer <= 0:
 		# Stats decay gradually
-		Global.hunger = min(100, Global.hunger + 0.3)  # Cat gets hungrier
+		Global.hunger = min(100, Global.hunger - 0.3)  # Cat gets hungrier
 		Global.cleanliness = max(0, Global.cleanliness - 0.2)  # Cat gets dirtier
 		Global.energy = max(0, Global.energy - 0.1)  # Slow energy loss
 		Global.entertainment = max(0, Global.entertainment - 0.15)  # Boredom increases
@@ -129,35 +129,35 @@ func update_mood_stats(delta: float) -> void:
 	var mood_modifiers = 0
 	
 	# Hunger strongly affects mood
-	if Global.hunger > 70:
-		mood_modifiers -= 20
-	elif Global.hunger > 50:
-		mood_modifiers -= 10
+	if Global.hunger < 70:
+		mood_modifiers -= 0.20
+	elif Global.hunger < 50:
+		mood_modifiers -= 0.10
 	
 	# Cleanliness affects mood
 	if Global.cleanliness < 30:
-		mood_modifiers -= 15
+		mood_modifiers -= 0.15
 	elif Global.cleanliness < 50:
-		mood_modifiers -= 8
+		mood_modifiers -= 0.8
 	
 	# Entertainment/boredom affects mood
 	if Global.entertainment < 20:
-		mood_modifiers -= 15
+		mood_modifiers -= 0.15
 	elif Global.entertainment < 40:
-		mood_modifiers -= 8
+		mood_modifiers -= 0.8
 	
 	# Energy affects mood
 	if Global.energy < 20:
-		mood_modifiers -= 12
+		mood_modifiers -= 0.12
 	
 	# Affection affects mood
 	if Global.affection < 30:
-		mood_modifiers -= 10
+		mood_modifiers -= 0.10
 	elif Global.affection > 70:
-		mood_modifiers += 15
+		mood_modifiers += 0.15
 	
 	# Contentment bonus (all stats in good range)
-	if Global.hunger < 50 and Global.cleanliness > 50 and Global.entertainment > 50 and Global.energy > 50 and Global.affection > 50:
+	if Global.hunger > 50 and Global.cleanliness > 50 and Global.entertainment > 50 and Global.energy > 50 and Global.affection > 50:
 		mood_modifiers += 5
 	
 	Global.mood = clamp(Global.mood + mood_modifiers * 0.01, 0, 100)
@@ -174,7 +174,7 @@ func play_meow() -> void:
 
 # Helper functions for external interactions
 func feed_cat() -> void:
-	Global.hunger = max(0, Global.hunger - 30)
+	Global.hunger = max(0, Global.hunger + 30)
 	Global.mood = min(100, Global.mood + 5)
 	Global.affection = min(100, Global.affection + 2)
 

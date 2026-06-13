@@ -1,13 +1,15 @@
-[gd_scene load_steps=14 format=3 uid="uid://cax4rbxu3xl4m"]
+[gd_scene load_steps=16 format=3 uid="uid://cax4rbxu3xl4m"]
 
-[ext_resource type="Texture2D" uid="uid://doubbmdvls630" path="res://backgrounds/torstensimon-doors-6742044_640.jpg" id="1_d1od2"]
+[ext_resource type="Script" uid="uid://c2dqaqa8syi1h" path="res://scripts/hub.gd" id="1_4oyfp"]
 [ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="1_qssp3"]
+[ext_resource type="Texture2D" uid="uid://de23ornwx2yqf" path="res://backgrounds/hub.jpg" id="2_2hkft"]
 [ext_resource type="Script" uid="uid://ct2y0jf52ptvo" path="res://scripts/cat_hub.gd" id="2_w6xti"]
 [ext_resource type="AudioStream" uid="uid://4rpjw24p04m6" path="res://sfx/meow_1.mp3" id="4_hlsmc"]
 [ext_resource type="AudioStream" uid="uid://cx14stefxmavf" path="res://sfx/meow_2.mp3" id="5_3wyi3"]
 [ext_resource type="AudioStream" uid="uid://cvclwqippv1kg" path="res://sfx/meow_3.mp3" id="6_441x5"]
 [ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="7_441x5"]
 [ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="8_2hkft"]
+[ext_resource type="Texture2D" uid="uid://cfxainbvyetvr" path="res://sprites/hub_door.png" id="9_2hkft"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qssp3"]
 radius = 25.342098
@@ -53,8 +55,10 @@ _data = {
 size = Vector2(33.39708, 21.190468)
 
 [node name="Hub" type="Node2D"]
+script = ExtResource("1_4oyfp")
 
 [node name="TextureRect" type="TextureRect" parent="."]
+z_index = -1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -62,7 +66,39 @@ offset_right = 1152.0
 offset_bottom = 648.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_d1od2")
+texture = ExtResource("2_2hkft")
+
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="Door" type="Node2D" parent="Doors"]
+position = Vector2(119, 364)
+
+[node name="Sprite2D" type="Sprite2D" parent="Doors/Door"]
+texture = ExtResource("9_2hkft")
+
+[node name="Door2" type="Node2D" parent="Doors"]
+position = Vector2(342, 364)
+
+[node name="Sprite2D" type="Sprite2D" parent="Doors/Door2"]
+texture = ExtResource("9_2hkft")
+
+[node name="Door3" type="Node2D" parent="Doors"]
+position = Vector2(575, 364)
+
+[node name="Sprite2D" type="Sprite2D" parent="Doors/Door3"]
+texture = ExtResource("9_2hkft")
+
+[node name="Door4" type="Node2D" parent="Doors"]
+position = Vector2(798, 364)
+
+[node name="Sprite2D" type="Sprite2D" parent="Doors/Door4"]
+texture = ExtResource("9_2hkft")
+
+[node name="Door5" type="Node2D" parent="Doors"]
+position = Vector2(1023, 364)
+
+[node name="Sprite2D" type="Sprite2D" parent="Doors/Door5"]
+texture = ExtResource("9_2hkft")
 
 [node name="Cat" type="CharacterBody2D" parent="."]
 position = Vector2(526, 459)
@@ -131,50 +167,58 @@ offset_top = 587.0
 offset_right = 769.0
 offset_bottom = 614.0
 
+[node name="Panel" type="Panel" parent="Control"]
+modulate = Color(1, 1, 1, 0.05882353)
+z_index = -1
+layout_mode = 0
+offset_top = -230.0
+offset_right = 1152.0
+offset_bottom = 170.0
+
 [node name="HungerBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 12.0
+offset_left = 100.0
 offset_top = 35.0
-offset_right = 426.0
+offset_right = 514.0
 offset_bottom = 62.0
 scale = Vector2(0.85, 0.85)
 
 [node name="EnergyBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 13.0
+offset_left = 100.0
 offset_top = 75.0
-offset_right = 427.0
+offset_right = 514.0
 offset_bottom = 102.0
 scale = Vector2(0.85, 0.85)
 
 [node name="CleanlinessBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 21.999939
-offset_top = 123.000015
-offset_right = 435.99994
-offset_bottom = 150.00002
+offset_left = 100.0
+offset_top = 115.0
+offset_right = 514.0
+offset_bottom = 142.0
 scale = Vector2(0.85, 0.85)
 
 [node name="EntertainmentBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 394.99997
+offset_left = 600.0
 offset_top = 36.999996
-offset_right = 809.0
+offset_right = 1014.0
 offset_bottom = 63.999996
 scale = Vector2(0.85, 0.85)
 
 [node name="AffectionBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 395.9999
+offset_left = 600.0
 offset_top = 75.00001
-offset_right = 809.9999
+offset_right = 1014.0
 offset_bottom = 102.00001
 scale = Vector2(0.85, 0.85)
 
 [node name="BladderBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 397.99988
-offset_top = 123.99999
-offset_right = 811.9999
-offset_bottom = 151.0
+offset_left = 600.0
+offset_top = 115.0
+offset_right = 1014.0
+offset_bottom = 142.0
 scale = Vector2(0.85, 0.85)
