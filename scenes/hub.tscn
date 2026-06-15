@@ -187,101 +187,101 @@ offset_bottom = 170.0
 [node name="HungerIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 91.75001
-offset_top = 12.35
+offset_top = 28.35
 offset_right = 425.75
-offset_bottom = 235.35
+offset_bottom = 251.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("12_s6eg2")
 
 [node name="HungerBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 180.00002
-offset_top = 20.0
+offset_left = 180.00006
+offset_top = 36.0
 offset_right = 594.0
-offset_bottom = 47.0
+offset_bottom = 63.000004
 scale = Vector2(0.85, 0.85)
 
 [node name="EnergyIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 91.75001
-offset_top = 72.35
+offset_top = 88.35
 offset_right = 438.75
-offset_bottom = 295.35
+offset_bottom = 311.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("13_5ox4q")
 
 [node name="EnergyBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 180.00002
-offset_top = 80.0
+offset_left = 180.00006
+offset_top = 96.00001
 offset_right = 594.0
-offset_bottom = 107.0
+offset_bottom = 123.00001
 scale = Vector2(0.85, 0.85)
 
 [node name="CleanlinessIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 91.75001
-offset_top = 132.35
+offset_top = 148.35
 offset_right = 425.75
-offset_bottom = 355.35
+offset_bottom = 371.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("14_mw5nc")
 
 [node name="CleanlinessBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 180.00002
-offset_top = 140.0
+offset_left = 180.00006
+offset_top = 156.0
 offset_right = 594.0
-offset_bottom = 167.0
+offset_bottom = 183.0
 scale = Vector2(0.85, 0.85)
 
 [node name="EntertainmentIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 591.75
-offset_top = 12.35
+offset_top = 28.35
 offset_right = 925.75
-offset_bottom = 296.35
+offset_bottom = 312.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("15_7t3s2")
 
 [node name="EntertainmentBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
 offset_left = 680.0
-offset_top = 20.0
+offset_top = 36.0
 offset_right = 1094.0
-offset_bottom = 47.0
+offset_bottom = 63.000004
 scale = Vector2(0.85, 0.85)
 
 [node name="AffectionIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 591.75
-offset_top = 72.35
+offset_top = 88.35
 offset_right = 925.75
-offset_bottom = 315.35
+offset_bottom = 331.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("16_7n2o6")
 
 [node name="AffectionBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
 offset_left = 680.0
-offset_top = 80.0
+offset_top = 96.00001
 offset_right = 1094.0
-offset_bottom = 107.0
+offset_bottom = 123.00001
 scale = Vector2(0.85, 0.85)
 
 [node name="BladderIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
 offset_left = 591.75
-offset_top = 132.35
+offset_top = 148.35
 offset_right = 925.75
-offset_bottom = 355.35
+offset_bottom = 371.35
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("17_rtbv5")
 
 [node name="BladderBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
 offset_left = 680.0
-offset_top = 140.0
+offset_top = 156.0
 offset_right = 1094.0
-offset_bottom = 167.0
+offset_bottom = 183.0
 scale = Vector2(0.85, 0.85)
