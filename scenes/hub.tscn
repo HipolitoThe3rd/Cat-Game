@@ -1,15 +1,22 @@
-[gd_scene load_steps=16 format=3 uid="uid://cax4rbxu3xl4m"]
+[gd_scene load_steps=23 format=3 uid="uid://cax4rbxu3xl4m"]
 
 [ext_resource type="Script" uid="uid://c2dqaqa8syi1h" path="res://scripts/hub.gd" id="1_4oyfp"]
 [ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="1_qssp3"]
 [ext_resource type="Texture2D" uid="uid://de23ornwx2yqf" path="res://backgrounds/hub.jpg" id="2_2hkft"]
 [ext_resource type="Script" uid="uid://ct2y0jf52ptvo" path="res://scripts/cat_hub.gd" id="2_w6xti"]
 [ext_resource type="AudioStream" uid="uid://4rpjw24p04m6" path="res://sfx/meow_1.mp3" id="4_hlsmc"]
+[ext_resource type="Texture2D" uid="uid://nfx8sa8gnjsl" path="res://sprites/hub_door_hover.png" id="4_lcd1r"]
 [ext_resource type="AudioStream" uid="uid://cx14stefxmavf" path="res://sfx/meow_2.mp3" id="5_3wyi3"]
 [ext_resource type="AudioStream" uid="uid://cvclwqippv1kg" path="res://sfx/meow_3.mp3" id="6_441x5"]
 [ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="7_441x5"]
 [ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="8_2hkft"]
 [ext_resource type="Texture2D" uid="uid://cfxainbvyetvr" path="res://sprites/hub_door.png" id="9_2hkft"]
+[ext_resource type="Texture2D" uid="uid://c3ybbv0khnqaj" path="res://sprites/mood_icons/hunger.png" id="12_s6eg2"]
+[ext_resource type="Texture2D" uid="uid://wdc52mf2vml1" path="res://sprites/mood_icons/energy.png" id="13_5ox4q"]
+[ext_resource type="Texture2D" uid="uid://ufgbaug4mt2g" path="res://sprites/mood_icons/hygiene.png" id="14_mw5nc"]
+[ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_icons/fun.png" id="15_7t3s2"]
+[ext_resource type="Texture2D" uid="uid://ccnvtv4vje8hf" path="res://sprites/mood_icons/love.png" id="16_7n2o6"]
+[ext_resource type="Texture2D" uid="uid://cwf1lqhdr7f41" path="res://sprites/mood_icons/bladder.png" id="17_rtbv5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qssp3"]
 radius = 25.342098
@@ -76,11 +83,13 @@ position = Vector2(119, 364)
 [node name="Sprite2D" type="Sprite2D" parent="Doors/Door"]
 texture = ExtResource("9_2hkft")
 
-[node name="Door2" type="Node2D" parent="Doors"]
-position = Vector2(342, 364)
-
-[node name="Sprite2D" type="Sprite2D" parent="Doors/Door2"]
-texture = ExtResource("9_2hkft")
+[node name="Door2" type="TextureButton" parent="Doors"]
+offset_left = 270.0
+offset_top = 236.0
+offset_right = 415.0
+offset_bottom = 492.0
+texture_normal = ExtResource("9_2hkft")
+texture_hover = ExtResource("4_lcd1r")
 
 [node name="Door3" type="Node2D" parent="Doors"]
 position = Vector2(575, 364)
@@ -168,57 +177,111 @@ offset_right = 769.0
 offset_bottom = 614.0
 
 [node name="Panel" type="Panel" parent="Control"]
-modulate = Color(1, 1, 1, 0.05882353)
+visible = false
 z_index = -1
 layout_mode = 0
 offset_top = -230.0
 offset_right = 1152.0
 offset_bottom = 170.0
 
+[node name="HungerIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 91.75001
+offset_top = 12.35
+offset_right = 425.75
+offset_bottom = 235.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("12_s6eg2")
+
 [node name="HungerBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 100.0
-offset_top = 35.0
-offset_right = 514.0
-offset_bottom = 62.0
+offset_left = 180.00002
+offset_top = 20.0
+offset_right = 594.0
+offset_bottom = 47.0
 scale = Vector2(0.85, 0.85)
+
+[node name="EnergyIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 91.75001
+offset_top = 72.35
+offset_right = 438.75
+offset_bottom = 295.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("13_5ox4q")
 
 [node name="EnergyBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 100.0
-offset_top = 75.0
-offset_right = 514.0
-offset_bottom = 102.0
+offset_left = 180.00002
+offset_top = 80.0
+offset_right = 594.0
+offset_bottom = 107.0
 scale = Vector2(0.85, 0.85)
+
+[node name="CleanlinessIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 91.75001
+offset_top = 132.35
+offset_right = 425.75
+offset_bottom = 355.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("14_mw5nc")
 
 [node name="CleanlinessBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 100.0
-offset_top = 115.0
-offset_right = 514.0
-offset_bottom = 142.0
+offset_left = 180.00002
+offset_top = 140.0
+offset_right = 594.0
+offset_bottom = 167.0
 scale = Vector2(0.85, 0.85)
+
+[node name="EntertainmentIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 591.75
+offset_top = 12.35
+offset_right = 925.75
+offset_bottom = 296.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("15_7t3s2")
 
 [node name="EntertainmentBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 600.0
-offset_top = 36.999996
-offset_right = 1014.0
-offset_bottom = 63.999996
+offset_left = 680.0
+offset_top = 20.0
+offset_right = 1094.0
+offset_bottom = 47.0
 scale = Vector2(0.85, 0.85)
+
+[node name="AffectionIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 591.75
+offset_top = 72.35
+offset_right = 925.75
+offset_bottom = 315.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("16_7n2o6")
 
 [node name="AffectionBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 600.0
-offset_top = 75.00001
-offset_right = 1014.0
-offset_bottom = 102.00001
+offset_left = 680.0
+offset_top = 80.0
+offset_right = 1094.0
+offset_bottom = 107.0
 scale = Vector2(0.85, 0.85)
+
+[node name="BladderIcon" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 591.75
+offset_top = 132.35
+offset_right = 925.75
+offset_bottom = 355.35
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("17_rtbv5")
 
 [node name="BladderBar" type="ProgressBar" parent="Control"]
 layout_mode = 0
-offset_left = 600.0
-offset_top = 115.0
-offset_right = 1014.0
-offset_bottom = 142.0
+offset_left = 680.0
+offset_top = 140.0
+offset_right = 1094.0
+offset_bottom = 167.0
 scale = Vector2(0.85, 0.85)

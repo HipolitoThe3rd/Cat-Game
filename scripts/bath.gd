@@ -27,6 +27,12 @@ func _process(_delta):
 			if $Audio/ShowerRun.playing == true:
 				$Audio/ShowerRun.stop()
 	pb_cleanbar.value = Global.cleanliness
+	if pb_cleanbar.value < 25:
+		pb_cleanbar.modulate = Color(1, 0, 0) # red for low values
+	elif pb_cleanbar.value > 75:
+		pb_cleanbar.modulate = Color(0, 1, 0) # green for high values
+	else:
+		pb_cleanbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
 
 func _input(event):
 	# Check if the event is a mouse button click
