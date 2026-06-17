@@ -1,6 +1,8 @@
 ## Global variables
 extends Node
 
+var cursor_default = load("res://sprites/cursors/cursor_default.png")
+var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
 var cursor_shower = load("res://sprites/cursors/cursor_shower-head.png")
 var cursor_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressedd.png")
 

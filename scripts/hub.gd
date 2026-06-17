@@ -8,6 +8,9 @@ extends Node2D
 @onready var pb_lovebar = $Control/AffectionBar
 @onready var pb_bladderbar = $Control/BladderBar
 
+func _ready() -> void:
+	Input.set_custom_mouse_cursor(Global.cursor_default)
+
 func  _process(_delta: float) -> void:
 	#print("Cat's mood: ", Global.mood)
 	pb_moodbar.value = Global.mood
@@ -60,3 +63,13 @@ func  _process(_delta: float) -> void:
 	else:
 		pb_bladderbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
 	pass
+
+
+func _on_cat_mouse_entered() -> void:
+	#print("cursor entered cat")
+	Input.set_custom_mouse_cursor(Global.cursor_pet)
+
+func _on_cat_mouse_exited() -> void:
+	#print("cursor exited cat")
+	Input.set_custom_mouse_cursor(Global.cursor_default)
+	
