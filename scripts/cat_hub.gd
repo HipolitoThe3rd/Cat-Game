@@ -180,15 +180,13 @@ func play_meow() -> void:
 
 # Helper functions for external interactions
 func feed_cat() -> void:
-	Global.hunger = max(0, Global.hunger + 30)
-	Global.mood = min(100, Global.mood + 5)
+	Global.hunger = min(100, Global.hunger + 30)
 	Global.affection = min(100, Global.affection + 2)
 
 
 func pet_cat() -> void:
 	Global.affection = min(100, Global.affection + 0.1)
 	Global.entertainment = min(100, Global.entertainment + 0.05)
-	Global.mood = min(100, Global.mood + 10)
 
 
 func play_with_cat() -> void:
@@ -199,7 +197,6 @@ func play_with_cat() -> void:
 
 func bathe_cat() -> void:
 	Global.cleanliness = 100
-	Global.mood = min(100, Global.mood + 8)
 	Global.affection = max(0, Global.affection - 10)  # Cats don't like baths!
 	Global.energy = max(0, Global.energy - 15)
 
