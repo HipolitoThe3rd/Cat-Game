@@ -118,7 +118,7 @@ size = Vector2(33.39708, 21.190468)
 [node name="Bath" type="Node2D"]
 script = ExtResource("1_drku7")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5

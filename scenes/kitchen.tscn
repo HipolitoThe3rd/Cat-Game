@@ -1,0 +1,192 @@
+[gd_scene load_steps=26 format=3 uid="uid://by50xwq6sjrju"]
+
+[ext_resource type="Script" uid="uid://d3ta5uq7xgoam" path="res://scripts/kitchen.gd" id="1_acu1m"]
+[ext_resource type="Texture2D" uid="uid://8pf0ekajn27s" path="res://backgrounds/kitchen.jpg" id="2_acu1m"]
+[ext_resource type="Texture2D" uid="uid://c3ybbv0khnqaj" path="res://sprites/mood_icons/hunger.png" id="3_acu1m"]
+[ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="4_3fy06"]
+[ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="5_e7cmp"]
+[ext_resource type="Script" uid="uid://dokhvifjb31rg" path="res://scripts/cat_kitchen.gd" id="6_k1cyo"]
+[ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="7_k1cyo"]
+[ext_resource type="Texture2D" uid="uid://c4tolfb8ufe2q" path="res://sprites/cat_pet.png" id="8_3fy06"]
+[ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="9_e7cmp"]
+[ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="10_f125y"]
+[ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="12_j1h31"]
+[ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="13_mbcyj"]
+[ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="14_psp1i"]
+[ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="15_lxurs"]
+[ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="16_7vcjq"]
+[ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="17_8vv5g"]
+[ext_resource type="Texture2D" uid="uid://cjgucwcq7dagd" path="res://sprites/Fish/fish_bucket.png" id="18_3fy06"]
+[ext_resource type="Texture2D" uid="uid://cdlwrrqgfxewr" path="res://sprites/Fish/fish_bucket_pressed.png" id="20_e7cmp"]
+[ext_resource type="Texture2D" uid="uid://c4occ1pwk0yr" path="res://sprites/Fish/fish_bucket_hover.png" id="21_f125y"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3fy06"]
+radius = 7.778145
+
+[sub_resource type="Animation" id="Animation_lcd1r"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_k1cyo")]
+}
+
+[sub_resource type="Animation" id="Animation_7t3s2"]
+resource_name = "pet"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_3fy06")]
+}
+
+[sub_resource type="Animation" id="Animation_4oyfp"]
+resource_name = "walk"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("9_e7cmp"), ExtResource("7_k1cyo"), ExtResource("10_f125y"), ExtResource("7_k1cyo")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
+_data = {
+&"RESET": SubResource("Animation_lcd1r"),
+&"pet": SubResource("Animation_7t3s2"),
+&"walk": SubResource("Animation_4oyfp")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i4q2v"]
+size = Vector2(33.39708, 21.190468)
+
+[node name="Kitchen" type="Node2D"]
+script = ExtResource("1_acu1m")
+
+[node name="Background" type="TextureRect" parent="."]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -8.0
+offset_right = 1152.0
+offset_bottom = 674.0
+grow_vertical = 2
+texture = ExtResource("2_acu1m")
+
+[node name="HungerIcon" type="TextureRect" parent="."]
+offset_left = 283.0
+offset_top = 16.0
+offset_right = 617.0
+offset_bottom = 239.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_acu1m")
+
+[node name="HungerBar" type="ProgressBar" parent="."]
+offset_left = 368.0
+offset_top = 25.0
+offset_right = 782.0
+offset_bottom = 52.0
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("4_3fy06")
+
+[node name="ShowerRun" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("5_e7cmp")
+volume_db = -9.0
+
+[node name="Cat" type="CharacterBody2D" parent="."]
+position = Vector2(478, 465)
+scale = Vector2(0.2, 0.2)
+script = ExtResource("6_k1cyo")
+
+[node name="Sprite2D" type="Sprite2D" parent="Cat"]
+texture = ExtResource("7_k1cyo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
+position = Vector2(0, 100)
+rotation = 1.5707964
+scale = Vector2(46.28352, 31.575474)
+shape = SubResource("CapsuleShape2D_3fy06")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
+libraries = {
+&"": SubResource("AnimationLibrary_s6eg2")
+}
+autoplay = "RESET"
+
+[node name="AudioCat" type="Node" parent="Cat"]
+
+[node name="MeowAngry" type="AudioStreamPlayer" parent="Cat/AudioCat"]
+stream = ExtResource("12_j1h31")
+
+[node name="MeowHappy" type="AudioStreamPlayer" parent="Cat/AudioCat"]
+stream = ExtResource("13_mbcyj")
+
+[node name="ShowerheadHitbox" parent="." instance=ExtResource("14_psp1i")]
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(589, 664)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+scale = Vector2(35.559998, 8.400002)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(-153, 190)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(1311, 134)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="BackButton" type="TextureButton" parent="."]
+offset_left = 970.0
+offset_top = 18.0
+offset_right = 1275.0
+offset_bottom = 266.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("15_lxurs")
+texture_pressed = ExtResource("16_7vcjq")
+texture_hover = ExtResource("17_8vv5g")
+
+[node name="FishBucket" type="TextureButton" parent="."]
+offset_left = 713.0
+offset_top = 347.00003
+offset_right = 1842.0
+offset_bottom = 1091.0
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("18_3fy06")
+texture_pressed = ExtResource("20_e7cmp")
+texture_hover = ExtResource("21_f125y")
+stretch_mode = 3
+
+[connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="button_down" from="FishBucket" to="." method="_on_fish_bucket_button_down"]
+[connection signal="button_up" from="FishBucket" to="." method="_on_fish_bucket_button_up"]
