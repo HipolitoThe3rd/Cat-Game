@@ -13,7 +13,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if Global.hunger >= 100:
-		pass
+		$FishBucket.disabled = true
 	else:
 		pass
 	pb_hungerbar.value = Global.hunger

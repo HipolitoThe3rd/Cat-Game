@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4occ1pwk0yr"
-path="res://.godot/imported/fish_bucket_hover.png-f56efb37bc4d7de3ac60eda285714958.ctex"
+path="res://.godot/imported/fish_bucket_hover.png-6fef9a3dcf9e9071ead5a6f7bab60f36.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/Fish/fish_bucket_hover.png"
-dest_files=["res://.godot/imported/fish_bucket_hover.png-f56efb37bc4d7de3ac60eda285714958.ctex"]
+source_file="res://sprites/fish/fish_bucket_hover.png"
+dest_files=["res://.godot/imported/fish_bucket_hover.png-6fef9a3dcf9e9071ead5a6f7bab60f36.ctex"]
 
 [params]
 

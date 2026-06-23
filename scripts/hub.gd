@@ -8,6 +8,7 @@ extends Node2D
 @onready var pb_lovebar = $Control/AffectionBar
 @onready var pb_bladderbar = $Control/BladderBar
 
+var room_kitchen = "res://scenes/kitchen.tscn"
 var room_bath = "res://scenes/bath.tscn"
 
 func _ready() -> void:
@@ -74,6 +75,9 @@ func _on_cat_mouse_entered() -> void:
 func _on_cat_mouse_exited() -> void:
 	#print("cursor exited cat")
 	Input.set_custom_mouse_cursor(Global.cursor_default)
+
+func _on_door_1_pressed() -> void:
+	get_tree().change_scene_to_file(room_kitchen)
 
 func _on_door_2_pressed() -> void:
 	get_tree().change_scene_to_file(room_bath)

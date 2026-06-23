@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://xg4f8ne178hr"]
 
 [ext_resource type="Script" uid="uid://bhgkpyvfk82or" path="res://scripts/fish.gd" id="1_em1dg"]
-[ext_resource type="Texture2D" uid="uid://hmfwjhndpst0" path="res://sprites/Fish/fish_drag.png" id="2_uk1io"]
-[ext_resource type="Texture2D" uid="uid://b716qmgo7bo1m" path="res://sprites/Fish/fish_fall.png" id="3_lrhas"]
+[ext_resource type="Texture2D" uid="uid://hmfwjhndpst0" path="res://sprites/fish/fish_drag.png" id="2_uk1io"]
+[ext_resource type="Texture2D" uid="uid://b716qmgo7bo1m" path="res://sprites/fish/fish_fall.png" id="3_lrhas"]
 [ext_resource type="AudioStream" uid="uid://bu3jai8jjscyd" path="res://sfx/fish_grab.wav" id="4_lrhas"]
 [ext_resource type="AudioStream" uid="uid://wsg3t7p7ywso" path="res://sfx/fish_drop.mp3" id="5_g2fcg"]
 
