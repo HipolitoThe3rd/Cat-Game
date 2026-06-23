@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://xg4f8ne178hr"]
+[gd_scene load_steps=7 format=3 uid="uid://xg4f8ne178hr"]
 
 [ext_resource type="Script" uid="uid://bhgkpyvfk82or" path="res://scripts/fish.gd" id="1_em1dg"]
 [ext_resource type="Texture2D" uid="uid://hmfwjhndpst0" path="res://sprites/Fish/fish_drag.png" id="2_uk1io"]
 [ext_resource type="Texture2D" uid="uid://b716qmgo7bo1m" path="res://sprites/Fish/fish_fall.png" id="3_lrhas"]
+[ext_resource type="AudioStream" uid="uid://bu3jai8jjscyd" path="res://sfx/fish_grab.wav" id="4_lrhas"]
+[ext_resource type="AudioStream" uid="uid://wsg3t7p7ywso" path="res://sfx/fish_drop.mp3" id="5_g2fcg"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_em1dg"]
 radius = 299.99997
@@ -17,6 +19,7 @@ position = Vector2(0, 645)
 texture = ExtResource("2_uk1io")
 
 [node name="SpriteFall" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("3_lrhas")
 
 [node name="Area2D" type="Area2D" parent="SpriteFall"]
@@ -24,3 +27,14 @@ texture = ExtResource("3_lrhas")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpriteFall/Area2D"]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_em1dg")
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="FishGrab" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("4_lrhas")
+
+[node name="FishFall" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("5_g2fcg")
+volume_db = -9.0
+
+[connection signal="body_entered" from="SpriteFall/Area2D" to="." method="_on_area_2d_body_entered"]

@@ -1,3 +1,4 @@
+class_name HubCat
 extends CharacterBody2D
 
 
@@ -179,10 +180,6 @@ func play_meow() -> void:
 
 
 # Helper functions for external interactions
-func feed_cat() -> void:
-	Global.hunger = min(100, Global.hunger + 30)
-	Global.affection = min(100, Global.affection + 2)
-
 
 func pet_cat() -> void:
 	Global.affection = min(100, Global.affection + 0.1)

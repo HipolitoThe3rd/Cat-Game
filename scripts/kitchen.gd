@@ -16,7 +16,7 @@ func _process(_delta):
 		pass
 	else:
 		pass
-	pb_hungerbar.value = Global.cleanliness
+	pb_hungerbar.value = Global.hunger
 	if pb_hungerbar.value < 25:
 		pb_hungerbar.modulate = Color(1, 0, 0) # red for low values
 	elif pb_hungerbar.value > 75:

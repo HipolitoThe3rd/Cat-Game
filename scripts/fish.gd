@@ -14,6 +14,7 @@ func _ready() -> void:
 	set_process(false)
 
 func start_drag(spawn_position: Vector2) -> void:
+	$Audio/FishGrab.play()
 	global_position = spawn_position
 	is_dragging = true
 	velocity = Vector2.ZERO
@@ -36,6 +37,15 @@ func _process(delta: float) -> void:
 		queue_free()
 
 func _begin_fall() -> void:
+	$Audio/FishFall.play()
 	is_dragging = false
 	drag_sprite.visible = false
 	fall_sprite.visible = true
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body is KitchenCat:
+		print("fish collided with Cat")
+		body.play_sound("happy")
+		Global.feed_cat(10)
+		queue_free()
+	pass

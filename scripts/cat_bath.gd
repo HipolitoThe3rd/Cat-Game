@@ -1,3 +1,4 @@
+class_name BathCat
 extends CharacterBody2D
 
 

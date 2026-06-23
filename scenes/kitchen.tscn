@@ -1,15 +1,17 @@
-[gd_scene load_steps=26 format=3 uid="uid://by50xwq6sjrju"]
+[gd_scene load_steps=29 format=3 uid="uid://by50xwq6sjrju"]
 
 [ext_resource type="Script" uid="uid://d3ta5uq7xgoam" path="res://scripts/kitchen.gd" id="1_acu1m"]
 [ext_resource type="Texture2D" uid="uid://8pf0ekajn27s" path="res://backgrounds/kitchen.jpg" id="2_acu1m"]
 [ext_resource type="Texture2D" uid="uid://c3ybbv0khnqaj" path="res://sprites/mood_icons/hunger.png" id="3_acu1m"]
-[ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="4_3fy06"]
-[ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="5_e7cmp"]
+[ext_resource type="AudioStream" uid="uid://bu3jai8jjscyd" path="res://sfx/fish_grab.wav" id="4_k1cyo"]
+[ext_resource type="AudioStream" uid="uid://wsg3t7p7ywso" path="res://sfx/fish_drop.mp3" id="5_3fy06"]
 [ext_resource type="Script" uid="uid://dokhvifjb31rg" path="res://scripts/cat_kitchen.gd" id="6_k1cyo"]
 [ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="7_k1cyo"]
 [ext_resource type="Texture2D" uid="uid://c4tolfb8ufe2q" path="res://sprites/cat_pet.png" id="8_3fy06"]
 [ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="9_e7cmp"]
 [ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="10_f125y"]
+[ext_resource type="Texture2D" uid="uid://cp3kkore6nwx5" path="res://sprites/cat_full_1.png" id="11_e7cmp"]
+[ext_resource type="Texture2D" uid="uid://b0pk2cl0hi6lh" path="res://sprites/cat_full_2.png" id="12_f125y"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="12_j1h31"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="13_mbcyj"]
 [ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="14_psp1i"]
@@ -69,9 +71,38 @@ tracks/0/keys = {
 "values": [ExtResource("9_e7cmp"), ExtResource("7_k1cyo"), ExtResource("10_f125y"), ExtResource("7_k1cyo")]
 }
 
+[sub_resource type="Animation" id="Animation_k1cyo"]
+resource_name = "full"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("7_k1cyo"), ExtResource("11_e7cmp"), ExtResource("12_f125y")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
 _data = {
 &"RESET": SubResource("Animation_lcd1r"),
+&"full": SubResource("Animation_k1cyo"),
 &"pet": SubResource("Animation_7t3s2"),
 &"walk": SubResource("Animation_4oyfp")
 }
@@ -108,11 +139,11 @@ offset_bottom = 52.0
 
 [node name="Audio" type="Node" parent="."]
 
-[node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
-stream = ExtResource("4_3fy06")
+[node name="FishGrab" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("4_k1cyo")
 
-[node name="ShowerRun" type="AudioStreamPlayer" parent="Audio"]
-stream = ExtResource("5_e7cmp")
+[node name="FishFall" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("5_3fy06")
 volume_db = -9.0
 
 [node name="Cat" type="CharacterBody2D" parent="."]
@@ -122,6 +153,7 @@ script = ExtResource("6_k1cyo")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cat"]
 texture = ExtResource("7_k1cyo")
+flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
 position = Vector2(0, 100)

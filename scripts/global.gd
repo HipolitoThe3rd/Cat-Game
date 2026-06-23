@@ -25,3 +25,6 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+func feed_cat(hunger_amount:int = 30) -> void:
+	Global.hunger = min(100, Global.hunger + hunger_amount)
