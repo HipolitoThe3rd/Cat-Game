@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var sh_hitbox = $ShowerheadHitbox
 @onready var pb_hungerbar = $HungerBar
+@onready var cat = $Cat
 @onready var fish_bucket = $FishBucket
 @onready var fish_prefab = preload("res://scenes/prefabs/fish.tscn")
 
@@ -13,9 +14,10 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if Global.hunger >= 100:
-		$FishBucket.disabled = true
+		fish_bucket.disabled = true
 	else:
-		pass
+		if fish == null:
+			fish_bucket.disabled = false
 	pb_hungerbar.value = Global.hunger
 	if pb_hungerbar.value < 25:
 		pb_hungerbar.modulate = Color(1, 0, 0) # red for low values
@@ -29,8 +31,10 @@ func _on_fish_bucket_button_down() -> void:
 	if is_instance_valid(fish):
 		return
 	fish = fish_prefab.instantiate()
+	cat.target = fish
 	add_child(fish)
 	fish.start_drag(get_global_mouse_position())
+	fish_bucket.disabled = true
 
 func _on_fish_bucket_button_up() -> void:
 	Input.set_custom_mouse_cursor(Global.cursor_default)
