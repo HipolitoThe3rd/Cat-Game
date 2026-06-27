@@ -23,6 +23,10 @@ Global="*res://scripts/global.gd"
 
 gdscript/warnings/inference_on_variant=0
 
+[display]
+
+window/size/mode=2
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
