@@ -1,0 +1,2 @@
+class_name LitterRoomCat
+extends Node2D
