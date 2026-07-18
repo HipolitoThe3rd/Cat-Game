@@ -9,7 +9,10 @@ extends Node2D
 var fish
 
 func _ready() -> void:
-	Input.set_custom_mouse_cursor(Global.cursor_default)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_default)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_default)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -27,7 +30,10 @@ func _process(_delta):
 		pb_hungerbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
 
 func _on_fish_bucket_button_down() -> void:
-	Input.set_custom_mouse_cursor(Global.cursor_pet)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_pet)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_pet)
 	if is_instance_valid(fish):
 		return
 	fish = fish_prefab.instantiate()
@@ -37,7 +43,10 @@ func _on_fish_bucket_button_down() -> void:
 	fish_bucket.disabled = true
 
 func _on_fish_bucket_button_up() -> void:
-	Input.set_custom_mouse_cursor(Global.cursor_default)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_default)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_default)
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/hub.tscn")

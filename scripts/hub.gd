@@ -12,7 +12,10 @@ var room_kitchen = "res://scenes/kitchen.tscn"
 var room_bath = "res://scenes/bath.tscn"
 
 func _ready() -> void:
-	Input.set_custom_mouse_cursor(Global.cursor_default)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_default)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_default)
 
 func  _process(_delta: float) -> void:
 	#print("Cat's mood: ", Global.mood)

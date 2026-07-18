@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1idyyqkpda3k"
-path="res://.godot/imported/cursor_shower-head_pressedd.png-ef3e5f47bb0f158e257620ce01e7d1d9.ctex"
+uid="uid://cnsl58gjm2n3"
+path="res://.godot/imported/cursor_shower-head_pressed.png-b6967cee04625ee4d284bf6a71ec59f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/cursors/cursor_shower-head_pressedd.png"
-dest_files=["res://.godot/imported/cursor_shower-head_pressedd.png-ef3e5f47bb0f158e257620ce01e7d1d9.ctex"]
+source_file="res://sprites/cursors/cursor_shower-head_pressed.png"
+dest_files=["res://.godot/imported/cursor_shower-head_pressed.png-b6967cee04625ee4d284bf6a71ec59f2.ctex"]
 
 [params]
 

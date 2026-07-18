@@ -6,13 +6,16 @@ extends Node
 var cursor_default = load("res://sprites/cursors/cursor_default.png")
 var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
 var cursor_shower = load("res://sprites/cursors/cursor_shower-head.png")
-var cursor_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressedd.png")
+var cursor_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressed.png")
 
 # small cursors for web version
-var smcursor_default = load("res://sprites/cursors/cursor_default.png")
-var smcursor_default_pet = load("res://sprites/cursors/cursor_pet.png")
-var smcursor_default_shower = load("res://sprites/cursors/cursor_shower-head.png")
-var smcursor_default_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressedd.png")
+var smcursor_default = load("res://sprites/cursors/smcursor_default.png")
+var smcursor_pet = load("res://sprites/cursors/smcursor_pet.png")
+var smcursor_shower = load("res://sprites/cursors/smcursor_shower-head.png")
+var smcursor_shower_pour = load("res://sprites/cursors/smcursor_shower-head_pressed.png")
+
+# Tracks the cursor path
+var cursor_path: Resource = null
 
 # Cat mood system globals
 var mood = 90 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
@@ -31,8 +34,18 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
+
+# only sets cursor to new_cursor if the current cursor does not already match it
+# this is to prevent a glitch in the web version where the cursor rapidly switches
+# back and forth between the OS default and the custom cursor when it processes
+# every frame
+func set_cursor(new_cursor:Resource) -> void:
+	if cursor_path != new_cursor:
+		Input.set_custom_mouse_cursor(new_cursor)
+		cursor_path = new_cursor
+	
 
 func feed_cat(hunger_amount:int = 30) -> void:
 	Global.hunger = min(100, Global.hunger + hunger_amount)
