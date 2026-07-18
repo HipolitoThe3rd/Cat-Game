@@ -70,11 +70,17 @@ func  _process(_delta: float) -> void:
 
 func _on_cat_mouse_entered() -> void:
 	#print("cursor entered cat")
-	Input.set_custom_mouse_cursor(Global.cursor_pet)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_pet)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_pet)
 
 func _on_cat_mouse_exited() -> void:
 	#print("cursor exited cat")
-	Input.set_custom_mouse_cursor(Global.cursor_default)
+	if Global.web_version:
+		Input.set_custom_mouse_cursor(Global.smcursor_default)
+	else:
+		Input.set_custom_mouse_cursor(Global.cursor_default)
 
 func _on_door_1_pressed() -> void:
 	get_tree().change_scene_to_file(room_kitchen)
