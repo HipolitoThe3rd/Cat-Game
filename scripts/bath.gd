@@ -44,7 +44,7 @@ func _process(_delta):
 	elif pb_cleanbar.value > 75:
 		pb_cleanbar.modulate = Color(0, 1, 0) # green for high values
 	else:
-		pb_cleanbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
+		pb_cleanbar.modulate = Color(0.666, 0.666, 0.666) # gray for neutral range
 
 func _input(event):
 	# Check if the event is a mouse button click

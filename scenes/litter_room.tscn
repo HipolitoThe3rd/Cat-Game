@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cl7etnngnkv8p"]
+[gd_scene load_steps=30 format=3 uid="uid://cl7etnngnkv8p"]
 
 [ext_resource type="Script" uid="uid://yddko3u57ew3" path="res://scripts/litter_room.gd" id="1_qy1km"]
 [ext_resource type="Texture2D" uid="uid://1yl0pkp0y23r" path="res://backgrounds/bath.jpg" id="2_2t3sf"]
@@ -20,6 +20,9 @@
 [ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="17_76877"]
 [ext_resource type="Texture2D" uid="uid://bjbbuqp137tev" path="res://sprites/litter_room/litterbox_clean.png" id="18_os7vx"]
 [ext_resource type="Texture2D" uid="uid://dfpymtgt1gy12" path="res://sprites/litter_room/litterbox_dirty.png" id="19_a8pcf"]
+[ext_resource type="Texture2D" uid="uid://b5u02x42suvlk" path="res://sprites/litter_room/litterbox_clean_hover.png" id="20_a8pcf"]
+[ext_resource type="Texture2D" uid="uid://58hxdyhpqf0v" path="res://sprites/litter_room/litterbox_clean_pressed.png" id="20_wbgc5"]
+[ext_resource type="Texture2D" uid="uid://d0hts2tssmhc4" path="res://sprites/litter_room/litterbox_disabled.png" id="21_wbgc5"]
 
 [sub_resource type="Animation" id="Animation_i4q2v"]
 resource_name = "idle"
@@ -44,6 +47,35 @@ tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("6_e7iwj"), ExtResource("7_os7vx"), ExtResource("8_a8pcf"), ExtResource("7_os7vx"), ExtResource("6_e7iwj")]
+}
+
+[sub_resource type="Animation" id="Animation_e7iwj"]
+resource_name = "idle_half-speed"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [ExtResource("6_e7iwj"), ExtResource("7_os7vx"), ExtResource("8_a8pcf"), ExtResource("7_os7vx"), ExtResource("6_e7iwj")]
@@ -116,35 +148,6 @@ tracks/3/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
-}
-
-[sub_resource type="Animation" id="Animation_e7iwj"]
-resource_name = "idle_half-speed"
-length = 2.0
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [ExtResource("6_e7iwj"), ExtResource("7_os7vx"), ExtResource("8_a8pcf"), ExtResource("7_os7vx"), ExtResource("6_e7iwj")]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_v7xm0"]
@@ -252,11 +255,36 @@ texture_normal = ExtResource("15_68s2r")
 texture_pressed = ExtResource("16_qhygm")
 texture_hover = ExtResource("17_76877")
 
-[node name="LitterBox" type="Node2D" parent="."]
+[node name="LitterBox" type="Control" parent="."]
 z_index = -5
-position = Vector2(-153, -113)
+layout_mode = 3
+anchors_preset = 0
+offset_left = -153.0
+offset_top = -113.0
+offset_right = -153.0
+offset_bottom = -113.0
+
+[node name="LitterBoxClean" type="TextureButton" parent="LitterBox"]
+layout_mode = 0
+offset_left = 375.0
+offset_top = 293.0
+offset_right = 1296.0
+offset_bottom = 747.0
+texture_normal = ExtResource("18_os7vx")
+texture_pressed = ExtResource("20_wbgc5")
+texture_hover = ExtResource("20_a8pcf")
+texture_disabled = ExtResource("21_wbgc5")
+
+[node name="LitterBoxDirty" type="TextureButton" parent="LitterBox"]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 162.0
+offset_right = 908.0
+offset_bottom = 170.0
+texture_disabled = ExtResource("21_wbgc5")
 
 [node name="LitterboxClean" type="Sprite2D" parent="LitterBox"]
+visible = false
 position = Vector2(900, 162)
 texture = ExtResource("18_os7vx")
 
