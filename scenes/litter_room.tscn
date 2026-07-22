@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://cl7etnngnkv8p"]
+[gd_scene load_steps=31 format=3 uid="uid://cl7etnngnkv8p"]
 
 [ext_resource type="Script" uid="uid://yddko3u57ew3" path="res://scripts/litter_room.gd" id="1_qy1km"]
 [ext_resource type="Texture2D" uid="uid://1yl0pkp0y23r" path="res://backgrounds/bath.jpg" id="2_2t3sf"]
@@ -14,15 +14,19 @@
 [ext_resource type="Texture2D" uid="uid://r3ne6bpbdtbw" path="res://sprites/cat_clothespin.png" id="12_e7iwj"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="12_gr1ho"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="13_cl0px"]
-[ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="14_75q13"]
 [ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="15_68s2r"]
 [ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="16_qhygm"]
 [ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="17_76877"]
 [ext_resource type="Texture2D" uid="uid://bjbbuqp137tev" path="res://sprites/litter_room/litterbox_clean.png" id="18_os7vx"]
 [ext_resource type="Texture2D" uid="uid://dfpymtgt1gy12" path="res://sprites/litter_room/litterbox_dirty.png" id="19_a8pcf"]
-[ext_resource type="Texture2D" uid="uid://b5u02x42suvlk" path="res://sprites/litter_room/litterbox_clean_hover.png" id="20_a8pcf"]
+[ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="19_khg7x"]
+[ext_resource type="Texture2D" uid="uid://c2ow4rcw0paq1" path="res://sprites/litter_room/litterbox_dirty_pressed.png" id="20_0nsp4"]
 [ext_resource type="Texture2D" uid="uid://58hxdyhpqf0v" path="res://sprites/litter_room/litterbox_clean_pressed.png" id="20_wbgc5"]
 [ext_resource type="Texture2D" uid="uid://d0hts2tssmhc4" path="res://sprites/litter_room/litterbox_disabled.png" id="21_wbgc5"]
+[ext_resource type="Texture2D" uid="uid://i13ksnj8c2xl" path="res://sprites/litter_room/litterbox_scat.png" id="23_0dpan"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i4q2v"]
+size = Vector2(33.39708, 21.190468)
 
 [sub_resource type="Animation" id="Animation_i4q2v"]
 resource_name = "idle"
@@ -158,9 +162,6 @@ _data = {
 &"stinky": SubResource("Animation_idygx")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_i4q2v"]
-size = Vector2(33.39708, 21.190468)
-
 [node name="LitterRoom" type="Node2D"]
 script = ExtResource("1_qy1km")
 
@@ -176,20 +177,6 @@ offset_bottom = 725.0
 grow_vertical = 2
 texture = ExtResource("2_2t3sf")
 
-[node name="BladderIcon" type="TextureRect" parent="."]
-offset_left = 283.0
-offset_top = 16.0
-offset_right = 617.0
-offset_bottom = 239.0
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("3_e7iwj")
-
-[node name="BladderBar" type="ProgressBar" parent="."]
-offset_left = 368.0
-offset_top = 25.0
-offset_right = 782.0
-offset_bottom = 52.0
-
 [node name="Audio" type="Node" parent="."]
 
 [node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
@@ -199,8 +186,71 @@ stream = ExtResource("4_e7iwj")
 stream = ExtResource("5_os7vx")
 volume_db = -9.0
 
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(3273, 1448)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+scale = Vector2(35.559998, 8.400002)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(2667, 1256)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(3814, 1200)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+scale = Vector2(13.318898, -72.35281)
+shape = SubResource("RectangleShape2D_i4q2v")
+
+[node name="BackButton" type="TextureButton" parent="."]
+offset_left = 970.0
+offset_top = 18.0
+offset_right = 1275.0
+offset_bottom = 266.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("15_68s2r")
+texture_pressed = ExtResource("16_qhygm")
+texture_hover = ExtResource("17_76877")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("19_khg7x")
+
+[node name="Scat" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(452, 397)
+texture = ExtResource("23_0dpan")
+
+[node name="LitterBoxDirty" type="TextureButton" parent="."]
+offset_left = 14.0
+offset_top = 84.0
+offset_right = 935.0
+offset_bottom = 585.0
+pivot_offset = Vector2(460.5, 227)
+disabled = true
+texture_normal = ExtResource("19_a8pcf")
+texture_hover = ExtResource("20_0nsp4")
+texture_disabled = ExtResource("21_wbgc5")
+
+[node name="LitterBoxClean" type="TextureButton" parent="."]
+offset_left = 15.0
+offset_top = 131.0
+offset_right = 936.0
+offset_bottom = 585.0
+pivot_offset = Vector2(460.5, 227)
+texture_normal = ExtResource("18_os7vx")
+texture_hover = ExtResource("20_wbgc5")
+texture_disabled = ExtResource("21_wbgc5")
+
 [node name="Cat" type="Node2D" parent="."]
-position = Vector2(229, 389)
+position = Vector2(899, 402)
 scale = Vector2(0.5, 0.5)
 script = ExtResource("6_os7vx")
 
@@ -222,75 +272,20 @@ stream = ExtResource("13_cl0px")
 [node name="MeowStinky" type="AudioStreamPlayer" parent="Cat/AudioCat"]
 stream = ExtResource("12_gr1ho")
 
-[node name="ShowerheadHitbox" parent="." instance=ExtResource("14_75q13")]
+[node name="BladderIcon" type="TextureRect" parent="."]
+offset_left = 283.0
+offset_top = 16.0
+offset_right = 617.0
+offset_bottom = 239.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_e7iwj")
 
-[node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(626, 382)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
-scale = Vector2(35.559998, 8.400002)
-shape = SubResource("RectangleShape2D_i4q2v")
-
-[node name="WallLeft" type="StaticBody2D" parent="."]
-position = Vector2(20, 190)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
-scale = Vector2(13.318898, -72.35281)
-shape = SubResource("RectangleShape2D_i4q2v")
-
-[node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(1167, 134)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
-scale = Vector2(13.318898, -72.35281)
-shape = SubResource("RectangleShape2D_i4q2v")
-
-[node name="BackButton" type="TextureButton" parent="."]
-offset_left = 970.0
-offset_top = 18.0
-offset_right = 1275.0
-offset_bottom = 266.0
-scale = Vector2(0.5, 0.5)
-texture_normal = ExtResource("15_68s2r")
-texture_pressed = ExtResource("16_qhygm")
-texture_hover = ExtResource("17_76877")
-
-[node name="LitterBox" type="Control" parent="."]
-z_index = -5
-layout_mode = 3
-anchors_preset = 0
-offset_left = -153.0
-offset_top = -113.0
-offset_right = -153.0
-offset_bottom = -113.0
-
-[node name="LitterBoxClean" type="TextureButton" parent="LitterBox"]
-layout_mode = 0
-offset_left = 375.0
-offset_top = 293.0
-offset_right = 1296.0
-offset_bottom = 747.0
-texture_normal = ExtResource("18_os7vx")
-texture_pressed = ExtResource("20_wbgc5")
-texture_hover = ExtResource("20_a8pcf")
-texture_disabled = ExtResource("21_wbgc5")
-
-[node name="LitterBoxDirty" type="TextureButton" parent="LitterBox"]
-layout_mode = 0
-offset_left = 900.0
-offset_top = 162.0
-offset_right = 908.0
-offset_bottom = 170.0
-texture_disabled = ExtResource("21_wbgc5")
-
-[node name="LitterboxClean" type="Sprite2D" parent="LitterBox"]
-visible = false
-position = Vector2(900, 162)
-texture = ExtResource("18_os7vx")
-
-[node name="LitterboxDirty" type="Sprite2D" parent="LitterBox"]
-visible = false
-position = Vector2(900, 162)
-texture = ExtResource("19_a8pcf")
+[node name="BladderBar" type="ProgressBar" parent="."]
+offset_left = 368.0
+offset_top = 25.0
+offset_right = 782.0
+offset_bottom = 52.0
 
 [connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="button_down" from="LitterBoxClean" to="." method="_on_litter_box_clean_button_down"]
+[connection signal="button_up" from="LitterBoxClean" to="." method="_on_litter_box_clean_button_up"]
