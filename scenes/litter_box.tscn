@@ -10,10 +10,10 @@
 [ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="8_6xxrb"]
 [ext_resource type="Texture2D" uid="uid://i13ksnj8c2xl" path="res://sprites/litter_room/litterbox_scat.png" id="9_f3asq"]
 [ext_resource type="Script" uid="uid://16hl7hts7les" path="res://scripts/cat_litter-box.gd" id="12_5iii0"]
-[ext_resource type="Texture2D" uid="uid://dxlfmhbcnhrmi" path="res://sprites/Cat_bath_sigh_0.png" id="13_0ef7i"]
+[ext_resource type="Texture2D" uid="uid://ypr6ldr11rln" path="res://sprites/cat_litterbag_hover.png" id="13_0ef7i"]
 [ext_resource type="Texture2D" uid="uid://n8l73uyytmav" path="res://sprites/cat_litterbag.png" id="13_6r4jn"]
 [ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="14_iiwyg"]
-[ext_resource type="Texture2D" uid="uid://d4d7kw5fm0ec2" path="res://sprites/cat_bath_idle.png" id="14_rwr14"]
+[ext_resource type="Texture2D" uid="uid://bpfia5s5r0dwe" path="res://sprites/cat_litterbag_disabled.png" id="14_rwr14"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="22_5lyuq"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="23_tjxdo"]
 
@@ -103,8 +103,8 @@ offset_right = 1513.0
 offset_bottom = 1982.0
 scale = Vector2(0.5, 0.5)
 texture_normal = ExtResource("13_6r4jn")
-texture_pressed = ExtResource("13_0ef7i")
-texture_hover = ExtResource("14_rwr14")
+texture_hover = ExtResource("13_0ef7i")
+texture_disabled = ExtResource("14_rwr14")
 script = ExtResource("12_5iii0")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cat"]

@@ -4,6 +4,7 @@ extends Node2D
 @onready var spawn_area = $SpawnArea # a Poop prefab will randomly spawn somewhere in this area
 @onready var spawn_area_poly = $SpawnArea/CollisionPolygon2D
 @onready var poop_prefab = load("res://scenes/prefabs/poop.tscn")
+@onready var scooped = false # whether the scooper is holding poop
 
 func _ready() -> void:
 	#set cursor
@@ -25,7 +26,16 @@ func _process(_delta):
 			$Audio/ShowerRun.stop()
 	else:
 		sc_hitbox.global_position = get_viewport().get_mouse_position()
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if Input.is_action_just_pressed("left_click"):
+			#print("scoop!")
+			var overlapping_targets = sc_hitbox.get_node("Area2D").get_overlapping_areas()
+			for target in overlapping_targets:
+				#print("Touching: ", target.name)
+				if target.get_parent() is Poop:
+					print("found poop!")
+					target.get_parent().queue_free()
+					scooped = true
+		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or scooped == true:
 			#print("Left mouse button is being held down!")
 			if Global.web_version:
 				Global.set_cursor(Global.smcursor_scooper_pressed)
@@ -75,6 +85,8 @@ func spawn_poop(num_to_spawn: int) -> void:
 		var poop_instance = poop_prefab.instantiate()
 		poop_instance.global_position = spawn_area_pos + spawn_point
 		add_child(poop_instance)
+
+
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/litter_room.tscn")

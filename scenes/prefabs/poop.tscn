@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://ccsalyn3or847"]
+[gd_scene load_steps=11 format=3 uid="uid://ccsalyn3or847"]
 
 [ext_resource type="Texture2D" uid="uid://bfsf8kodhvoo1" path="res://sprites/litter_room/poop.png" id="1_87rh3"]
+[ext_resource type="Script" uid="uid://bccfdp07aoyrj" path="res://scripts/poop.gd" id="1_yd7gy"]
 [ext_resource type="Texture2D" uid="uid://brsvrtxbbyqnf" path="res://sprites/litter_room/stink_0.png" id="2_d2ytp"]
 [ext_resource type="Texture2D" uid="uid://coct5sw1q7p2" path="res://sprites/litter_room/stink_1.png" id="3_u1cl6"]
 [ext_resource type="Texture2D" uid="uid://cj2lh7821mu7m" path="res://sprites/litter_room/stink_2.png" id="4_yd7gy"]
@@ -48,6 +49,7 @@ _data = {
 radius = 41.303753
 
 [node name="Poop" type="Node2D"]
+script = ExtResource("1_yd7gy")
 
 [node name="SpriteLitter" type="Sprite2D" parent="."]
 texture = ExtResource("1_87rh3")
