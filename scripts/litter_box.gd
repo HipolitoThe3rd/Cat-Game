@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var sc_hitbox = $ScooperHitbox
 @onready var spawn_area = $SpawnArea # a Poop prefab will randomly spawn somewhere in this area
+@onready var spawn_area_poly = $SpawnArea/CollisionPolygon2D
 @onready var poop_prefab = load("res://scenes/prefabs/poop.tscn")
 
 func _ready() -> void:
@@ -10,6 +11,7 @@ func _ready() -> void:
 		Input.set_custom_mouse_cursor(Global.smcursor_scooper)
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_scooper)
+	spawn_poop(5)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -39,6 +41,40 @@ func _process(_delta):
 				Input.set_custom_mouse_cursor(Global.cursor_scooper)
 			#if $Audio/ShowerRun.playing == true:
 			#	$Audio/ShowerRun.stop()
+
+func spawn_poop(num_to_spawn: int) -> void:
+	# spawn [num_to_spawn] instances of poop prefab in a random area within spawn_area
+	var polygon = spawn_area_poly.polygon
+	
+	# Calculate bounding rect from polygon points
+	var min_x = polygon[0].x
+	var max_x = polygon[0].x
+	var min_y = polygon[0].y
+	var max_y = polygon[0].y
+	
+	for point in polygon:
+		min_x = min(min_x, point.x)
+		max_x = max(max_x, point.x)
+		min_y = min(min_y, point.y)
+		max_y = max(max_y, point.y)
+	
+	var spawn_area_pos = spawn_area.global_position
+	
+	for i in range(num_to_spawn):
+		var spawn_point = Vector2.ZERO
+		var point_valid = false
+		
+		# Keep trying until we find a valid point inside the polygon
+		while not point_valid:
+			spawn_point = Vector2(
+				randf_range(min_x, max_x),
+				randf_range(min_y, max_y)
+			)
+			point_valid = Geometry2D.is_point_in_polygon(spawn_point, polygon)
+		
+		var poop_instance = poop_prefab.instantiate()
+		poop_instance.global_position = spawn_area_pos + spawn_point
+		add_child(poop_instance)
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/litter_room.tscn")

@@ -1,5 +1,5 @@
 class_name LitterBoxCat
-extends Node2D
+extends TextureButton
 
 @onready var anim_play = $AnimationPlayer
 
