@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c1obja3gldjbb"]
+[gd_scene load_steps=18 format=3 uid="uid://c1obja3gldjbb"]
 
 [ext_resource type="Script" uid="uid://dpnqx3ygfpn6p" path="res://scripts/litter_box.gd" id="1_uyfhs"]
 [ext_resource type="Texture2D" uid="uid://5tjhq11d0rq4" path="res://backgrounds/litter_box.jpg" id="2_qrnk5"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://i13ksnj8c2xl" path="res://sprites/litter_room/litterbox_scat.png" id="9_f3asq"]
 [ext_resource type="Script" uid="uid://16hl7hts7les" path="res://scripts/cat_litter-box.gd" id="12_5iii0"]
 [ext_resource type="Texture2D" uid="uid://n8l73uyytmav" path="res://sprites/cat_litterbag.png" id="13_6r4jn"]
+[ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="14_iiwyg"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="22_5lyuq"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="23_tjxdo"]
 
@@ -66,10 +67,10 @@ scale = Vector2(13.318898, -72.35281)
 shape = SubResource("RectangleShape2D_i4q2v")
 
 [node name="BackButton" type="TextureButton" parent="."]
-offset_left = 970.0
-offset_top = 18.0
-offset_right = 1275.0
-offset_bottom = 266.0
+offset_left = 1943.0
+offset_top = 218.0
+offset_right = 2248.0
+offset_bottom = 466.0
 scale = Vector2(0.5, 0.5)
 texture_normal = ExtResource("5_1k1n3")
 texture_pressed = ExtResource("6_whaqf")
@@ -82,7 +83,7 @@ offset_bottom = 40.0
 texture = ExtResource("8_6xxrb")
 
 [node name="Scat" type="Sprite2D" parent="."]
-position = Vector2(662, 215)
+position = Vector2(655, 250)
 texture = ExtResource("9_f3asq")
 
 [node name="AudioCat" type="Node" parent="."]
@@ -107,5 +108,14 @@ root_node = NodePath("../Sprite2D")
 libraries = {
 &"": SubResource("AnimationLibrary_v7xm0")
 }
+
+[node name="ScooperHitbox" parent="." instance=ExtResource("14_iiwyg")]
+position = Vector2(668, 973)
+scale = Vector2(0.5, 0.5)
+
+[node name="SpawnArea" type="Area2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="SpawnArea"]
+polygon = PackedVector2Array(277, 217, 312, 618, 799, 612, 1104, 520, 1081, 53, 517, 49)
 
 [connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]

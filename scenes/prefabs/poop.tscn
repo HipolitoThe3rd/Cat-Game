@@ -1,0 +1,68 @@
+[gd_scene load_steps=10 format=3 uid="uid://ccsalyn3or847"]
+
+[ext_resource type="Texture2D" uid="uid://bfsf8kodhvoo1" path="res://sprites/litter_room/poop.png" id="1_87rh3"]
+[ext_resource type="Texture2D" uid="uid://brsvrtxbbyqnf" path="res://sprites/litter_room/stink_0.png" id="2_d2ytp"]
+[ext_resource type="Texture2D" uid="uid://coct5sw1q7p2" path="res://sprites/litter_room/stink_1.png" id="3_u1cl6"]
+[ext_resource type="Texture2D" uid="uid://cj2lh7821mu7m" path="res://sprites/litter_room/stink_2.png" id="4_yd7gy"]
+[ext_resource type="Texture2D" uid="uid://dwh8nw4uq38iy" path="res://sprites/litter_room/stink_3.png" id="5_lxapl"]
+
+[sub_resource type="Animation" id="Animation_kw8ft"]
+resource_name = "stink"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpriteStink:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.365, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("2_d2ytp"), ExtResource("3_u1cl6"), ExtResource("4_yd7gy"), ExtResource("5_lxapl"), ExtResource("2_d2ytp")]
+}
+
+[sub_resource type="Animation" id="Animation_xvest"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpriteStink:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_d2ytp")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gg5ku"]
+_data = {
+&"RESET": SubResource("Animation_xvest"),
+&"stink": SubResource("Animation_kw8ft")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u1cl6"]
+radius = 41.303753
+
+[node name="Poop" type="Node2D"]
+
+[node name="SpriteLitter" type="Sprite2D" parent="."]
+texture = ExtResource("1_87rh3")
+
+[node name="SpriteStink" type="Sprite2D" parent="."]
+position = Vector2(0, -72)
+texture = ExtResource("2_d2ytp")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_gg5ku")
+}
+autoplay = "stink"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_u1cl6")
