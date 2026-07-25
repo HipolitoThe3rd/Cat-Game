@@ -5,6 +5,7 @@ extends Node2D
 @onready var spawn_area_poly = $SpawnArea/CollisionPolygon2D
 @onready var poop_prefab = load("res://scenes/prefabs/poop.tscn")
 @onready var scooped = false # whether the scooper is holding poop
+@onready var cat = $Cat
 
 func _ready() -> void:
 	#set cursor
@@ -12,7 +13,7 @@ func _ready() -> void:
 		Input.set_custom_mouse_cursor(Global.smcursor_scooper)
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_scooper)
-	spawn_poop(5)
+	spawn_poop(Global.poop_in_litterbox)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -28,13 +29,18 @@ func _process(_delta):
 		sc_hitbox.global_position = get_viewport().get_mouse_position()
 		if Input.is_action_just_pressed("left_click"):
 			#print("scoop!")
+			if scooped == false:
+				$Audio/Scoop.play()
 			var overlapping_targets = sc_hitbox.get_node("Area2D").get_overlapping_areas()
 			for target in overlapping_targets:
 				#print("Touching: ", target.name)
 				if target.get_parent() is Poop:
-					print("found poop!")
-					target.get_parent().queue_free()
-					scooped = true
+					#print("found poop!")
+					print('Scooped? ', scooped)
+					if scooped == false and cat.position.y > 86.0:
+						target.get_parent().queue_free()
+						scooped = true
+						cat.animate("move_up")
 		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or scooped == true:
 			#print("Left mouse button is being held down!")
 			if Global.web_version:
@@ -86,7 +92,29 @@ func spawn_poop(num_to_spawn: int) -> void:
 		poop_instance.global_position = spawn_area_pos + spawn_point
 		add_child(poop_instance)
 
+func _on_cat_button_down() -> void:
+	if scooped == true:
+		scooped = false
+		Global.poop_in_litterbox -= 1
+		cat.animate("move_down")
 
+
+func _on_cat_button_up() -> void:
+	pass # Replace with function body.
+
+
+func _on_cat_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_cat_toggled(_toggled_on: bool) -> void:
+	pass # Replace with function body.
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/litter_room.tscn")
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	if anim_name == "move_down":
+		print("Poop left: ", Global.poop_in_litterbox		)
+		if Global.poop_in_litterbox == 0:
+			get_tree().change_scene_to_file("res://scenes/litter_room.tscn")

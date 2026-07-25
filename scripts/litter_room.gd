@@ -16,7 +16,7 @@ func _ready() -> void:
 	
 	# if bladder is below 25, use the litterbox automatically
 	if Global.bladder < 25:
-		relieve_cat()
+		relieve_cat(10)
 	elif Global.bladder > 75:
 		cat.happy_meow()
 		cat.animate()
@@ -26,30 +26,33 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	bl_bar.value = Global.bladder
 
-func relieve_cat() -> void:
+func relieve_cat(num_of_poop: int) -> void:
 	Global.bladder = 100
 	lb_clean_button.disabled = true
 	lb_clean_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lb_dirty_button.disabled = false
 	scat.visible = true
 	cat.animate("stinky")
+	Global.poop_in_litterbox = num_of_poop
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/hub.tscn")
 
+func _on_litter_box_clean_button_up() -> void:
+	pass
+
+func _on_litter_box_clean_button_down() -> void:
+	if Global.bladder > 25 and Global.bladder < 75:
+		relieve_cat(5)
 
 func _on_litter_box_dirty_button_up() -> void:
 	pass
 
-
-func _on_litter_box_clean_button_up() -> void:
-	pass
-
-
 func _on_litter_box_dirty_button_down() -> void:
+	get_tree().change_scene_to_file("res://scenes/litter_box.tscn")
+
+func _on_litter_box_dirty_pressed() -> void:
 	pass # Replace with function body.
 
-
-func _on_litter_box_clean_button_down() -> void:
-	if Global.bladder > 25 and Global.bladder < 75:
-		relieve_cat()
+func _on_litter_box_dirty_toggled(_toggled_on: bool) -> void:
+	pass # Replace with function body.

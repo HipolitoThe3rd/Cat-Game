@@ -207,16 +207,6 @@ position = Vector2(3814, 1200)
 scale = Vector2(13.318898, -72.35281)
 shape = SubResource("RectangleShape2D_i4q2v")
 
-[node name="BackButton" type="TextureButton" parent="."]
-offset_left = 970.0
-offset_top = 18.0
-offset_right = 1275.0
-offset_bottom = 266.0
-scale = Vector2(0.5, 0.5)
-texture_normal = ExtResource("15_68s2r")
-texture_pressed = ExtResource("16_qhygm")
-texture_hover = ExtResource("17_76877")
-
 [node name="TextureRect" type="TextureRect" parent="."]
 visible = false
 offset_right = 40.0
@@ -286,6 +276,20 @@ offset_top = 25.0
 offset_right = 782.0
 offset_bottom = 52.0
 
-[connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]
+[node name="BackButton" type="TextureButton" parent="."]
+offset_left = 970.0
+offset_top = 18.0
+offset_right = 1275.0
+offset_bottom = 266.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("15_68s2r")
+texture_pressed = ExtResource("16_qhygm")
+texture_hover = ExtResource("17_76877")
+
+[connection signal="button_down" from="LitterBoxDirty" to="." method="_on_litter_box_dirty_button_down"]
+[connection signal="button_up" from="LitterBoxDirty" to="." method="_on_litter_box_dirty_button_up"]
+[connection signal="pressed" from="LitterBoxDirty" to="." method="_on_litter_box_dirty_pressed"]
+[connection signal="toggled" from="LitterBoxDirty" to="." method="_on_litter_box_dirty_toggled"]
 [connection signal="button_down" from="LitterBoxClean" to="." method="_on_litter_box_clean_button_down"]
 [connection signal="button_up" from="LitterBoxClean" to="." method="_on_litter_box_clean_button_up"]
+[connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]

@@ -33,6 +33,9 @@ var entertainment = 75 # 0 to 100, boredom level; too low means bored, default 5
 var affection = 15 # 0 to 100, needs player interaction to increase, default 40
 var bladder = 70 # 0 to 100, decreases over time/activity; at 0 cat soils itself and resets to 100, default 100
 
+# Misc variables
+var poop_in_litterbox = 0 # how much poop is in the litterbox; default 0
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
