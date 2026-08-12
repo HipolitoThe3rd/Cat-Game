@@ -1,0 +1,363 @@
+[gd_scene load_steps=30 format=3 uid="uid://djfrbw4ntmsvy"]
+
+[ext_resource type="Script" uid="uid://v0pwifgpeufb" path="res://scripts/bedroom.gd" id="1_wlwc7"]
+[ext_resource type="Texture2D" uid="uid://bm4skrynnemsk" path="res://backgrounds/bedroom.jpg" id="2_ls8op"]
+[ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="3_qbrme"]
+[ext_resource type="Texture2D" uid="uid://wdc52mf2vml1" path="res://sprites/mood_icons/energy.png" id="3_wlwc7"]
+[ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="4_lyvny"]
+[ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="5_ns14s"]
+[ext_resource type="Texture2D" uid="uid://dvnrsybl5coty" path="res://sprites/cat_sleep_0.png" id="8_0wemr"]
+[ext_resource type="Script" uid="uid://cjecqjhdoduis" path="res://scripts/cat_bed.gd" id="10_wlwc7"]
+[ext_resource type="Texture2D" uid="uid://ddv27frolbmg0" path="res://sprites/cat_sit_0.png" id="13_15if8"]
+[ext_resource type="Texture2D" uid="uid://6to1vlsubjjd" path="res://sprites/cat_sit_1_3.png" id="14_u3yip"]
+[ext_resource type="Texture2D" uid="uid://5wm387iif02c" path="res://sprites/cat_sit_2.png" id="15_pnsqg"]
+[ext_resource type="Texture2D" uid="uid://dfcposf80ql13" path="res://sprites/Cat_bath_move_0.png" id="16_3lri6"]
+[ext_resource type="Texture2D" uid="uid://cmhkury6urlbg" path="res://sprites/cat_sleep_1.png" id="16_u8wxw"]
+[ext_resource type="Texture2D" uid="uid://di4oycah3x3mn" path="res://sprites/Cat_bath_move_1.png" id="17_7uc5s"]
+[ext_resource type="Texture2D" uid="uid://cglsudmappw3w" path="res://sprites/cat_sleep_2.png" id="17_ls8op"]
+[ext_resource type="Texture2D" uid="uid://r3ne6bpbdtbw" path="res://sprites/cat_clothespin.png" id="18_3eg4m"]
+[ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="19_boshx"]
+[ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="20_iuwyb"]
+[ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="22_wltlc"]
+[ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="23_styym"]
+[ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="24_6bpri"]
+
+[sub_resource type="Animation" id="Animation_e7iwj"]
+resource_name = "idle_half-speed"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("13_15if8"), ExtResource("14_u3yip"), ExtResource("15_pnsqg"), ExtResource("14_u3yip"), ExtResource("13_15if8")]
+}
+
+[sub_resource type="Animation" id="Animation_v7xm0"]
+resource_name = "move"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("16_3lri6"), ExtResource("17_7uc5s")]
+}
+
+[sub_resource type="Animation" id="Animation_i4q2v"]
+resource_name = "rested"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("13_15if8"), ExtResource("14_u3yip"), ExtResource("15_pnsqg"), ExtResource("14_u3yip"), ExtResource("13_15if8")]
+}
+
+[sub_resource type="Animation" id="Animation_qw8ek"]
+resource_name = "sleep"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("8_0wemr"), ExtResource("16_u8wxw"), ExtResource("17_ls8op"), ExtResource("16_u8wxw"), ExtResource("8_0wemr")]
+}
+
+[sub_resource type="Animation" id="Animation_idygx"]
+resource_name = "upset"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("18_3eg4m")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -48.3)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../AudioCat/MeowUpset:stream")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("19_boshx")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../AudioCat/MeowUpset:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_v7xm0"]
+_data = {
+&"idle_half-speed": SubResource("Animation_e7iwj"),
+&"move": SubResource("Animation_v7xm0"),
+&"rested": SubResource("Animation_i4q2v"),
+&"sleep": SubResource("Animation_qw8ek"),
+&"upset": SubResource("Animation_idygx")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qquio"]
+radius = 250.31
+height = 1024.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wlwc7"]
+radius = 25.0
+
+[node name="Bedroom" type="Node2D"]
+script = ExtResource("1_wlwc7")
+
+[node name="Background" type="TextureRect" parent="."]
+z_index = -5
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -120.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_vertical = 2
+texture = ExtResource("2_ls8op")
+
+[node name="UI" type="Control" parent="."]
+z_index = 5
+layout_mode = 3
+anchors_preset = 0
+offset_left = 283.0
+offset_top = 16.0
+offset_right = 323.0
+offset_bottom = 56.0
+
+[node name="EnergyIcon" type="TextureRect" parent="UI"]
+layout_mode = 0
+offset_right = 334.0
+offset_bottom = 223.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_wlwc7")
+
+[node name="EnergyBar" type="ProgressBar" parent="UI"]
+layout_mode = 0
+offset_left = 85.0
+offset_top = 9.0
+offset_right = 499.0
+offset_bottom = 36.0
+
+[node name="BackButton" type="TextureButton" parent="UI"]
+layout_mode = 0
+offset_left = 201.0
+offset_top = 55.0
+offset_right = 506.0
+offset_bottom = 303.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("22_wltlc")
+texture_pressed = ExtResource("23_styym")
+texture_hover = ExtResource("24_6bpri")
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("3_qbrme")
+
+[node name="ShowerRun" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("4_lyvny")
+volume_db = -9.0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("5_ns14s")
+
+[node name="Cat" type="Node2D" parent="."]
+position = Vector2(574, 371)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("10_wlwc7")
+
+[node name="Sprite2D" type="Sprite2D" parent="Cat"]
+texture = ExtResource("13_15if8")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
+root_node = NodePath("../Sprite2D")
+libraries = {
+&"": SubResource("AnimationLibrary_v7xm0")
+}
+autoplay = "sleep"
+
+[node name="AudioCat" type="Node" parent="Cat"]
+
+[node name="MeowHappy" type="AudioStreamPlayer" parent="Cat/AudioCat"]
+stream = ExtResource("20_iuwyb")
+
+[node name="MeowUpset" type="AudioStreamPlayer" parent="Cat/AudioCat"]
+stream = ExtResource("19_boshx")
+
+[node name="Area2D" type="Area2D" parent="Cat"]
+position = Vector2(-6, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cat/Area2D"]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_qquio")
+
+[node name="BedbugWalkAreas" type="Node2D" parent="."]
+position = Vector2(574, 371)
+scale = Vector2(0.5, 0.5)
+
+[node name="SpawnArea" type="Area2D" parent="BedbugWalkAreas"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/SpawnArea"]
+polygon = PackedVector2Array(-754, -762, -1132, -754, -1338, -1120, -846, -1190, 1180, -1184, 1450, -944, 1120, -768, 530, -770, 668, -906, -808, -1010, -860, -982)
+
+[node name="WalkAreaL" type="Area2D" parent="BedbugWalkAreas"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaL"]
+polygon = PackedVector2Array(-790, -720, -752, -628, -1248, -552, -1270, -720)
+
+[node name="WalkAreaL2" type="Area2D" parent="BedbugWalkAreas"]
+position = Vector2(14, 354)
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaL2"]
+polygon = PackedVector2Array(-792, -876, -766, -634, -1248, -552, -1288, -850)
+
+[node name="WalkAreaL3" type="Area2D" parent="BedbugWalkAreas"]
+position = Vector2(-180, 958)
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaL3"]
+polygon = PackedVector2Array(-942, -1126, -646, -1152, -752, -636, -630, -448, -954, -434)
+
+[node name="WalkAreaR" type="Area2D" parent="BedbugWalkAreas"]
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaR"]
+polygon = PackedVector2Array(540, -722, 564, -604, 1142, -406, 1134, -712)
+
+[node name="WalkAreaR2" type="Area2D" parent="BedbugWalkAreas"]
+position = Vector2(-38, 258)
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaR2"]
+polygon = PackedVector2Array(610, -784, 542, -648, 1170, -342, 1154, -576)
+
+[node name="WalkAreaR3" type="Area2D" parent="BedbugWalkAreas"]
+position = Vector2(264, 668)
+monitoring = false
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BedbugWalkAreas/WalkAreaR3"]
+polygon = PackedVector2Array(512, -156, 606, -430, 534, -824, 858, -674, 864, -136)
+
+[node name="EnemyList" type="Node" parent="."]
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 3.0
+
+[node name="Hitbox" type="Node2D" parent="."]
+position = Vector2(-272, -284)
+
+[node name="Area2D" type="Area2D" parent="Hitbox"]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox/Area2D"]
+scale = Vector2(3.2, 3.2)
+shape = SubResource("CircleShape2D_wlwc7")
+
+[connection signal="button_down" from="UI/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="area_entered" from="Cat/Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="child_exiting_tree" from="EnemyList" to="." method="_on_enemy_list_child_exiting_tree"]
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

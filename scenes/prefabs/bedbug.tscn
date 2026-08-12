@@ -1,0 +1,91 @@
+[gd_scene load_steps=11 format=3 uid="uid://oq8kcgncr72p"]
+
+[ext_resource type="Script" uid="uid://f8l3wp1tsqbk" path="res://scripts/bedbug.gd" id="1_kpfn0"]
+[ext_resource type="Texture2D" uid="uid://bowapgftnrs77" path="res://sprites/bedbug/bedbug_0.png" id="2_vrke0"]
+[ext_resource type="Texture2D" uid="uid://crxulqit1aj2u" path="res://sprites/bedbug/bedbug_1.png" id="3_qacps"]
+[ext_resource type="Texture2D" uid="uid://bcf8pynlouksv" path="res://sprites/bedbug/bedbug_die.png" id="4_auo5l"]
+[ext_resource type="AudioStream" uid="uid://c2m5ivxqfx0nk" path="res://sfx/squish_bug.wav" id="4_qacps"]
+
+[sub_resource type="Animation" id="Animation_auo5l"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("2_vrke0"), ExtResource("3_qacps")]
+}
+
+[sub_resource type="Animation" id="Animation_v06im"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_vrke0"]
+resource_name = "die"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_auo5l")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../AudioDie:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qggv5"]
+_data = {
+&"RESET": SubResource("Animation_v06im"),
+&"die": SubResource("Animation_vrke0"),
+&"walk": SubResource("Animation_auo5l")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vrke0"]
+radius = 341.335
+height = 703.36
+
+[node name="Bedbug" type="Node2D"]
+z_index = 1
+scale = Vector2(0.1, 0.1)
+script = ExtResource("1_kpfn0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_vrke0")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite2D")
+libraries = {
+&"": SubResource("AnimationLibrary_qggv5")
+}
+autoplay = "walk"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_vrke0")
+
+[node name="AudioDie" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_qacps")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

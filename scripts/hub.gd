@@ -11,6 +11,7 @@ extends Node2D
 var room_kitchen = "res://scenes/kitchen.tscn"
 var room_bath = "res://scenes/bath.tscn"
 var room_litter = "res://scenes/litter_room.tscn"
+var room_bed = "res://scenes/bedroom.tscn"
 
 func _ready() -> void:
 	if Global.web_version:
@@ -94,3 +95,6 @@ func _on_door_2_pressed() -> void:
 
 func _on_door_3_pressed() -> void:
 	get_tree().change_scene_to_file(room_litter)
+
+func _on_door_4_pressed() -> void:
+	get_tree().change_scene_to_file(room_bed)

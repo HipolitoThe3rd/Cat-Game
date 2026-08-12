@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doubbmdvls630"
-path="res://.godot/imported/torstensimon-doors-6742044_640.jpg-83fa3ae825d3c100f24684e18f59a69f.ctex"
+uid="uid://cglsudmappw3w"
+path="res://.godot/imported/cat_sleep_2.png-2881cbcea0e12f0e0c825d5011e75960.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://backgrounds/torstensimon-doors-6742044_640.jpg"
-dest_files=["res://.godot/imported/torstensimon-doors-6742044_640.jpg-83fa3ae825d3c100f24684e18f59a69f.ctex"]
+source_file="res://sprites/cat_sleep_2.png"
+dest_files=["res://.godot/imported/cat_sleep_2.png-2881cbcea0e12f0e0c825d5011e75960.ctex"]
 
 [params]
 

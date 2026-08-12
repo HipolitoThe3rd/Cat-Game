@@ -1,7 +1,7 @@
 ## Global variables
 extends Node
 
-@onready var web_version = false # whether or not this is the web version
+@onready var web_version = true # whether or not this is the web version
 
 var cursor_default = load("res://sprites/cursors/cursor_default.png")
 var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
@@ -27,7 +27,7 @@ var mood = 90 # how happy the cat is; 0 is minimum and 100 is maximum, default 5
 
 # Cat mood contributors
 var hunger = 5 # 0 to 100, affects mood and behavior, default 30
-var energy = 80 # 0 to 100, decreases with activity, default 80
+var energy = 87 # 0 to 100, decreases with activity, default 80
 var cleanliness = 55 # 0 to 100, decreases over time, affects mood, default 95
 var entertainment = 75 # 0 to 100, boredom level; too low means bored, default 50
 var affection = 15 # 0 to 100, needs player interaction to increase, default 40
