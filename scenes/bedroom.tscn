@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://djfrbw4ntmsvy"]
+[gd_scene load_steps=28 format=3 uid="uid://djfrbw4ntmsvy"]
 
 [ext_resource type="Script" uid="uid://v0pwifgpeufb" path="res://scripts/bedroom.gd" id="1_wlwc7"]
 [ext_resource type="Texture2D" uid="uid://bm4skrynnemsk" path="res://backgrounds/bedroom.jpg" id="2_ls8op"]
@@ -8,14 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="5_ns14s"]
 [ext_resource type="Texture2D" uid="uid://dvnrsybl5coty" path="res://sprites/cat_sleep_0.png" id="8_0wemr"]
 [ext_resource type="Script" uid="uid://cjecqjhdoduis" path="res://scripts/cat_bed.gd" id="10_wlwc7"]
+[ext_resource type="Texture2D" uid="uid://b8easxaj21soe" path="res://sprites/Cat_awoken.png" id="11_wlwc7"]
 [ext_resource type="Texture2D" uid="uid://ddv27frolbmg0" path="res://sprites/cat_sit_0.png" id="13_15if8"]
 [ext_resource type="Texture2D" uid="uid://6to1vlsubjjd" path="res://sprites/cat_sit_1_3.png" id="14_u3yip"]
 [ext_resource type="Texture2D" uid="uid://5wm387iif02c" path="res://sprites/cat_sit_2.png" id="15_pnsqg"]
-[ext_resource type="Texture2D" uid="uid://dfcposf80ql13" path="res://sprites/Cat_bath_move_0.png" id="16_3lri6"]
 [ext_resource type="Texture2D" uid="uid://cmhkury6urlbg" path="res://sprites/cat_sleep_1.png" id="16_u8wxw"]
-[ext_resource type="Texture2D" uid="uid://di4oycah3x3mn" path="res://sprites/Cat_bath_move_1.png" id="17_7uc5s"]
 [ext_resource type="Texture2D" uid="uid://cglsudmappw3w" path="res://sprites/cat_sleep_2.png" id="17_ls8op"]
-[ext_resource type="Texture2D" uid="uid://r3ne6bpbdtbw" path="res://sprites/cat_clothespin.png" id="18_3eg4m"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="19_boshx"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="20_iuwyb"]
 [ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="22_wltlc"]
@@ -36,7 +34,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, -200)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -49,23 +47,6 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [ExtResource("13_15if8"), ExtResource("14_u3yip"), ExtResource("15_pnsqg"), ExtResource("14_u3yip"), ExtResource("13_15if8")]
-}
-
-[sub_resource type="Animation" id="Animation_v7xm0"]
-resource_name = "move"
-length = 0.5
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [ExtResource("16_3lri6"), ExtResource("17_7uc5s")]
 }
 
 [sub_resource type="Animation" id="Animation_i4q2v"]
@@ -81,7 +62,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, -200)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -137,7 +118,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("18_3eg4m")]
+"values": [ExtResource("11_wlwc7")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -149,7 +130,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, -48.3)]
+"values": [Vector2(0, -200)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -176,10 +157,25 @@ tracks/3/keys = {
 "values": [true]
 }
 
+[sub_resource type="Animation" id="Animation_0wemr"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_v7xm0"]
 _data = {
+&"RESET": SubResource("Animation_0wemr"),
 &"idle_half-speed": SubResource("Animation_e7iwj"),
-&"move": SubResource("Animation_v7xm0"),
 &"rested": SubResource("Animation_i4q2v"),
 &"sleep": SubResource("Animation_qw8ek"),
 &"upset": SubResource("Animation_idygx")
