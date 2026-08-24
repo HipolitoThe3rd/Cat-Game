@@ -1,0 +1,181 @@
+[gd_scene load_steps=24 format=3 uid="uid://b4q1b13n6u3s7"]
+
+[ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
+[ext_resource type="Texture2D" uid="uid://bm4skrynnemsk" path="res://backgrounds/bedroom.jpg" id="2_0vtxf"]
+[ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_icons/fun.png" id="3_lrjy8"]
+[ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="4_4kfa6"]
+[ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="5_mpdoj"]
+[ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="6_0nyju"]
+[ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="7_poo7g"]
+[ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="8_1itpy"]
+[ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="9_r0hti"]
+[ext_resource type="Script" uid="uid://dj837vbrtjjx7" path="res://scripts/cat_playroom.gd" id="10_lrjy8"]
+[ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="11_5d2ak"]
+[ext_resource type="Texture2D" uid="uid://c4tolfb8ufe2q" path="res://sprites/cat_pet.png" id="12_0vtxf"]
+[ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="13_ryj4h"]
+[ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="14_4kfa6"]
+[ext_resource type="AudioStream" uid="uid://4rpjw24p04m6" path="res://sfx/meow_1.mp3" id="15_mpdoj"]
+[ext_resource type="AudioStream" uid="uid://cx14stefxmavf" path="res://sfx/meow_2.mp3" id="16_0nyju"]
+[ext_resource type="AudioStream" uid="uid://cvclwqippv1kg" path="res://sfx/meow_3.mp3" id="17_poo7g"]
+[ext_resource type="AudioStream" uid="uid://dbtdyief021cq" path="res://sfx/purr.mp3" id="18_1itpy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_r0hti"]
+radius = 25.342098
+
+[sub_resource type="Animation" id="Animation_lcd1r"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("11_5d2ak")]
+}
+
+[sub_resource type="Animation" id="Animation_7t3s2"]
+resource_name = "pet"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("12_0vtxf")]
+}
+
+[sub_resource type="Animation" id="Animation_4oyfp"]
+resource_name = "walk"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("13_ryj4h"), ExtResource("11_5d2ak"), ExtResource("14_4kfa6"), ExtResource("11_5d2ak")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
+_data = {
+&"RESET": SubResource("Animation_lcd1r"),
+&"pet": SubResource("Animation_7t3s2"),
+&"walk": SubResource("Animation_4oyfp")
+}
+
+[node name="Playroom" type="Node2D"]
+script = ExtResource("1_lwduy")
+
+[node name="Background" type="TextureRect" parent="."]
+z_index = -5
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -120.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_vertical = 2
+texture = ExtResource("2_0vtxf")
+
+[node name="UI" type="Control" parent="."]
+z_index = 5
+layout_mode = 3
+anchors_preset = 0
+offset_left = 283.0
+offset_top = 16.0
+offset_right = 323.0
+offset_bottom = 56.0
+
+[node name="FunIcon" type="TextureRect" parent="UI"]
+layout_mode = 0
+offset_right = 334.0
+offset_bottom = 223.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_lrjy8")
+
+[node name="FunBar" type="ProgressBar" parent="UI"]
+layout_mode = 0
+offset_left = 85.0
+offset_top = 9.0
+offset_right = 499.0
+offset_bottom = 36.0
+
+[node name="BackButton" type="TextureButton" parent="UI"]
+layout_mode = 1
+offset_left = 709.0
+offset_top = -7.0
+offset_right = 1014.0
+offset_bottom = 241.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("4_4kfa6")
+texture_pressed = ExtResource("5_mpdoj")
+texture_hover = ExtResource("6_0nyju")
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="ShowerToggle" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("7_poo7g")
+
+[node name="ShowerRun" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("8_1itpy")
+volume_db = -9.0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("9_r0hti")
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 3.0
+
+[node name="Cat" type="CharacterBody2D" parent="."]
+position = Vector2(61, 115)
+input_pickable = true
+script = ExtResource("10_lrjy8")
+
+[node name="Sprite2D" type="Sprite2D" parent="Cat"]
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("11_5d2ak")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
+shape = SubResource("CircleShape2D_r0hti")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
+libraries = {
+&"": SubResource("AnimationLibrary_s6eg2")
+}
+autoplay = "RESET"
+
+[node name="SFX" type="Node" parent="Cat"]
+
+[node name="Meow1" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("15_mpdoj")
+
+[node name="Meow2" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("16_0nyju")
+
+[node name="Meow3" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("17_poo7g")
+
+[node name="MeowHappy" type="AudioStreamPlayer" parent="Cat/SFX"]
+
+[node name="Purr" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("18_1itpy")
+
+[connection signal="button_down" from="UI/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
+[connection signal="mouse_entered" from="Cat" to="Cat" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Cat" to="Cat" method="_on_mouse_exited"]

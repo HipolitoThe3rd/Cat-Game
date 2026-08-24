@@ -9,6 +9,8 @@ var cursor_shower = load("res://sprites/cursors/cursor_shower-head.png")
 var cursor_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressed.png")
 var cursor_scooper = load("res://sprites/cursors/cursor_scooper.png")
 var cursor_scooper_pressed = load("res://sprites/cursors/cursor_scooper_pressed.png")
+var cursor_laser = load("res://sprites/cursors/cursor_laser.png")
+var cursor_laser_pressed = load("res://sprites/cursors/cursor_laser_pressed.png")
 
 # small cursors for web version
 var smcursor_default = load("res://sprites/cursors/smcursor_default.png")
@@ -17,6 +19,8 @@ var smcursor_shower = load("res://sprites/cursors/smcursor_shower-head.png")
 var smcursor_shower_pour = load("res://sprites/cursors/smcursor_shower-head_pressed.png")
 var smcursor_scooper = load("res://sprites/cursors/smcursor_scooper.png")
 var smcursor_scooper_pressed = load("res://sprites/cursors/smcursor_scooper_pressed.png")
+var smcursor_laser = load("res://sprites/cursors/smcursor_laser.png")
+var smcursor_laser_pressed = load("res://sprites/cursors/smcursor_laser_pressed.png")
 
 
 # Tracks the cursor path
