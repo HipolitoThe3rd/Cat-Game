@@ -42,5 +42,8 @@ func update_fun_bar() -> void:
 		
 		
 ## Signals
+func _on_replay_button_button_down() -> void:
+	get_tree().reload_current_scene()
+
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/hub.tscn")

@@ -1,11 +1,14 @@
-[gd_scene load_steps=24 format=3 uid="uid://b4q1b13n6u3s7"]
+[gd_scene load_steps=28 format=3 uid="uid://b4q1b13n6u3s7"]
 
 [ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
-[ext_resource type="Texture2D" uid="uid://bm4skrynnemsk" path="res://backgrounds/bedroom.jpg" id="2_0vtxf"]
+[ext_resource type="Texture2D" uid="uid://dw5w7ut45qtdi" path="res://backgrounds/playroom_alt_outline.jpg" id="2_lrjy8"]
 [ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_icons/fun.png" id="3_lrjy8"]
 [ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="4_4kfa6"]
+[ext_resource type="Texture2D" uid="uid://beyklh3y4hfbd" path="res://sprites/ui/IconReplay.png" id="4_ryj4h"]
+[ext_resource type="Texture2D" uid="uid://30iqvkdrd1j2" path="res://sprites/ui/IconReplayPressed.png" id="5_4kfa6"]
 [ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="5_mpdoj"]
 [ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="6_0nyju"]
+[ext_resource type="Texture2D" uid="uid://bc6trx5hg6hqj" path="res://sprites/ui/IconReplayHover.png" id="6_mpdoj"]
 [ext_resource type="AudioStream" uid="uid://bcffy88chhld8" path="res://sfx/shower_toggle.wav" id="7_poo7g"]
 [ext_resource type="AudioStream" uid="uid://b2wtehgiwvj5q" path="res://sfx/shower_run.wav" id="8_1itpy"]
 [ext_resource type="Texture2D" uid="uid://c8n2rqd4shrwl" path="res://sprites/ui/standby.jpg" id="9_r0hti"]
@@ -75,6 +78,8 @@ _data = {
 &"walk": SubResource("Animation_4oyfp")
 }
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ryj4h"]
+
 [node name="Playroom" type="Node2D"]
 script = ExtResource("1_lwduy")
 
@@ -83,11 +88,10 @@ z_index = -5
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_top = -120.0
 offset_right = 1152.0
 offset_bottom = 648.0
 grow_vertical = 2
-texture = ExtResource("2_0vtxf")
+texture = ExtResource("2_lrjy8")
 
 [node name="UI" type="Control" parent="."]
 z_index = 5
@@ -112,12 +116,23 @@ offset_top = 9.0
 offset_right = 499.0
 offset_bottom = 36.0
 
+[node name="ReplayButton" type="TextureButton" parent="UI"]
+layout_mode = 1
+offset_left = -263.0
+offset_top = -8.0
+offset_right = 48.0
+offset_bottom = 255.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("4_ryj4h")
+texture_pressed = ExtResource("5_4kfa6")
+texture_hover = ExtResource("6_mpdoj")
+
 [node name="BackButton" type="TextureButton" parent="UI"]
 layout_mode = 1
-offset_left = 709.0
-offset_top = -7.0
-offset_right = 1014.0
-offset_bottom = 241.0
+offset_left = 705.0
+offset_top = -8.0
+offset_right = 1016.0
+offset_bottom = 255.0
 scale = Vector2(0.5, 0.5)
 texture_normal = ExtResource("4_4kfa6")
 texture_pressed = ExtResource("5_mpdoj")
@@ -142,7 +157,8 @@ texture = ExtResource("9_r0hti")
 wait_time = 3.0
 
 [node name="Cat" type="CharacterBody2D" parent="."]
-position = Vector2(61, 115)
+position = Vector2(594, 205)
+scale = Vector2(2, 2)
 input_pickable = true
 script = ExtResource("10_lrjy8")
 
@@ -175,6 +191,17 @@ stream = ExtResource("17_poo7g")
 [node name="Purr" type="AudioStreamPlayer" parent="Cat/SFX"]
 stream = ExtResource("18_1itpy")
 
+[node name="LevelDesign" type="Node2D" parent="."]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="LevelDesign"]
+position = Vector2(534, 519)
+scale = Vector2(75, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LevelDesign/StaticBody2D"]
+shape = SubResource("RectangleShape2D_ryj4h")
+
+[connection signal="button_down" from="UI/ReplayButton" to="." method="_on_back_button_button_down"]
+[connection signal="button_down" from="UI/ReplayButton" to="." method="_on_replay_button_button_down"]
 [connection signal="button_down" from="UI/BackButton" to="." method="_on_back_button_button_down"]
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
 [connection signal="mouse_entered" from="Cat" to="Cat" method="_on_mouse_entered"]
