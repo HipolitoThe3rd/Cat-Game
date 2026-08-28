@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2n1gnyym6rg1"]
+
+[ext_resource type="Texture2D" uid="uid://bebu6xs2bmyu8" path="res://sprites/playroom/block_square.png" id="1_l7g1h"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_l7g1h"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i41os"]
+
+[node name="BlockSquare" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_l7g1h")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+scale = Vector2(1.65, 1.65)
+physics_material_override = SubResource("PhysicsMaterial_l7g1h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_i41os")

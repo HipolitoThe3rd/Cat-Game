@@ -3,6 +3,7 @@ extends Node2D
 
 @onready var fn_bar = $UI/FunBar
 @onready var cat = $Cat
+@onready var pointing_at_door = false
 
 ## Default functions
 func _ready() -> void:
@@ -18,17 +19,30 @@ func _process(_delta: float) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			#print("Left mouse button is being held down!")
 		if Global.web_version:
-			Global.set_cursor(Global.smcursor_laser_pressed)
+			if pointing_at_door:
+				Global.set_cursor(Global.smcursor_pet)
+			else:
+				Global.set_cursor(Global.smcursor_laser_pressed)
 		else:
-			Input.set_custom_mouse_cursor(Global.cursor_laser_pressed)
+			if pointing_at_door:
+				Input.set_custom_mouse_cursor(Global.cursor_pet)
+			else:
+				Input.set_custom_mouse_cursor(Global.cursor_laser_pressed)
 			#if $Audio/ShowerToggle.playing == false and $Audio/ShowerRun.playing == false:
 				#$Audio/ShowerRun.play()
 				#pass
 	else:
 		if Global.web_version:
-			Global.set_cursor(Global.smcursor_laser)
+			if pointing_at_door:
+				Global.set_cursor(Global.smcursor_default)
+				pass
+			else:
+				Global.set_cursor(Global.smcursor_laser)
 		else:
-			Input.set_custom_mouse_cursor(Global.cursor_laser)
+			if pointing_at_door:
+				Input.set_custom_mouse_cursor(Global.cursor_default)
+			else:
+				Input.set_custom_mouse_cursor(Global.cursor_laser)
 
 ## Custom functions
 func update_fun_bar() -> void:
@@ -43,7 +57,8 @@ func update_fun_bar() -> void:
 		
 ## Signals
 func _on_replay_button_button_down() -> void:
-	get_tree().reload_current_scene()
+	#get_tree().reload_current_scene()
+	cat.global_position = cat.start_pos
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/hub.tscn")

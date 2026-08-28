@@ -12,6 +12,7 @@ const JUMP_VELOCITY = -400.0
 @onready var sfx_meow3 = $SFX/Meow3
 @onready var sfx_meow_happy = $SFX/MeowHappy
 @onready var sfx_purr = $SFX/Purr
+@onready var start_pos = global_position
 
 # Autonomous behavior timers
 var meow_timer = 0.0
@@ -27,7 +28,7 @@ var current_direction = 0 # -1, 0, or 1
 var is_autonomous = true
 
 # Misc vars
-var being_petted = false # whether the player is petting the cat
+var ready_to_follow = false # whether the cat will follow the laser pointer
 
 func _ready() -> void:
 	Input.set_custom_mouse_cursor(null)
@@ -62,9 +63,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
-	if being_petted:
-		pet_cat()
-	else:
+	if ready_to_follow:
 		move_and_slide()
 
 
@@ -74,11 +73,11 @@ func update_autonomous_behavior(delta: float) -> void:
 	if movement_timer <= 0:
 		current_direction = randi() % 3 - 1  # -1, 0, or 1
 		print("cat's current direction: ", current_direction)
-		if current_direction == 0 and being_petted == false:
+		if current_direction == 0 and ready_to_follow == false:
 			anim_play.play("RESET")
 		else:
 			#print("cat started walking")
-			if anim_play.current_animation != "walk" and being_petted == false:
+			if anim_play.current_animation != "walk" and ready_to_follow == false:
 				anim_play.play("walk")
 			if current_direction == 1: # if moving right
 				sprite.flip_h = current_direction # flip sprite
@@ -181,10 +180,6 @@ func play_meow() -> void:
 
 # Helper functions for external interactions
 
-func pet_cat() -> void:
-	Global.affection = min(100, Global.affection + 0.1)
-	Global.entertainment = min(100, Global.entertainment + 0.05)
-
 
 func play_with_cat() -> void:
 	Global.entertainment = 100
@@ -199,12 +194,12 @@ func bathe_cat() -> void:
 
 
 func _on_mouse_entered() -> void:
-	being_petted = true
+	ready_to_follow = true
 	sfx_purr.play()
 	anim_play.play("pet")
 
 
 func _on_mouse_exited() -> void:
-	being_petted = false
+	ready_to_follow = false
 	sfx_purr.stop()
 	anim_play.play("RESET")

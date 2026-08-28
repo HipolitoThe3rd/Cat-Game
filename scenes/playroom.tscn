@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://b4q1b13n6u3s7"]
+[gd_scene load_steps=30 format=3 uid="uid://b4q1b13n6u3s7"]
 
 [ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
 [ext_resource type="Texture2D" uid="uid://dw5w7ut45qtdi" path="res://backgrounds/playroom_alt_outline.jpg" id="2_lrjy8"]
@@ -21,9 +21,12 @@
 [ext_resource type="AudioStream" uid="uid://cx14stefxmavf" path="res://sfx/meow_2.mp3" id="16_0nyju"]
 [ext_resource type="AudioStream" uid="uid://cvclwqippv1kg" path="res://sfx/meow_3.mp3" id="17_poo7g"]
 [ext_resource type="AudioStream" uid="uid://dbtdyief021cq" path="res://sfx/purr.mp3" id="18_1itpy"]
+[ext_resource type="PackedScene" uid="uid://idi0b8k4c0jl" path="res://scenes/prefabs/playroom/block_line.tscn" id="22_4kfa6"]
+[ext_resource type="PackedScene" uid="uid://b2n1gnyym6rg1" path="res://scenes/prefabs/playroom/block_square.tscn" id="23_0nyju"]
+[ext_resource type="PackedScene" uid="uid://dbnilgjq084qr" path="res://scenes/prefabs/playroom/playroom_door.tscn" id="23_mpdoj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_r0hti"]
-radius = 25.342098
+radius = 22.0
 
 [sub_resource type="Animation" id="Animation_lcd1r"]
 length = 0.001
@@ -77,8 +80,6 @@ _data = {
 &"pet": SubResource("Animation_7t3s2"),
 &"walk": SubResource("Animation_4oyfp")
 }
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ryj4h"]
 
 [node name="Playroom" type="Node2D"]
 script = ExtResource("1_lwduy")
@@ -157,8 +158,8 @@ texture = ExtResource("9_r0hti")
 wait_time = 3.0
 
 [node name="Cat" type="CharacterBody2D" parent="."]
-position = Vector2(594, 205)
-scale = Vector2(2, 2)
+position = Vector2(651, 121.00001)
+scale = Vector2(2.5, 2.5)
 input_pickable = true
 script = ExtResource("10_lrjy8")
 
@@ -167,6 +168,7 @@ scale = Vector2(0.05, 0.05)
 texture = ExtResource("11_5d2ak")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
+position = Vector2(0, 3.2000427)
 shape = SubResource("CircleShape2D_r0hti")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
@@ -193,14 +195,20 @@ stream = ExtResource("18_1itpy")
 
 [node name="LevelDesign" type="Node2D" parent="."]
 
-[node name="StaticBody2D" type="StaticBody2D" parent="LevelDesign"]
-position = Vector2(534, 519)
-scale = Vector2(75, 1)
+[node name="BlockLine" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
+position = Vector2(239, 85)
+rotation = 1.5707964
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LevelDesign/StaticBody2D"]
-shape = SubResource("RectangleShape2D_ryj4h")
+[node name="BlockLine2" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
+position = Vector2(911, 85)
+rotation = 1.5707964
 
-[connection signal="button_down" from="UI/ReplayButton" to="." method="_on_back_button_button_down"]
+[node name="BlockSquare" parent="LevelDesign" instance=ExtResource("23_0nyju")]
+position = Vector2(201, 397)
+
+[node name="PlayroomDoor" parent="LevelDesign" instance=ExtResource("23_mpdoj")]
+position = Vector2(633, 395)
+
 [connection signal="button_down" from="UI/ReplayButton" to="." method="_on_replay_button_button_down"]
 [connection signal="button_down" from="UI/BackButton" to="." method="_on_back_button_button_down"]
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
