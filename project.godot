@@ -23,6 +23,13 @@ Global="*res://scripts/global.gd"
 
 gdscript/warnings/inference_on_variant=0
 
+[display]
+
+window/size/viewport_width=1152
+window/size/viewport_height=648
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
 [input]
 
 left_click={
