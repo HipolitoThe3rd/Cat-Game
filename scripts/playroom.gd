@@ -62,3 +62,9 @@ func _on_replay_button_button_down() -> void:
 
 func _on_back_button_button_down() -> void:
 	get_tree().change_scene_to_file("res://scenes/hub.tscn")
+
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	if anim_name == "yarn":
+		# reset room and rearrange blocks
+		pass # Replace with function body.
