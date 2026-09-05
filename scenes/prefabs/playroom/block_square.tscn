@@ -9,9 +9,11 @@
 [node name="BlockSquare" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0, 1, 1, 1)
 texture = ExtResource("1_l7g1h")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
+visible = false
 scale = Vector2(1.65, 1.65)
 physics_material_override = SubResource("PhysicsMaterial_l7g1h")
 

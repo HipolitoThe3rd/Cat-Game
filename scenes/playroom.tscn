@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://b4q1b13n6u3s7"]
+[gd_scene load_steps=32 format=3 uid="uid://b4q1b13n6u3s7"]
 
 [ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
 [ext_resource type="Texture2D" uid="uid://dw5w7ut45qtdi" path="res://backgrounds/playroom_alt_outline.jpg" id="2_lrjy8"]
@@ -15,7 +15,6 @@
 [ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="11_5d2ak"]
 [ext_resource type="AudioStream" uid="uid://dplxek6i3g1cb" path="res://sfx/switch_off.wav" id="11_pvk0r"]
 [ext_resource type="Texture2D" uid="uid://c4tolfb8ufe2q" path="res://sprites/cat_pet.png" id="12_0vtxf"]
-[ext_resource type="PackedScene" uid="uid://dnq7c6g28k7bi" path="res://scenes/prefabs/showerhead_hitbox.tscn" id="13_1n0vl"]
 [ext_resource type="Texture2D" uid="uid://d3c7yuwaro5y3" path="res://sprites/cat_walk_0.png" id="13_ryj4h"]
 [ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="14_4kfa6"]
 [ext_resource type="AudioStream" uid="uid://4rpjw24p04m6" path="res://sfx/meow_1.mp3" id="15_mpdoj"]
@@ -24,11 +23,8 @@
 [ext_resource type="AudioStream" uid="uid://dbtdyief021cq" path="res://sfx/purr.mp3" id="18_1itpy"]
 [ext_resource type="Texture2D" uid="uid://72wbqsp1kp22" path="res://sprites/cat_yarn_1.png" id="18_bcixq"]
 [ext_resource type="Texture2D" uid="uid://cqfssjbguo0vc" path="res://sprites/cat_yarn_0.png" id="19_1n0vl"]
-[ext_resource type="PackedScene" uid="uid://idi0b8k4c0jl" path="res://scenes/prefabs/playroom/block_line.tscn" id="22_4kfa6"]
-[ext_resource type="PackedScene" uid="uid://b2n1gnyym6rg1" path="res://scenes/prefabs/playroom/block_square.tscn" id="23_0nyju"]
-[ext_resource type="PackedScene" uid="uid://dbnilgjq084qr" path="res://scenes/prefabs/playroom/playroom_door.tscn" id="23_mpdoj"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="23_pvk0r"]
-[ext_resource type="PackedScene" uid="uid://ve5dtg307crr" path="res://scenes/prefabs/yarn.tscn" id="25_poo7g"]
+[ext_resource type="AudioStream" uid="uid://cinbkhshlovt2" path="res://sfx/woosh.wav" id="25_poo7g"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_r0hti"]
 radius = 22.0
@@ -48,6 +44,22 @@ tracks/0/keys = {
 "values": [ExtResource("11_5d2ak")]
 }
 
+[sub_resource type="Animation" id="Animation_4oyfp"]
+resource_name = "move"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("13_ryj4h"), ExtResource("11_5d2ak"), ExtResource("14_4kfa6"), ExtResource("11_5d2ak")]
+}
+
 [sub_resource type="Animation" id="Animation_7t3s2"]
 resource_name = "pet"
 tracks/0/type = "value"
@@ -61,22 +73,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("12_0vtxf")]
-}
-
-[sub_resource type="Animation" id="Animation_4oyfp"]
-resource_name = "walk"
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [ExtResource("13_ryj4h"), ExtResource("11_5d2ak"), ExtResource("14_4kfa6"), ExtResource("11_5d2ak")]
 }
 
 [sub_resource type="Animation" id="Animation_lx7oo"]
@@ -110,8 +106,8 @@ tracks/1/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
 _data = {
 &"RESET": SubResource("Animation_lcd1r"),
+&"move": SubResource("Animation_4oyfp"),
 &"pet": SubResource("Animation_7t3s2"),
-&"walk": SubResource("Animation_4oyfp"),
 &"yarn": SubResource("Animation_lx7oo")
 }
 
@@ -151,6 +147,16 @@ offset_top = 9.0
 offset_right = 499.0
 offset_bottom = 36.0
 
+[node name="SpeedBar" type="ProgressBar" parent="UI"]
+visible = false
+layout_mode = 0
+offset_left = 85.0
+offset_top = 49.0
+offset_right = 499.0
+offset_bottom = 76.0
+min_value = -50.0
+max_value = 50.0
+
 [node name="ReplayButton" type="TextureButton" parent="UI"]
 layout_mode = 1
 offset_left = -263.0
@@ -187,13 +193,9 @@ offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("9_r0hti")
 
-[node name="LaserHitbox" parent="." instance=ExtResource("13_1n0vl")]
-position = Vector2(-397, 40.000008)
-scale = Vector2(2.5, 2.5)
-
 [node name="Cat" type="CharacterBody2D" parent="."]
-position = Vector2(651, 121.00001)
-scale = Vector2(2.5, 2.5)
+position = Vector2(64, 84.72)
+scale = Vector2(1.4, 1.4)
 input_pickable = true
 script = ExtResource("10_lrjy8")
 
@@ -228,91 +230,13 @@ stream = ExtResource("23_pvk0r")
 [node name="Purr" type="AudioStreamPlayer" parent="Cat/SFX"]
 stream = ExtResource("18_1itpy")
 
+[node name="Woosh" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("25_poo7g")
+
 [node name="LevelDesign" type="Node2D" parent="."]
-
-[node name="BlockLine" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(239, 85)
-rotation = 1.5707964
-
-[node name="BlockLine2" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(911, 85)
-rotation = 1.5707964
-
-[node name="BlockLine3" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(9, 242)
-rotation = 1.5707964
-
-[node name="BlockLine4" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(9, 370)
-rotation = 1.5707964
-
-[node name="BlockLine5" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(9, 498)
-rotation = 1.5707964
-
-[node name="BlockLine7" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(1139, 242)
-rotation = 1.5707964
-
-[node name="BlockLine8" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(1139, 370)
-rotation = 1.5707964
-
-[node name="BlockLine9" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(1139, 498)
-rotation = 1.5707964
-
-[node name="BlockLine6" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(65, 642)
-
-[node name="BlockLine10" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(193, 642)
-
-[node name="BlockLine11" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(321, 642)
-
-[node name="BlockLine12" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(449, 642)
-
-[node name="BlockLine13" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(577, 642)
-
-[node name="BlockLine14" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(705, 642)
-
-[node name="BlockLine15" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(833, 642)
-
-[node name="BlockLine16" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(961, 642)
-
-[node name="BlockLine17" parent="LevelDesign" instance=ExtResource("22_4kfa6")]
-position = Vector2(1089, 642)
-
-[node name="BlockSquare" parent="LevelDesign" instance=ExtResource("23_0nyju")]
-position = Vector2(18, 612)
-
-[node name="BlockSquare2" parent="LevelDesign" instance=ExtResource("23_0nyju")]
-position = Vector2(18, 576)
-
-[node name="BlockSquare3" parent="LevelDesign" instance=ExtResource("23_0nyju")]
-position = Vector2(1133, 612)
-
-[node name="BlockSquare4" parent="LevelDesign" instance=ExtResource("23_0nyju")]
-position = Vector2(1133, 576)
-
-[node name="PlayroomDoor" parent="LevelDesign" instance=ExtResource("23_mpdoj")]
-position = Vector2(278, 328)
-
-[node name="Yarn" parent="LevelDesign" instance=ExtResource("25_poo7g")]
-position = Vector2(1057, 587)
 
 [connection signal="button_down" from="UI/ReplayButton" to="." method="_on_replay_button_button_down"]
 [connection signal="button_down" from="UI/BackButton" to="." method="_on_back_button_button_down"]
 [connection signal="mouse_entered" from="Cat" to="Cat" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Cat" to="Cat" method="_on_mouse_exited"]
 [connection signal="animation_finished" from="Cat/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
-[connection signal="body_entered" from="LevelDesign/Yarn/Area2D" to="LevelDesign/Yarn" method="_on_area_2d_body_entered"]
-
-[editable path="LaserHitbox"]
-[editable path="LevelDesign/Yarn"]
