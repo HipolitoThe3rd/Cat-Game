@@ -183,7 +183,6 @@ func play_meow() -> void:
 
 func pet_cat() -> void:
 	Global.affection = min(100, Global.affection + 0.1)
-	Global.entertainment = min(100, Global.entertainment + 0.05)
 
 
 func play_with_cat() -> void:

@@ -11,6 +11,7 @@ var cursor_scooper = load("res://sprites/cursors/cursor_scooper.png")
 var cursor_scooper_pressed = load("res://sprites/cursors/cursor_scooper_pressed.png")
 var cursor_laser = load("res://sprites/cursors/cursor_laser.png")
 var cursor_laser_pressed = load("res://sprites/cursors/cursor_laser_pressed.png")
+var cursor_secret = load("res://sprites/cursors/cursor_secret.png")
 
 # small cursors for web version
 var smcursor_default = load("res://sprites/cursors/smcursor_default.png")
@@ -21,13 +22,14 @@ var smcursor_scooper = load("res://sprites/cursors/smcursor_scooper.png")
 var smcursor_scooper_pressed = load("res://sprites/cursors/smcursor_scooper_pressed.png")
 var smcursor_laser = load("res://sprites/cursors/smcursor_laser.png")
 var smcursor_laser_pressed = load("res://sprites/cursors/smcursor_laser_pressed.png")
+var smcursor_secret = load("res://sprites/cursors/smcursor_secret.png")
 
 
 # Tracks the cursor path
 var cursor_path: Resource = null
 
 # Cat mood system globals
-var mood = 50 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
+var mood = 96 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
 
 # Cat mood contributors
 var hunger = 30 # 0 to 100, affects mood and behavior, default 30

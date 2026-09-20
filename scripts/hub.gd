@@ -76,9 +76,15 @@ func  _process(_delta: float) -> void:
 func _on_cat_mouse_entered() -> void:
 	#print("cursor entered cat")
 	if Global.web_version:
-		Input.set_custom_mouse_cursor(Global.smcursor_pet)
+		if Global.mood >= 95:
+			Input.set_custom_mouse_cursor(Global.smcursor_secret)
+		else:
+			Input.set_custom_mouse_cursor(Global.smcursor_pet)
 	else:
-		Input.set_custom_mouse_cursor(Global.cursor_pet)
+		if Global.mood >= 95:
+			Input.set_custom_mouse_cursor(Global.cursor_secret)
+		else:
+			Input.set_custom_mouse_cursor(Global.cursor_pet)
 
 func _on_cat_mouse_exited() -> void:
 	#print("cursor exited cat")
