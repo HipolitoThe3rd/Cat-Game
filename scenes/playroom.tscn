@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://b4q1b13n6u3s7"]
+[gd_scene load_steps=33 format=3 uid="uid://b4q1b13n6u3s7"]
 
 [ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
 [ext_resource type="Texture2D" uid="uid://dw5w7ut45qtdi" path="res://backgrounds/playroom_alt_outline.jpg" id="2_lrjy8"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://cqfssjbguo0vc" path="res://sprites/cat_yarn_0.png" id="19_1n0vl"]
 [ext_resource type="AudioStream" uid="uid://dt067tneqp13v" path="res://sfx/meow_happy.mp3" id="23_pvk0r"]
 [ext_resource type="AudioStream" uid="uid://cinbkhshlovt2" path="res://sfx/woosh.wav" id="25_poo7g"]
+[ext_resource type="AudioStream" uid="uid://cld33cgsbikqo" path="res://sfx/rise.wav" id="26_1itpy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_r0hti"]
 radius = 22.0
@@ -232,6 +233,9 @@ stream = ExtResource("18_1itpy")
 
 [node name="Woosh" type="AudioStreamPlayer" parent="Cat/SFX"]
 stream = ExtResource("25_poo7g")
+
+[node name="Jump" type="AudioStreamPlayer" parent="Cat/SFX"]
+stream = ExtResource("26_1itpy")
 
 [node name="LevelDesign" type="Node2D" parent="."]
 

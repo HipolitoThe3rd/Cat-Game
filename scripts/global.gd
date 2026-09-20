@@ -29,7 +29,7 @@ var smcursor_secret = load("res://sprites/cursors/smcursor_secret.png")
 var cursor_path: Resource = null
 
 # Cat mood system globals
-var mood = 96 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
+var mood = 50 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
 
 # Cat mood contributors
 var hunger = 30 # 0 to 100, affects mood and behavior, default 30

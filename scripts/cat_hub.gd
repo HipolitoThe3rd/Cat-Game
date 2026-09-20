@@ -21,6 +21,8 @@ var movement_interval = randf_range(2.0, 5.0)
 var hop_timer = 0.0
 var hop_interval = randf_range(8.0, 15.0)
 var stat_decay_timer = 0.0
+var stat_anim_timer = 0.0
+var stat_anim_interval = randf_range(4.0, 10.0)
 
 # Movement state
 var current_direction = 0 # -1, 0, or 1
@@ -53,6 +55,7 @@ func _physics_process(delta: float) -> void:
 		update_autonomous_behavior(delta)
 		update_timers(delta)
 		update_mood_stats(delta)
+		update_stat_animations(delta)
 	
 	# Determine direction: player input overrides autonomous behavior
 	var direction = player_direction if player_direction else current_direction
@@ -64,6 +67,8 @@ func _physics_process(delta: float) -> void:
 
 	if being_petted:
 		pet_cat()
+	elif anim_play.current_animation == "hungry" or anim_play.current_animation == "stinky" or anim_play.current_animation == "tired":
+		return
 	else:
 		move_and_slide()
 
@@ -168,6 +173,28 @@ func update_mood_stats(delta: float) -> void:
 		mood_modifiers += 5
 	
 	Global.mood = clamp(Global.mood + mood_modifiers * 0.01, 0, 100)
+
+
+func update_stat_animations(delta: float) -> void:
+	stat_anim_timer -= delta
+	if stat_anim_timer <= 0:
+		stat_anim_interval = randf_range(4.0, 10.0)
+		stat_anim_timer = stat_anim_interval
+
+		if being_petted:
+			return
+
+		var candidates: Array[String] = []
+		if Global.hunger < 25:
+			candidates.append("hungry")
+		if Global.cleanliness < 25 or Global.bladder < 25:
+			candidates.append("stinky")
+		if Global.affection < 25 or Global.entertainment < 25 or Global.energy < 25:
+			candidates.append("tired")
+
+		if candidates.size() > 0:
+			var chosen_anim = candidates[randi() % candidates.size()]
+			anim_play.play(chosen_anim)
 
 
 func play_meow() -> void:

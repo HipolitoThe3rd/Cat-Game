@@ -12,6 +12,8 @@ var room_kitchen = "res://scenes/kitchen.tscn"
 var room_bath = "res://scenes/bath.tscn"
 var room_litter = "res://scenes/litter_room.tscn"
 var room_bed = "res://scenes/bedroom.tscn"
+var room_play = "res://scenes/playroom.tscn"
+var room_secret = "res://scenes/secret_scene.tscn"
 
 func _ready() -> void:
 	if Global.web_version:
@@ -93,6 +95,11 @@ func _on_cat_mouse_exited() -> void:
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_default)
 
+func _on_cat_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if Global.mood >= 95:
+			get_tree().change_scene_to_file(room_secret)
+
 func _on_door_1_pressed() -> void:
 	get_tree().change_scene_to_file(room_kitchen)
 
@@ -104,3 +111,6 @@ func _on_door_3_pressed() -> void:
 
 func _on_door_4_pressed() -> void:
 	get_tree().change_scene_to_file(room_bed)
+
+func _on_door_5_pressed() -> void:
+	get_tree().change_scene_to_file(room_play)

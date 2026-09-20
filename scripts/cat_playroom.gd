@@ -136,6 +136,7 @@ func try_hop(dir: int) -> void:
 	velocity.y = JUMP_VELOCITY
 	velocity.x = dir * RUN_SPEED
 	jump_lock = JUMP_LOCK
+	$SFX/Jump.play()
 
 
 # Standing still with nothing under his middle means he is balanced on the lip,
