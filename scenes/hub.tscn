@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cax4rbxu3xl4m"]
+[gd_scene load_steps=39 format=3 uid="uid://cax4rbxu3xl4m"]
 
 [ext_resource type="Script" uid="uid://c2dqaqa8syi1h" path="res://scripts/hub.gd" id="1_4oyfp"]
 [ext_resource type="Texture2D" uid="uid://dlbmmwgfog3m" path="res://sprites/cat.png" id="1_qssp3"]
@@ -12,13 +12,23 @@
 [ext_resource type="Texture2D" uid="uid://cujqlo1rtbohn" path="res://sprites/cat_walk_2.png" id="8_2hkft"]
 [ext_resource type="Texture2D" uid="uid://cfxainbvyetvr" path="res://sprites/hub_door.png" id="9_2hkft"]
 [ext_resource type="Texture2D" uid="uid://c4tolfb8ufe2q" path="res://sprites/cat_pet.png" id="9_mw5nc"]
+[ext_resource type="Texture2D" uid="uid://brsvrtxbbyqnf" path="res://sprites/litter_room/stink_0.png" id="11_jjmck"]
 [ext_resource type="Texture2D" uid="uid://c3ybbv0khnqaj" path="res://sprites/mood_icons/hunger.png" id="12_s6eg2"]
 [ext_resource type="Texture2D" uid="uid://wdc52mf2vml1" path="res://sprites/mood_icons/energy.png" id="13_5ox4q"]
 [ext_resource type="AudioStream" uid="uid://dbtdyief021cq" path="res://sfx/purr.mp3" id="13_7t3s2"]
+[ext_resource type="Texture2D" uid="uid://db45jf4eu42sg" path="res://sprites/cat_hungry_0.png" id="14_0vypl"]
 [ext_resource type="Texture2D" uid="uid://ufgbaug4mt2g" path="res://sprites/mood_icons/hygiene.png" id="14_mw5nc"]
 [ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_icons/fun.png" id="15_7t3s2"]
+[ext_resource type="Texture2D" uid="uid://cj8dr7vl3mkgn" path="res://sprites/cat_hungry_1.png" id="15_fm13a"]
 [ext_resource type="Texture2D" uid="uid://ccnvtv4vje8hf" path="res://sprites/mood_icons/love.png" id="16_7n2o6"]
+[ext_resource type="Texture2D" uid="uid://copi53piwhg22" path="res://sprites/cat_hungry_2.png" id="16_tmir4"]
+[ext_resource type="Texture2D" uid="uid://eqmk6abeeg0g" path="res://sprites/cat_hungry_3.png" id="17_bb8k7"]
 [ext_resource type="Texture2D" uid="uid://cwf1lqhdr7f41" path="res://sprites/mood_icons/bladder.png" id="17_rtbv5"]
+[ext_resource type="Texture2D" uid="uid://r3ne6bpbdtbw" path="res://sprites/cat_clothespin.png" id="18_tmir4"]
+[ext_resource type="Texture2D" uid="uid://b8easxaj21soe" path="res://sprites/Cat_awoken.png" id="19_bb8k7"]
+[ext_resource type="Texture2D" uid="uid://coct5sw1q7p2" path="res://sprites/litter_room/stink_1.png" id="20_7boss"]
+[ext_resource type="Texture2D" uid="uid://cj2lh7821mu7m" path="res://sprites/litter_room/stink_2.png" id="21_njkjy"]
+[ext_resource type="Texture2D" uid="uid://dwh8nw4uq38iy" path="res://sprites/litter_room/stink_3.png" id="22_m0pb7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qssp3"]
 radius = 25.342098
@@ -36,6 +46,30 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("1_qssp3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("S2DStink:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("11_jjmck")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("S2DStink:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="Animation" id="Animation_7t3s2"]
@@ -69,10 +103,84 @@ tracks/0/keys = {
 "values": [ExtResource("7_441x5"), ExtResource("1_qssp3"), ExtResource("8_2hkft"), ExtResource("1_qssp3")]
 }
 
+[sub_resource type="Animation" id="Animation_trb2f"]
+resource_name = "hungry"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("14_0vypl"), ExtResource("15_fm13a"), ExtResource("16_tmir4"), ExtResource("17_bb8k7"), ExtResource("14_0vypl"), ExtResource("15_fm13a"), ExtResource("16_tmir4"), ExtResource("17_bb8k7")]
+}
+
+[sub_resource type="Animation" id="Animation_8rcoo"]
+resource_name = "stinky"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("18_tmir4")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("S2DStink:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("11_jjmck"), ExtResource("20_7boss"), ExtResource("21_njkjy"), ExtResource("22_m0pb7"), ExtResource("11_jjmck"), ExtResource("20_7boss"), ExtResource("21_njkjy"), ExtResource("22_m0pb7")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("S2DStink:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_jjmck"]
+resource_name = "tired"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("19_bb8k7")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s6eg2"]
 _data = {
 &"RESET": SubResource("Animation_lcd1r"),
+&"hungry": SubResource("Animation_trb2f"),
 &"pet": SubResource("Animation_7t3s2"),
+&"stinky": SubResource("Animation_8rcoo"),
+&"tired": SubResource("Animation_jjmck"),
 &"walk": SubResource("Animation_4oyfp")
 }
 
@@ -188,6 +296,12 @@ script = ExtResource("2_w6xti")
 [node name="Sprite2D" type="Sprite2D" parent="Cat"]
 scale = Vector2(0.05, 0.05)
 texture = ExtResource("1_qssp3")
+
+[node name="S2DStink" type="Sprite2D" parent="Cat"]
+visible = false
+position = Vector2(0, -30.333282)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("11_jjmck")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
 shape = SubResource("CircleShape2D_qssp3")
@@ -368,3 +482,4 @@ scale = Vector2(0.85, 0.85)
 [connection signal="mouse_entered" from="Cat" to="Cat" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="Cat" to="." method="_on_cat_mouse_exited"]
 [connection signal="mouse_exited" from="Cat" to="Cat" method="_on_mouse_exited"]
+[connection signal="animation_finished" from="Cat/AnimationPlayer" to="Cat" method="_on_animation_player_animation_finished"]

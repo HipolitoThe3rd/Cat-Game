@@ -196,7 +196,7 @@ func bathe_cat() -> void:
 	Global.affection = max(0, Global.affection - 10)  # Cats don't like baths!
 	Global.energy = max(0, Global.energy - 15)
 
-
+## SIGNALS
 func _on_mouse_entered() -> void:
 	being_petted = true
 	sfx_purr.play()
@@ -207,3 +207,15 @@ func _on_mouse_exited() -> void:
 	being_petted = false
 	sfx_purr.stop()
 	anim_play.play("RESET")
+
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	match anim_name:
+		"hungry":
+			anim_play.play("RESET")
+		"stinky":
+			anim_play.play("RESET")
+		"tired":
+			anim_play.play("RESET")
+		_:
+			pass
