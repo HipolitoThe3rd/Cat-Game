@@ -217,7 +217,7 @@ func update_timers(delta: float) -> void:
 	stat_decay_timer -= delta
 	if stat_decay_timer <= 0:
 		# Stats decay gradually
-		Global.hunger = min(100, Global.hunger - 0.3)  # Cat gets hungrier
+		Global.hunger = max(0, Global.hunger - 0.3)  # Cat gets hungrier
 		Global.cleanliness = max(0, Global.cleanliness - 0.2)  # Cat gets dirtier
 		Global.energy = max(0, Global.energy - 0.1)  # Slow energy loss
 		Global.bladder = max(0, Global.bladder - 0.2)  # Bladder slowly drains over time

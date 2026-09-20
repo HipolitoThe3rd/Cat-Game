@@ -21,6 +21,12 @@ func _ready() -> void:
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_default)
 
+	# Only populated when load_game() measured real time away, so returning
+	# from a minigame room will not re-trigger it. Cleared once shown.
+	if not Global.offline_summary.is_empty():
+		add_child(WelcomeBack.new(Global.offline_summary))
+		Global.offline_summary = {}
+
 func  _process(_delta: float) -> void:
 	#print("Cat's mood: ", Global.mood)
 	pb_moodbar.value = Global.mood
