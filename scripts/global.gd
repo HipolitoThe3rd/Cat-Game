@@ -1,7 +1,7 @@
 ## Global variables
 extends Node
 
-@onready var web_version = true # whether or not this is the web version
+@onready var web_version = false # whether or not this is the web version
 
 var cursor_default = load("res://sprites/cursors/cursor_default.png")
 var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
