@@ -51,6 +51,18 @@ var playroom_difficulty: float = 0.15
 enum skins { CRISPY, COLTRANE }
 var skin = skins.CRISPY
 
+# Each skin is a folder of sprites sharing a filename prefix, e.g.
+# crispy_walk_0.png <-> Coltrane_walk_0.png. Scenes are authored with Crispy's
+# sprites and swapped to the active skin as their nodes enter the tree.
+const SKIN_FOLDERS := {
+	skins.CRISPY: "res://sprites/skins/Crispy/",
+	skins.COLTRANE: "res://sprites/skins/Coltrane/",
+}
+const SKIN_PREFIXES := {
+	skins.CRISPY: "crispy",
+	skins.COLTRANE: "Coltrane",
+}
+
 # Save system ---------------------------------------------------------------
 const SAVE_PATH := "user://catgame_save.cfg"
 const SAVE_VERSION := 1
@@ -100,6 +112,11 @@ func _ready() -> void:
 		push_warning("Cat Game: persistent storage unavailable; progress will not be saved.")
 	load_game()
 
+	# Reskin every cat sprite as it is spawned, in whatever room it lives in.
+	get_tree().node_added.connect(_apply_skin_to_node)
+	# Console is autoloaded after us, so wait for it before registering.
+	_register_skin_commands.call_deferred()
+
 
 func _process(delta: float) -> void:
 	# Autosave on a timer rather than only on quit. A browser tab can be closed
@@ -134,6 +151,91 @@ func feed_cat(hunger_amount:int = 30) -> void:
 
 
 ## ---------------------------------------------------------------------------
+## Skins
+## ---------------------------------------------------------------------------
+
+func _register_skin_commands() -> void:
+	Console.add_command("charles", set_skin.bind(skins.CRISPY))
+	Console.add_command("051426", set_skin.bind(skins.COLTRANE))
+
+
+## Switches the cat's skin, reskins the current room immediately, and saves so
+## the choice survives restarts.
+func set_skin(new_skin: skins) -> void:
+	skin = new_skin
+	print("Cat's skin changed to %s" % SKIN_PREFIXES[skin])
+	_apply_skin_recursive(get_tree().root)
+	save_game()
+
+
+## Returns the active skin's version of a skinned texture. Textures that are not
+## part of any skin (backgrounds, icons, etc.) are returned unchanged, as are
+## sprites the active skin has no version of.
+func skinned_texture(tex: Texture2D) -> Texture2D:
+	if tex == null:
+		return tex
+	var path := tex.resource_path
+	for s in SKIN_FOLDERS:
+		var prefix: String = SKIN_FOLDERS[s] + SKIN_PREFIXES[s]
+		if not path.begins_with(prefix):
+			continue
+		if s == skin:
+			return tex
+		var suffix := path.substr(prefix.length()) # e.g. "_walk_0.png"
+		var target: String = SKIN_FOLDERS[skin] + SKIN_PREFIXES[skin] + suffix
+		if ResourceLoader.exists(target):
+			return load(target)
+		# Fall back to the default skin rather than leave a stale one showing.
+		var fallback: String = SKIN_FOLDERS[skins.CRISPY] + SKIN_PREFIXES[skins.CRISPY] + suffix
+		return load(fallback) if ResourceLoader.exists(fallback) else tex
+	return tex
+
+
+func _apply_skin_recursive(node: Node) -> void:
+	_apply_skin_to_node(node)
+	for child in node.get_children():
+		_apply_skin_recursive(child)
+
+
+func _apply_skin_to_node(node: Node) -> void:
+	if node is Sprite2D:
+		node.texture = skinned_texture(node.texture)
+	elif node is TextureButton:
+		node.texture_normal = skinned_texture(node.texture_normal)
+		node.texture_pressed = skinned_texture(node.texture_pressed)
+		node.texture_hover = skinned_texture(node.texture_hover)
+		node.texture_disabled = skinned_texture(node.texture_disabled)
+		node.texture_focused = skinned_texture(node.texture_focused)
+	elif node is AnimatedSprite2D:
+		_apply_skin_to_frames(node.sprite_frames)
+	elif node is AnimationPlayer:
+		_apply_skin_to_animations(node)
+
+
+func _apply_skin_to_frames(frames: SpriteFrames) -> void:
+	if frames == null:
+		return
+	for anim in frames.get_animation_names():
+		for i in frames.get_frame_count(anim):
+			frames.set_frame(anim, i, skinned_texture(frames.get_frame_texture(anim, i)),
+					frames.get_frame_duration(anim, i))
+
+
+# Animation keys hold the textures directly, so they need swapping too or the
+# first animation that plays would put the old skin straight back.
+func _apply_skin_to_animations(player: AnimationPlayer) -> void:
+	for anim_name in player.get_animation_list():
+		var anim := player.get_animation(anim_name)
+		for track in anim.get_track_count():
+			if anim.track_get_type(track) != Animation.TYPE_VALUE:
+				continue
+			for key in anim.track_get_key_count(track):
+				var value = anim.track_get_key_value(track, key)
+				if value is Texture2D:
+					anim.track_set_key_value(track, key, skinned_texture(value))
+
+
+## ---------------------------------------------------------------------------
 ## Save / load
 ## ---------------------------------------------------------------------------
 
@@ -157,6 +259,8 @@ func save_game() -> void:
 
 	cfg.set_value("world", "poop_in_litterbox", poop_in_litterbox)
 	cfg.set_value("world", "playroom_difficulty", playroom_difficulty)
+
+	cfg.set_value("cosmetic", "skin", skin)
 
 	var err := cfg.save(SAVE_PATH)
 	if err != OK:
@@ -196,6 +300,9 @@ func load_game() -> void:
 
 	poop_in_litterbox = int(cfg.get_value("world", "poop_in_litterbox", poop_in_litterbox))
 	playroom_difficulty = float(cfg.get_value("world", "playroom_difficulty", playroom_difficulty))
+
+	var saved_skin := int(cfg.get_value("cosmetic", "skin", skin))
+	skin = saved_skin if saved_skin in skins.values() else skins.CRISPY
 
 	var last_played := float(cfg.get_value("meta", "last_played_unix", 0.0))
 	if last_played > 0.0:

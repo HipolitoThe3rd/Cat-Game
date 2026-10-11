@@ -17,8 +17,6 @@ var room_secret = "res://scenes/secret_scene.tscn"
 
 ## DEFAULT FUNCTIONS
 func _ready() -> void:
-	Console.add_command("051426", set_skin.bind("coltrane"))
-	
 	if Global.web_version:
 		Input.set_custom_mouse_cursor(Global.smcursor_default)
 	else:
@@ -82,15 +80,6 @@ func  _process(_delta: float) -> void:
 	else:
 		pb_bladderbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
 	pass
-
-## CUSTOM FUNCTIONS
-func set_skin(skin : String) -> void:
-	print("Cat's skin changed to %s" % skin)
-	match skin:
-		"coltrane":
-			Global.skin = Global.skins.COLTRANE
-		_:
-			Global.skin = Global.skins.CRISPY
 
 ## SIGNALS
 func _on_cat_mouse_entered() -> void:
