@@ -46,6 +46,10 @@ var poop_in_litterbox = 0 # how much poop is in the litterbox; default 0
 # win and back down every time the player has to hit Reset. 0 is gentlest.
 var playroom_difficulty: float = 0.15
 
+# Which skin the Cat has active, which affects his coloring
+# CRISPY is the default skin
+enum skins { CRISPY, COLTRANE }
+var skin = skins.CRISPY
 
 # Save system ---------------------------------------------------------------
 const SAVE_PATH := "user://catgame_save.cfg"
