@@ -117,7 +117,7 @@ func update_laser(delta: float) -> void:
 			$Audio/LaserOff.play()
 	_mouse_was_down = down
 
-	cat.laser_pos = get_global_mouse_position()
+	cat.laser_pos = Global.pointer_position("laser")
 	cat.laser_held = down and _laser_engaged
 
 	# Playing is entertaining whether or not he ever reaches the yarn.

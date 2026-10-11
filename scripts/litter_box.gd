@@ -26,7 +26,7 @@ func _process(_delta):
 		if $Audio/ShowerRun.playing == true:
 			$Audio/ShowerRun.stop()
 	else:
-		sc_hitbox.global_position = get_viewport().get_mouse_position()
+		sc_hitbox.global_position = Global.pointer_position("scooper", $ScooperHitbox/Area2D.position * sc_hitbox.scale)
 		if Input.is_action_just_pressed("left_click"):
 			#print("scoop!")
 			if scooped == false:

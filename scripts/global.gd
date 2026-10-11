@@ -28,6 +28,35 @@ var smcursor_secret = load("res://sprites/cursors/smcursor_secret.png")
 # Tracks the cursor path
 var cursor_path: Resource = null
 
+# Touchscreens never draw a mouse cursor, so while a finger is down these are
+# drawn as a sprite under it instead. Points are fractions of the image size:
+#   grip - the spot on the handle the finger "holds", so the business end of
+#          the tool pokes out above the fingertip rather than hiding under it
+#   tip  - where the tool actually acts (the spray, the scoop, the laser dot);
+#          rooms aim their hitboxes here on touchscreens via pointer_position()
+const TOUCH_TOOLS := {
+	"shower": {"grip": Vector2(0.78, 0.80), "tip": Vector2(0.20, 0.34)},
+	"scooper": {"grip": Vector2(0.74, 0.80), "tip": Vector2(0.28, 0.22)},
+	"laser": {"grip": Vector2(0.74, 0.80), "tip": Vector2(0.06, 0.05)},
+}
+@onready var touch_cursors := {
+	cursor_shower_pour: "shower", smcursor_shower_pour: "shower",
+	cursor_scooper_pressed: "scooper", smcursor_scooper_pressed: "scooper",
+	cursor_laser_pressed: "laser", smcursor_laser_pressed: "laser",
+}
+# Used for sizing, since the hit point has to be known even on the frame a
+# finger lands, before the room has swapped to the pressed cursor.
+@onready var _touch_tool_textures := {
+	"shower": smcursor_shower_pour,
+	"scooper": smcursor_scooper_pressed,
+	"laser": smcursor_laser_pressed,
+}
+# The full-size cursors range up to 1280px, so every touch cursor is drawn at
+# this size (in game pixels, longest side) regardless of which one is active.
+const TOUCH_CURSOR_SIZE := 128.0
+var _touch_cursor: Sprite2D
+var _touches := {} # finger index -> screen position
+
 # Cat mood system globals
 var mood = 50 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
 
@@ -117,8 +146,29 @@ func _ready() -> void:
 	# Console is autoloaded after us, so wait for it before registering.
 	_register_skin_commands.call_deferred()
 
+	# Top-most layer so the cursor is never hidden behind a room's UI.
+	var layer := CanvasLayer.new()
+	layer.layer = 128
+	add_child(layer)
+	_touch_cursor = Sprite2D.new()
+	_touch_cursor.centered = false # offset is set per cursor from its grip point
+	_touch_cursor.visible = false
+	layer.add_child(_touch_cursor)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touches[event.index] = event.position
+		else:
+			_touches.erase(event.index)
+	elif event is InputEventScreenDrag:
+		_touches[event.index] = event.position
+
 
 func _process(delta: float) -> void:
+	_update_touch_cursor()
+
 	# Autosave on a timer rather than only on quit. A browser tab can be closed
 	# without ever delivering a close notification, so the timer is the real
 	# safety net and the _notification() handler below is a bonus.
@@ -144,7 +194,38 @@ func set_cursor(new_cursor:Resource) -> void:
 	if cursor_path != new_cursor:
 		Input.set_custom_mouse_cursor(new_cursor)
 		cursor_path = new_cursor
-	
+
+
+func _update_touch_cursor() -> void:
+	if _touches.is_empty() or not cursor_path in touch_cursors:
+		_touch_cursor.visible = false
+		return
+	_touch_cursor.texture = cursor_path
+	var size: Vector2 = cursor_path.get_size()
+	_touch_cursor.offset = -size * TOUCH_TOOLS[touch_cursors[cursor_path]].grip
+	_touch_cursor.scale = Vector2.ONE * (TOUCH_CURSOR_SIZE / maxf(size.x, size.y))
+	_touch_cursor.position = _touch_position()
+	_touch_cursor.visible = true
+
+
+# Follows the first finger that went down.
+func _touch_position() -> Vector2:
+	return _touches[_touches.keys()[0]]
+
+
+## Where a room should aim the tool's hitbox. With a mouse that is the mouse
+## position, as before. On a touchscreen it is the tool's tip as drawn above the
+## finger, minus hitbox_offset (the hitbox Area2D's offset from the node being
+## positioned) so the Area2D itself lands on the tip.
+func pointer_position(tool: String, hitbox_offset := Vector2.ZERO) -> Vector2:
+	var viewport := get_viewport()
+	if _touches.is_empty():
+		return viewport.get_mouse_position()
+	var size: Vector2 = _touch_tool_textures[tool].get_size()
+	size *= TOUCH_CURSOR_SIZE / maxf(size.x, size.y)
+	var t: Dictionary = TOUCH_TOOLS[tool]
+	return _touch_position() + (t.tip - t.grip) * size - hitbox_offset
+
 
 func feed_cat(hunger_amount:int = 30) -> void:
 	Global.hunger = min(100, Global.hunger + hunger_amount)

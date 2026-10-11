@@ -22,7 +22,7 @@ func _process(_delta):
 		if $Audio/ShowerRun.playing == true:
 			$Audio/ShowerRun.stop()
 	else:
-		sh_hitbox.global_position = get_viewport().get_mouse_position()
+		sh_hitbox.global_position = Global.pointer_position("shower", $ShowerheadHitbox/Area2D.position)
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			#print("Left mouse button is being held down!")
 			if Global.web_version:
