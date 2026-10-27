@@ -75,6 +75,10 @@ var poop_in_litterbox = 0 # how much poop is in the litterbox; default 0
 # win and back down every time the player has to hit Reset. 0 is gentlest.
 var playroom_difficulty: float = 0.15
 
+# game's currency. can be used to buy clothes, skins, furniture, toys, etc.
+# a paycheck with Kitcoins is earned every Friday.
+var kitcoins: int = 0
+
 # Which skin the Cat has active, which affects his coloring
 # CRISPY is the default skin
 enum skins { CRISPY, COLTRANE }

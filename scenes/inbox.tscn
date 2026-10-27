@@ -1,0 +1,172 @@
+[gd_scene load_steps=12 format=3 uid="uid://bsn6ia4mkcofg"]
+
+[ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="1_0lhgn"]
+[ext_resource type="Script" uid="uid://cxk06dl1y2yii" path="res://scripts/inbox.gd" id="1_hkbtn"]
+[ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="2_hkbtn"]
+[ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="3_x1jwj"]
+[ext_resource type="Texture2D" uid="uid://bsuosut0gyv48" path="res://sprites/skins/Crispy/crispy_mail_2.png" id="4_crtgc"]
+[ext_resource type="Texture2D" uid="uid://f3nxy4ywn6qw" path="res://sprites/skins/Crispy/crispy_mail_0.png" id="5_2j8pa"]
+[ext_resource type="Texture2D" uid="uid://b0yh0uhtxhoti" path="res://sprites/skins/Crispy/crispy_mail_1.png" id="6_5cbxy"]
+[ext_resource type="AudioStream" uid="uid://xtigjlkevtbq" path="res://sfx/mail.mp3" id="7_e1oyq"]
+
+[sub_resource type="Animation" id="Animation_on4mk"]
+resource_name = "mail"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.51, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("5_2j8pa"), ExtResource("6_5cbxy"), ExtResource("4_crtgc")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SFXMail:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_pmbe3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SFXMail:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_crtgc")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_yv2t8"]
+_data = {
+&"RESET": SubResource("Animation_pmbe3"),
+&"mail": SubResource("Animation_on4mk")
+}
+
+[node name="Inbox" type="Node2D"]
+script = ExtResource("1_hkbtn")
+
+[node name="Cat" type="Node2D" parent="."]
+position = Vector2(511, 186)
+
+[node name="Sprite2D" type="Sprite2D" parent="Cat"]
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("4_crtgc")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cat"]
+libraries = {
+&"": SubResource("AnimationLibrary_yv2t8")
+}
+autoplay = "mail"
+
+[node name="SFXMail" type="AudioStreamPlayer" parent="Cat"]
+stream = ExtResource("7_e1oyq")
+autoplay = true
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="Background" type="ColorRect" parent="UI"]
+z_index = -10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.22745098, 0.39215687, 0.4745098, 1)
+
+[node name="BackButton" type="TextureButton" parent="UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -171.0
+offset_top = 20.0
+offset_right = 140.0
+offset_bottom = 283.0
+grow_horizontal = 0
+scale = Vector2(0.5, 0.5)
+disabled = true
+texture_normal = ExtResource("1_0lhgn")
+texture_pressed = ExtResource("2_hkbtn")
+texture_hover = ExtResource("3_x1jwj")
+
+[node name="MailPanel" type="Panel" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Mail Body" type="RichTextLabel" parent="UI/MailPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.1
+anchor_right = 0.95
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+text = "From:
+
+To:
+
+Subject:
+
+[Body]"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MailPanel"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -96.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ButtonPrev" type="Button" parent="UI/MailPanel/HBoxContainer"]
+layout_mode = 2
+text = "Previous"
+
+[node name="ButtonNext" type="Button" parent="UI/MailPanel/HBoxContainer"]
+layout_mode = 2
+text = "Next"
+
+[connection signal="animation_finished" from="Cat/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="pressed" from="UI/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonPrev" to="." method="_on_button_prev_pressed"]
+[connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonNext" to="." method="_on_button_next_pressed"]
