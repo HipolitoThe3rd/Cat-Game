@@ -72,6 +72,8 @@ func _ready() -> void:
 	Account.changed.connect(_refresh)
 	MailClient.registered.connect(_refresh)
 	_refresh()
+	# Opening the panel is when a new backer would look for their perks.
+	Account.refresh_supporter(true)
 
 
 func _label(box: VBoxContainer, font_size: int) -> Label:
@@ -96,6 +98,11 @@ func _refresh() -> void:
 		_title.text = "Logged in as %s" % Account.display_name
 		_info.text = ("@%s\n\nYour progress, letters and friend code are saved to your account, "
 			% Account.username + "so you can pick them up on any device.")
+		_code.text = _supporter_text()
+		_code.add_theme_font_size_override("font_size", 22)
+		_code.add_theme_color_override("font_color",
+			Account.tier_color() if Account.is_supporter() else COLOR_HINT)
+		_code.visible = true
 		_status.text = ("Friend code: %s" % MailClient.friend_code) if MailClient.is_registered() else ""
 		_status.add_theme_color_override("font_color", COLOR_HINT)
 		_main_button.text = "Save now"
@@ -106,6 +113,8 @@ func _refresh() -> void:
 		_title.text = "Log in with Discord"
 		_info.text = "Your login page will show this code. Only continue if it matches:"
 		_code.text = Account.login_code
+		_code.add_theme_font_size_override("font_size", 44)
+		_code.remove_theme_color_override("font_color")
 		_code.visible = true
 		_status.text = "Waiting for you to log in..."
 		_status.add_theme_color_override("font_color", COLOR_HINT)
@@ -125,6 +134,14 @@ func _refresh() -> void:
 		blurple.set_content_margin_all(10)
 		_main_button.add_theme_stylebox_override("normal", blurple)
 		_main_button.add_theme_color_override("font_color", Color.WHITE)
+
+
+func _supporter_text() -> String:
+	if Account.is_supporter():
+		return "%s supporter - thank you!" % Account.tier_name()
+	if not Account.in_discord_server:
+		return "Join our Discord server to get supporter perks when you back us."
+	return "Back us on Ko-fi, Patreon or SubscribeStar for supporter perks!"
 
 
 func _show_avatar(url: String) -> void:

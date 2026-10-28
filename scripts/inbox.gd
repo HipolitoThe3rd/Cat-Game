@@ -57,8 +57,15 @@ func show_letter(index: int) -> void:
 	if not from_code.is_empty() and from != from_code:
 		from += " (%s)" % from_code
 
-	var text := "[b]From:[/b] %s\n\n[b]To:[/b] %s\n\n[b]Subject:[/b] %s%s\n\n%s" % [
-		_escape(from),
+	# Backers get a badge in their tier's color.
+	var from_tier := int(letter.get("from_tier", 0))
+	var badge := ""
+	if from_tier > 0:
+		badge = "  [color=#%s](%s supporter)[/color]" % [
+			Account.tier_color(from_tier).to_html(false), Account.tier_name(from_tier)]
+
+	var text := "[b]From:[/b] %s%s\n\n[b]To:[/b] %s\n\n[b]Subject:[/b] %s%s\n\n%s" % [
+		_escape(from), badge,
 		_escape(letter.get("to", "")),
 		_escape(letter.get("subject", "")),
 		"  [color=gold](new)[/color]" if was_unread else "",

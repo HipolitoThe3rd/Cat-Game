@@ -15,14 +15,26 @@ const UPLOAD_DELAY := 60.0 # seconds between uploads while the save keeps changi
 const RETRY_DELAY := 30.0 # after a failed upload, e.g. while offline
 const LOGIN_POLL_INTERVAL := 3.0
 
-## Logged in or out, or a login started, finished or failed. UI listens to this.
+## Logged in or out, a login started, finished or failed, or the supporter
+## tier changed. UI listens to this.
 signal changed
+
+# Backer tiers, from roles in the Steel Fish Studios Discord server that
+# Ko-fi, Patreon and SubscribeStar hand out (netlify/lib/supporter.mjs on the
+# website). Index = tier; 0 is not a supporter.
+enum Tier { NONE, BRONZE_GUPPY, SILVER_BASS, GOLDEN_SHARK, PLATINUM_RAY }
+const TIER_NAMES := ["", "Bronze Guppy", "Silver Bass", "Golden Shark", "Platinum Ray"]
+const TIER_COLORS := [Color.WHITE, Color("cd7f32"), Color("c0c8d0"), Color("ffcc33"), Color("b8f0ff")]
 
 var account_id := ""
 var session := ""
 var display_name := ""
 var username := ""
 var avatar_url := ""
+# Decided by the website, never by the game, so it can't be edited into a
+# save. Re-checked on launch and when the account panel opens.
+var supporter_tier: int = Tier.NONE
+var in_discord_server := false
 
 # Login in progress: show login_code in the game, then send the player to
 # login_url. login_error explains the last failed attempt.
@@ -75,6 +87,32 @@ func is_logged_in() -> bool:
 
 func is_logging_in() -> bool:
 	return not _login_id.is_empty()
+
+
+## Whether the player backs us at min_tier or above. Use this to unlock
+## supporter perks; items already earned should stay theirs even after it
+## turns false.
+func is_supporter(min_tier: int = Tier.BRONZE_GUPPY) -> bool:
+	return is_logged_in() and supporter_tier >= min_tier
+
+
+func tier_name(tier: int = supporter_tier) -> String:
+	return TIER_NAMES[clampi(tier, 0, TIER_NAMES.size() - 1)]
+
+
+func tier_color(tier: int = supporter_tier) -> Color:
+	return TIER_COLORS[clampi(tier, 0, TIER_COLORS.size() - 1)]
+
+
+## Asks the website for the current tier. With force, it checks with Discord
+## even if it did so recently (the website allows that once a minute), e.g.
+## for a player who has just started backing us.
+func refresh_supporter(force := false) -> void:
+	if not is_logged_in():
+		return
+	var res := await _request(HTTPClient.METHOD_GET, "supporter" + ("?refresh=1" if force else ""))
+	if res.ok:
+		_set_supporter(res.data)
 
 
 ## Asks the website for a login. On success login_code and login_url are set;
@@ -248,6 +286,7 @@ func _startup_sync() -> void:
 
 	if not _mail_linked:
 		_link_mail(MailClient.credentials())
+	refresh_supporter() # a lapsed or new backer is noticed on the next launch
 
 
 func _upload() -> void:
@@ -347,6 +386,8 @@ func _drop_account() -> void:
 	display_name = ""
 	username = ""
 	avatar_url = ""
+	supporter_tier = Tier.NONE
+	in_discord_server = false
 	_revision = 0
 	_dirty = false
 	_mail_linked = false
@@ -375,6 +416,20 @@ func _set_profile(profile) -> void:
 	display_name = str(profile.get("display_name", display_name))
 	username = str(profile.get("username", username))
 	avatar_url = str(profile.get("avatar_url", avatar_url))
+	_set_supporter(profile.get("supporter"))
+
+
+func _set_supporter(status) -> void:
+	if not status is Dictionary:
+		return
+	var tier := clampi(int(status.get("tier", 0)), 0, TIER_NAMES.size() - 1)
+	var in_server := bool(status.get("in_server", false))
+	if tier == supporter_tier and in_server == in_discord_server:
+		return
+	supporter_tier = tier
+	in_discord_server = in_server
+	_save()
+	changed.emit()
 
 
 func _mail_path(id := account_id) -> String:
@@ -425,6 +480,8 @@ func _load() -> void:
 	display_name = str(cfg.get_value("account", "display_name", ""))
 	username = str(cfg.get_value("account", "username", ""))
 	avatar_url = str(cfg.get_value("account", "avatar_url", ""))
+	supporter_tier = int(cfg.get_value("account", "supporter_tier", Tier.NONE))
+	in_discord_server = bool(cfg.get_value("account", "in_discord_server", false))
 	_revision = int(cfg.get_value("sync", "revision", 0))
 	_dirty = bool(cfg.get_value("sync", "dirty", false))
 	_mail_linked = bool(cfg.get_value("sync", "mail_linked", false))
@@ -442,6 +499,8 @@ func _save() -> void:
 	cfg.set_value("account", "display_name", display_name)
 	cfg.set_value("account", "username", username)
 	cfg.set_value("account", "avatar_url", avatar_url)
+	cfg.set_value("account", "supporter_tier", supporter_tier)
+	cfg.set_value("account", "in_discord_server", in_discord_server)
 	cfg.set_value("sync", "revision", _revision)
 	cfg.set_value("sync", "dirty", _dirty)
 	cfg.set_value("sync", "mail_linked", _mail_linked)

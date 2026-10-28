@@ -190,6 +190,7 @@ func _fetch_inbox() -> void:
 		letter["from_code"] = str(item.get("from_code", ""))
 		letter["sent_unix"] = float(item.get("sent_unix", letter["sent_unix"]))
 		letter["sig"] = str(item.get("sig", "")) # proves the letter's text if it is reported
+		letter["from_tier"] = int(item.get("from_tier", 0)) # sender's supporter tier, for a badge
 
 	# Save before acking: the ack deletes the letters from the server, so they
 	# have to be on disk first or a closed tab would lose them.
