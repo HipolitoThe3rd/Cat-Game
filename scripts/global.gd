@@ -127,8 +127,21 @@ const SKIN_PREFIXES := {
 }
 
 # Save system ---------------------------------------------------------------
+# The save for playing without an account. A logged-in player gets a separate
+# save (see account_save_path()) that Account keeps in sync with the cloud, so
+# logging out brings the device's own save back untouched.
 const SAVE_PATH := "user://catgame_save.cfg"
 const SAVE_VERSION := 1
+
+# Written by account.gd; read here at startup to pick the right save before
+# Account itself is ready.
+const ACCOUNT_FILE := "user://account.cfg"
+
+# Whichever save is in use right now.
+var save_path := SAVE_PATH
+
+# Fires after every successful save, so Account can upload it.
+signal game_saved(cfg: ConfigFile)
 
 # How often the game quietly writes to disk, in seconds.
 const AUTOSAVE_INTERVAL := 10.0
@@ -173,6 +186,7 @@ func _ready() -> void:
 	save_available = OS.is_userfs_persistent()
 	if not save_available:
 		push_warning("Cat Game: persistent storage unavailable; progress will not be saved.")
+	save_path = _startup_save_path()
 	load_game()
 	_start_mail_if_new()
 	check_payday()
@@ -283,6 +297,26 @@ func _register_skin_commands() -> void:
 	Console.add_command("payday", func():
 		last_payday_unix = 0.0
 		check_payday())
+	# Until every room has a door, jump straight to any of them.
+	Console.add_command("room", _cmd_room, ["room name"], 1, "Go to a room, e.g. room office")
+	Console.add_command_autocomplete_list("room", PackedStringArray(room_names()))
+
+
+## Every scene directly in res://scenes, by file name without ".tscn".
+func room_names() -> Array[String]:
+	var names: Array[String] = []
+	for file in ResourceLoader.list_directory("res://scenes"):
+		if file.ends_with(".tscn"):
+			names.append(file.get_basename())
+	return names
+
+
+func _cmd_room(room_name: String) -> void:
+	var room := room_name.strip_edges().to_lower()
+	if not room in room_names():
+		Console.print_line("No room called \"%s\". Rooms: %s" % [room, ", ".join(room_names())])
+		return
+	get_tree().change_scene_to_file("res://scenes/%s.tscn" % room)
 
 
 ## Switches the cat's skin, reskins the current room immediately, and saves so
@@ -371,6 +405,17 @@ func save_game() -> void:
 	if not save_available:
 		return
 
+	var cfg := build_save()
+	var err := cfg.save(save_path)
+	if err != OK:
+		push_warning("Cat Game: could not write save (error %d)." % err)
+		save_available = false
+		return
+	game_saved.emit(cfg)
+
+
+## The whole game state as a ConfigFile, for writing to disk or the cloud.
+func build_save() -> ConfigFile:
 	var cfg := ConfigFile.new()
 	cfg.set_value("meta", "version", SAVE_VERSION)
 	cfg.set_value("meta", "last_played_unix", Time.get_unix_time_from_system())
@@ -395,11 +440,12 @@ func save_game() -> void:
 	cfg.set_value("mail", "last_payday_unix", last_payday_unix)
 	cfg.set_value("mail", "mood_seconds", mood_seconds)
 	cfg.set_value("mail", "mood_weighted_sum", mood_weighted_sum)
+	return cfg
 
-	var err := cfg.save(SAVE_PATH)
-	if err != OK:
-		push_warning("Cat Game: could not write save (error %d)." % err)
-		save_available = false
+
+## A few numbers that sum up a save, shown when choosing between two of them.
+func save_summary() -> Dictionary:
+	return {"kitcoins": kitcoins, "mood": roundi(mood), "letters": mail.size()}
 
 
 ## Restores the last session and then ages the cat by however long it was left
@@ -407,20 +453,26 @@ func save_game() -> void:
 func load_game() -> void:
 	offline_summary = {}
 
-	if not FileAccess.file_exists(SAVE_PATH):
+	if not FileAccess.file_exists(save_path):
 		return # brand new player
 
 	var cfg := ConfigFile.new()
-	var err := cfg.load(SAVE_PATH)
+	var err := cfg.load(save_path)
 	if err != OK:
 		push_warning("Cat Game: save unreadable (error %d). Starting fresh." % err)
 		return
+	apply_save(cfg)
 
+
+## Loads a save built by build_save(), from disk or the cloud. Returns false
+## (changing nothing) if it is from another save version.
+func apply_save(cfg: ConfigFile) -> bool:
+	offline_summary = {}
 	if int(cfg.get_value("meta", "version", 0)) != SAVE_VERSION:
 		# Ignore rather than half-apply an unknown layout. Migrations go here
 		# if the stat list ever changes.
 		push_warning("Cat Game: save is from another version. Starting fresh.")
-		return
+		return false
 
 	# Clamped on the way in: cat_hub.gd drains hunger with min(100, ...) instead
 	# of max(0, ...), so a stored value can legitimately be negative.
@@ -450,6 +502,39 @@ func load_game() -> void:
 	var last_played := float(cfg.get_value("meta", "last_played_unix", 0.0))
 	if last_played > 0.0:
 		_apply_offline_decay(Time.get_unix_time_from_system() - last_played)
+	return true
+
+
+## Swaps to another save, e.g. on logging in or out. With a cfg, that is the
+## save to use (and it is written to path); without one, path is loaded from
+## disk, or a new game starts if there is nothing there. The current room is
+## reloaded so it shows the new state.
+func switch_save(path: String, cfg: ConfigFile = null) -> void:
+	_reset_state()
+	save_path = path
+	if cfg == null:
+		load_game()
+	elif not apply_save(cfg):
+		_reset_state()
+	_start_mail_if_new()
+	check_payday()
+	save_game()
+	_apply_skin_recursive(get_tree().root)
+	if get_tree().current_scene != null:
+		get_tree().reload_current_scene()
+
+
+## Where a logged-in account's save lives on this device.
+func account_save_path(account_id: String) -> String:
+	return "user://save_%s.cfg" % account_id.validate_filename()
+
+
+func _startup_save_path() -> String:
+	var cfg := ConfigFile.new()
+	if cfg.load(ACCOUNT_FILE) != OK:
+		return SAVE_PATH
+	var account_id := str(cfg.get_value("account", "account_id", ""))
+	return SAVE_PATH if account_id.is_empty() else account_save_path(account_id)
 
 
 ## Ages the cat by `seconds` of real time spent with the game closed.
@@ -515,6 +600,14 @@ func _apply_offline_decay(seconds: float) -> void:
 ## Wipes the save and restores the starting stats. Wire this to a "new game"
 ## button if you ever add one.
 func reset_save() -> void:
+	_reset_state()
+	var dir := DirAccess.open("user://")
+	if dir != null:
+		dir.remove(save_path)
+	_start_mail_if_new()
+
+
+func _reset_state() -> void:
 	mood = 50
 	hunger = 30
 	energy = 80
@@ -531,12 +624,7 @@ func reset_save() -> void:
 	last_payday_unix = 0.0
 	mood_seconds = 0.0
 	mood_weighted_sum = 0.0
-
-	var dir := DirAccess.open("user://")
-	if dir != null:
-		dir.remove(SAVE_PATH)
-
-	_start_mail_if_new()
+	skin = skins.CRISPY
 
 
 ## ---------------------------------------------------------------------------

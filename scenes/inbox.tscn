@@ -9,6 +9,33 @@
 [ext_resource type="Texture2D" uid="uid://b0yh0uhtxhoti" path="res://sprites/skins/Crispy/crispy_mail_1.png" id="6_5cbxy"]
 [ext_resource type="AudioStream" uid="uid://xtigjlkevtbq" path="res://sfx/mail.mp3" id="7_e1oyq"]
 
+[sub_resource type="Animation" id="Animation_pmbe3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SFXMail:playing")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_crtgc")]
+}
+
 [sub_resource type="Animation" id="Animation_on4mk"]
 resource_name = "mail"
 length = 3.0
@@ -35,33 +62,6 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
-}
-
-[sub_resource type="Animation" id="Animation_pmbe3"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SFXMail:playing")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:texture")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("4_crtgc")]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_yv2t8"]
@@ -195,10 +195,10 @@ texture_pressed = ExtResource("2_hkbtn")
 texture_hover = ExtResource("3_x1jwj")
 
 [connection signal="animation_finished" from="Cat/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
-[connection signal="pressed" from="UI/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonPrev" to="." method="_on_button_prev_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonNext" to="." method="_on_button_next_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonReply" to="." method="_on_button_reply_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonWrite" to="." method="_on_button_write_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonBlock" to="." method="_on_button_block_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonReport" to="." method="_on_button_report_pressed"]
+[connection signal="pressed" from="UI/BackButton" to="." method="_on_back_button_pressed"]

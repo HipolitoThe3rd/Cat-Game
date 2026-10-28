@@ -3,8 +3,8 @@
 ## polls for letters from other players and drops them into Global's inbox.
 extends Node
 
-const API_URL := "https://steelfishstudios.com/api/mail/"
-const ACCOUNT_PATH := "user://mail_account.cfg"
+var api_url := "https://steelfishstudios.com/api/mail/" # tests point this at a local server
+const ACCOUNT_PATH := "user://mail_account.cfg" # without a login; see use_account_file()
 const POLL_INTERVAL := 120.0 # seconds between inbox checks while playing
 const RETRY_INTERVAL := 30.0 # after a failed request, e.g. while offline
 
@@ -24,6 +24,9 @@ signal registered
 
 var _busy := false
 var _poll_countdown := 0.0 # check right away on launch
+# A logged-in player's mail account is kept in its own file (Account picks it),
+# so the device's own friend code comes back on logging out.
+var account_path := ACCOUNT_PATH
 
 
 ## DEFAULT FUNCTIONS
@@ -43,6 +46,34 @@ func _process(delta: float) -> void:
 ## CUSTOM FUNCTIONS
 func is_registered() -> bool:
 	return not player_id.is_empty()
+
+
+## Switches to the mail account stored at path, registering a new one on the
+## next check if there is none there yet.
+func use_account_file(path: String) -> void:
+	_forget_account()
+	account_path = path
+	_load_account()
+	_poll_countdown = 0.0
+	if is_registered():
+		registered.emit()
+
+
+## Adopts a mail account handed over by the account server.
+func use_credentials(path: String, data: Dictionary) -> void:
+	_forget_account()
+	account_path = path
+	player_id = str(data.get("player_id", ""))
+	secret = str(data.get("secret", ""))
+	friend_code = str(data.get("friend_code", ""))
+	display_name = str(data.get("display_name", ""))
+	_save_account()
+	_poll_countdown = 0.0
+	registered.emit()
+
+
+func credentials() -> Dictionary:
+	return {"player_id": player_id, "secret": secret} if is_registered() else {}
 
 
 ## Sends a letter to another player's friend code. Returns "" on success, or an
@@ -186,7 +217,7 @@ func _request(method: HTTPClient.Method, action: String, body = null) -> Diction
 		headers.append("X-Player-Id: " + player_id)
 		headers.append("X-Player-Secret: " + secret)
 
-	var err := http.request(API_URL + action, headers, method,
+	var err := http.request(api_url + action, headers, method,
 		JSON.stringify(body) if body != null else "")
 	if err != OK:
 		http.queue_free()
@@ -212,7 +243,7 @@ func _request(method: HTTPClient.Method, action: String, body = null) -> Diction
 
 func _load_account() -> void:
 	var cfg := ConfigFile.new()
-	if cfg.load(ACCOUNT_PATH) != OK:
+	if cfg.load(account_path) != OK:
 		return
 	player_id = str(cfg.get_value("account", "player_id", ""))
 	secret = str(cfg.get_value("account", "secret", ""))
@@ -231,7 +262,7 @@ func _save_account() -> void:
 	cfg.set_value("account", "friend_code", friend_code)
 	cfg.set_value("account", "display_name", display_name)
 	cfg.set_value("account", "blocked_codes", blocked_codes)
-	if cfg.save(ACCOUNT_PATH) != OK:
+	if cfg.save(account_path) != OK:
 		push_warning("Cat Game: could not save mail account.")
 
 

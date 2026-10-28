@@ -18,9 +18,9 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*res://scripts/global.gd"
-MailClient="*res://scripts/mail_client.gd"
 Console="*res://addons/console/console.gd"
-Discord_tick="*res://addons/discord-game-sdk-godot/tick.gd"
+MailClient="*res://scripts/mail_client.gd"
+Account="*res://scripts/account.gd"
 
 [debug]
 
@@ -32,7 +32,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/console/plugin.cfg", "res://addons/discord-game-sdk-godot/plugin.cfg")
+enabled=PackedStringArray("res://addons/console/plugin.cfg")
 
 [input]
 
