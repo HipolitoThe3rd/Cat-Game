@@ -8,6 +8,8 @@ extends Node2D
 @onready var prev_button = $UI/MailPanel/HBoxContainer/ButtonPrev
 @onready var next_button = $UI/MailPanel/HBoxContainer/ButtonNext
 @onready var reply_button = $UI/MailPanel/HBoxContainer/ButtonReply
+@onready var block_button = $UI/MailPanel/HBoxContainer/ButtonBlock
+@onready var report_button = $UI/MailPanel/HBoxContainer/ButtonReport
 
 # Snapshot of Global.sorted_mail() taken on entering, so opening a letter (which
 # marks it read and would re-sort it) does not shuffle the pages mid-read.
@@ -38,6 +40,8 @@ func show_letter(index: int) -> void:
 		prev_button.disabled = true
 		next_button.disabled = true
 		reply_button.visible = false
+		block_button.visible = false
+		report_button.visible = false
 		return
 
 	current = clampi(index, 0, letters.size() - 1)
@@ -71,6 +75,39 @@ func show_letter(index: int) -> void:
 	prev_button.disabled = current == 0
 	next_button.disabled = current == letters.size() - 1
 	reply_button.visible = not from_code.is_empty()
+	block_button.visible = not from_code.is_empty()
+	block_button.text = "Unblock" if MailClient.is_blocked(from_code) else "Block"
+	report_button.visible = MailClient.can_report(letter)
+
+
+## Asks a yes/no question and waits for the answer.
+func _confirm(text: String, ok_text: String) -> bool:
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Are you sure?"
+	dialog.dialog_text = text
+	dialog.dialog_autowrap = true
+	dialog.ok_button_text = ok_text
+	dialog.add_user_signal("closed")
+	dialog.confirmed.connect(dialog.set_meta.bind("ok", true))
+	dialog.confirmed.connect(dialog.emit_signal.bind("closed"))
+	dialog.canceled.connect(dialog.emit_signal.bind("closed"))
+	add_child(dialog)
+	dialog.popup_centered(Vector2i(520, 0))
+	await Signal(dialog, "closed")
+	var ok: bool = dialog.get_meta("ok", false)
+	dialog.queue_free()
+	return ok
+
+
+func _tell(text: String) -> void:
+	var dialog := AcceptDialog.new()
+	dialog.title = "Mail"
+	dialog.dialog_text = text
+	dialog.dialog_autowrap = true
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.canceled.connect(dialog.queue_free)
+	add_child(dialog)
+	dialog.popup_centered(Vector2i(520, 0))
 
 
 # Letters from other players are untrusted text, so keep their BBCode from
@@ -113,3 +150,48 @@ func _on_button_reply_pressed() -> void:
 
 func _on_button_write_pressed() -> void:
 	add_child(ComposeLetter.new())
+
+
+func _on_button_block_pressed() -> void:
+	var letter: Dictionary = letters[current]
+	var code := str(letter.get("from_code", ""))
+	var unblocking := MailClient.is_blocked(code)
+	if not unblocking and not await _confirm(
+			"Block %s? You won't get any more letters from them." % code, "Block"):
+		return
+
+	block_button.disabled = true
+	var error: String
+	if unblocking:
+		error = await MailClient.unblock(code)
+	else:
+		error = await MailClient.block(code)
+	if not is_inside_tree():
+		return
+	block_button.disabled = false
+	if not error.is_empty():
+		_tell(error)
+	show_letter(current)
+
+
+func _on_button_report_pressed() -> void:
+	var letter: Dictionary = letters[current]
+	if not await _confirm("Report this letter to Steel Fish Studios? It will be "
+			+ "removed from your inbox, and you won't get any more letters from %s."
+			% letter.get("from_code", ""), "Report"):
+		return
+
+	report_button.disabled = true
+	var error: String = await MailClient.report(letter)
+	if not is_inside_tree():
+		return
+	report_button.disabled = false
+	if not error.is_empty():
+		_tell(error)
+		return
+
+	Global.delete_mail(letter)
+	Global.save_game()
+	letters.erase(letter)
+	show_letter(current)
+	_tell("Thanks for letting us know. We'll take a look.")

@@ -592,6 +592,12 @@ func undelivered_mail_count() -> int:
 	return mail.filter(func(l): return not l.get("delivered", l.get("read", false))).size()
 
 
+## Removes a letter for good, e.g. once it has been reported. Never used on
+## letters with Kitcoins still attached.
+func delete_mail(letter: Dictionary) -> void:
+	mail.erase(letter)
+
+
 ## Called on entering the inbox, so backing out with letters still unread does
 ## not bounce the player straight back in.
 func mark_mail_delivered() -> void:

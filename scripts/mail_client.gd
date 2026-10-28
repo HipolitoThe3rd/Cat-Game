@@ -14,6 +14,9 @@ var player_id := ""
 var secret := ""
 var friend_code := ""
 var display_name := ""
+# Friend codes this player blocked. The server is what actually stops their
+# letters; this copy is just so the inbox knows to offer "Unblock".
+var blocked_codes: Array = []
 
 # Fires once this install has a friend code, e.g. for a compose screen that was
 # opened while offline.
@@ -50,6 +53,57 @@ func send(to_code: String, subject: String, body: String) -> String:
 	var res := await _request(HTTPClient.METHOD_POST, "send",
 		{"to": to_code, "subject": subject, "body": body})
 	return "" if res.ok else res.error
+
+
+func is_blocked(code: String) -> bool:
+	return blocked_codes.has(code)
+
+
+## Stops letters from a friend code. Returns "" on success or an error message.
+func block(code: String) -> String:
+	var res := await _request(HTTPClient.METHOD_POST, "block", {"code": code})
+	if not res.ok:
+		return res.error
+	if not blocked_codes.has(code):
+		blocked_codes.append(code)
+		_save_account()
+	return ""
+
+
+func unblock(code: String) -> String:
+	var res := await _request(HTTPClient.METHOD_POST, "unblock", {"code": code})
+	if not res.ok:
+		return res.error
+	blocked_codes.erase(code)
+	_save_account()
+	return ""
+
+
+## Sends a letter to Steel Fish Studios for review; the server also blocks its
+## sender. Only letters fetched from the server (which carry a "sig") can be
+## reported. Returns "" on success or an error message.
+func report(letter: Dictionary) -> String:
+	if not can_report(letter):
+		return "This letter can't be reported."
+	var res := await _request(HTTPClient.METHOD_POST, "report", {"letter": {
+		"id": letter["server_id"],
+		"from_code": letter.get("from_code", ""),
+		"from_name": letter.get("from", ""),
+		"subject": letter.get("subject", ""),
+		"body": letter.get("body", ""),
+		"sig": letter["sig"],
+	}})
+	if not res.ok:
+		return res.error
+	var code := str(letter.get("from_code", ""))
+	if not blocked_codes.has(code):
+		blocked_codes.append(code)
+		_save_account()
+	return ""
+
+
+func can_report(letter: Dictionary) -> bool:
+	return letter.has("server_id") and not str(letter.get("sig", "")).is_empty()
 
 
 ## Registers if needed, then pulls new letters into the inbox.
@@ -104,6 +158,7 @@ func _fetch_inbox() -> void:
 		letter["server_id"] = server_id
 		letter["from_code"] = str(item.get("from_code", ""))
 		letter["sent_unix"] = float(item.get("sent_unix", letter["sent_unix"]))
+		letter["sig"] = str(item.get("sig", "")) # proves the letter's text if it is reported
 
 	# Save before acking: the ack deletes the letters from the server, so they
 	# have to be on disk first or a closed tab would lose them.
@@ -163,6 +218,8 @@ func _load_account() -> void:
 	secret = str(cfg.get_value("account", "secret", ""))
 	friend_code = str(cfg.get_value("account", "friend_code", ""))
 	display_name = str(cfg.get_value("account", "display_name", ""))
+	var saved_blocked = cfg.get_value("account", "blocked_codes", [])
+	blocked_codes = saved_blocked if saved_blocked is Array else []
 	if player_id.is_empty() or secret.is_empty():
 		_forget_account()
 
@@ -173,6 +230,7 @@ func _save_account() -> void:
 	cfg.set_value("account", "secret", secret)
 	cfg.set_value("account", "friend_code", friend_code)
 	cfg.set_value("account", "display_name", display_name)
+	cfg.set_value("account", "blocked_codes", blocked_codes)
 	if cfg.save(ACCOUNT_PATH) != OK:
 		push_warning("Cat Game: could not save mail account.")
 
@@ -182,6 +240,7 @@ func _forget_account() -> void:
 	secret = ""
 	friend_code = ""
 	display_name = ""
+	blocked_codes = [] # blocks belonged to the old account
 
 
 # Debug helpers for testing mail without going through the inbox.
