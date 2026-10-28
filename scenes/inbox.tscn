@@ -158,6 +158,15 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Next"
 
+[node name="ButtonReply" type="Button" parent="UI/MailPanel/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Reply"
+
+[node name="ButtonWrite" type="Button" parent="UI/MailPanel/HBoxContainer"]
+layout_mode = 2
+text = "Write a letter"
+
 [node name="BackButton" type="TextureButton" parent="UI"]
 visible = false
 layout_mode = 1
@@ -179,3 +188,5 @@ texture_hover = ExtResource("3_x1jwj")
 [connection signal="pressed" from="UI/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonPrev" to="." method="_on_button_prev_pressed"]
 [connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonNext" to="." method="_on_button_next_pressed"]
+[connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonReply" to="." method="_on_button_reply_pressed"]
+[connection signal="pressed" from="UI/MailPanel/HBoxContainer/ButtonWrite" to="." method="_on_button_write_pressed"]

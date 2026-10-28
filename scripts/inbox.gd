@@ -7,6 +7,7 @@ extends Node2D
 @onready var counter_label = $UI/MailPanel/HBoxContainer/Counter
 @onready var prev_button = $UI/MailPanel/HBoxContainer/ButtonPrev
 @onready var next_button = $UI/MailPanel/HBoxContainer/ButtonNext
+@onready var reply_button = $UI/MailPanel/HBoxContainer/ButtonReply
 
 # Snapshot of Global.sorted_mail() taken on entering, so opening a letter (which
 # marks it read and would re-sort it) does not shuffle the pages mid-read.
@@ -36,6 +37,7 @@ func show_letter(index: int) -> void:
 		counter_label.text = ""
 		prev_button.disabled = true
 		next_button.disabled = true
+		reply_button.visible = false
 		return
 
 	current = clampi(index, 0, letters.size() - 1)
@@ -45,8 +47,14 @@ func show_letter(index: int) -> void:
 	if deposited > 0:
 		Global.save_game() # don't risk losing a paycheck to a closed tab
 
+	# Players are shown with their friend code, so it is clear who to write back to.
+	var from := str(letter.get("from", ""))
+	var from_code := str(letter.get("from_code", ""))
+	if not from_code.is_empty() and from != from_code:
+		from += " (%s)" % from_code
+
 	var text := "[b]From:[/b] %s\n\n[b]To:[/b] %s\n\n[b]Subject:[/b] %s%s\n\n%s" % [
-		_escape(letter.get("from", "")),
+		_escape(from),
 		_escape(letter.get("to", "")),
 		_escape(letter.get("subject", "")),
 		"  [color=gold](new)[/color]" if was_unread else "",
@@ -62,6 +70,7 @@ func show_letter(index: int) -> void:
 	counter_label.text = "%d / %d" % [current + 1, letters.size()]
 	prev_button.disabled = current == 0
 	next_button.disabled = current == letters.size() - 1
+	reply_button.visible = not from_code.is_empty()
 
 
 # Letters from other players are untrusted text, so keep their BBCode from
@@ -91,3 +100,16 @@ func _on_button_prev_pressed() -> void:
 
 func _on_button_next_pressed() -> void:
 	show_letter(current + 1)
+
+
+func _on_button_reply_pressed() -> void:
+	var letter: Dictionary = letters[current]
+	var subject := str(letter.get("subject", ""))
+	if not subject.to_lower().begins_with("re:"):
+		subject = ("Re: " + subject).strip_edges()
+	add_child(ComposeLetter.new(str(letter.get("from_code", "")),
+		subject.left(ComposeLetter.MAX_SUBJECT)))
+
+
+func _on_button_write_pressed() -> void:
+	add_child(ComposeLetter.new())

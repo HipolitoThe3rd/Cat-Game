@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*res://scripts/global.gd"
+MailClient="*res://scripts/mail_client.gd"
 Console="*res://addons/console/console.gd"
 Discord_tick="*res://addons/discord-game-sdk-godot/tick.gd"
 
