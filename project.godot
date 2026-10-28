@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Global="*res://scripts/global.gd"
 Console="*res://addons/console/console.gd"
+Discord_tick="*res://addons/discord-game-sdk-godot/tick.gd"
 
 [debug]
 
@@ -30,7 +31,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/console/plugin.cfg")
+enabled=PackedStringArray("res://addons/console/plugin.cfg", "res://addons/discord-game-sdk-godot/plugin.cfg")
 
 [input]
 

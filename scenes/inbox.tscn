@@ -106,24 +106,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.22745098, 0.39215687, 0.4745098, 1)
 
-[node name="BackButton" type="TextureButton" parent="UI"]
-visible = false
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -171.0
-offset_top = 20.0
-offset_right = 140.0
-offset_bottom = 283.0
-grow_horizontal = 0
-scale = Vector2(0.5, 0.5)
-disabled = true
-texture_normal = ExtResource("1_0lhgn")
-texture_pressed = ExtResource("2_hkbtn")
-texture_hover = ExtResource("3_x1jwj")
-
 [node name="MailPanel" type="Panel" parent="UI"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -140,6 +124,7 @@ anchor_right = 0.95
 anchor_bottom = 0.8
 grow_horizontal = 2
 grow_vertical = 2
+bbcode_enabled = true
 text = "From:
 
 To:
@@ -157,14 +142,38 @@ anchor_bottom = 1.0
 offset_top = -96.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_constants/separation = 24
+alignment = 1
 
 [node name="ButtonPrev" type="Button" parent="UI/MailPanel/HBoxContainer"]
 layout_mode = 2
 text = "Previous"
 
+[node name="Counter" type="Label" parent="UI/MailPanel/HBoxContainer"]
+layout_mode = 2
+text = "1 / 1"
+horizontal_alignment = 1
+
 [node name="ButtonNext" type="Button" parent="UI/MailPanel/HBoxContainer"]
 layout_mode = 2
 text = "Next"
+
+[node name="BackButton" type="TextureButton" parent="UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -171.0
+offset_top = 20.0
+offset_right = 140.0
+offset_bottom = 283.0
+grow_horizontal = 0
+scale = Vector2(0.5, 0.5)
+disabled = true
+texture_normal = ExtResource("1_0lhgn")
+texture_pressed = ExtResource("2_hkbtn")
+texture_hover = ExtResource("3_x1jwj")
 
 [connection signal="animation_finished" from="Cat/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="pressed" from="UI/BackButton" to="." method="_on_back_button_pressed"]

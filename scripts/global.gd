@@ -76,8 +76,38 @@ var poop_in_litterbox = 0 # how much poop is in the litterbox; default 0
 var playroom_difficulty: float = 0.15
 
 # game's currency. can be used to buy clothes, skins, furniture, toys, etc.
-# a paycheck with Kitcoins is earned every Friday.
+# a paycheck with Kitcoins is earned every week.
 var kitcoins: int = 0
+
+# Mail / paycheck system ------------------------------------------------------
+# Crispy's anonymous owner pays out once per real-world Friday (local time):
+# base pay plus a bonus scaled by the cat's average mood since the last payday.
+const PAYDAY_WEEKDAY := 5 # Time.WEEKDAY_FRIDAY
+const PAYCHECK_BASE_PAY := 50
+const PAYCHECK_MAX_BONUS := 50 # paid in full at an average mood of 100
+const PAYCHECK_SENDER := "Anonymous"
+const MAIL_RECIPIENT := "Crispy's Caretaker"
+
+# Oldest letters are dropped past this so the save file stays small.
+const MAX_MAIL := 50
+
+enum mail_kinds { LETTER, PAYCHECK, PLAYER }
+
+# Each letter is a Dictionary built by receive_mail(); oldest first.
+var mail: Array = []
+var _next_mail_id := 1
+
+# Start (unix, UTC) of the last payday that has been paid out. 0 means the
+# mail system has not been set up yet for this save.
+var last_payday_unix := 0.0
+
+# Time-weighted running average of mood since the last payday. Covers both
+# time spent playing and (via _apply_offline_decay) time spent away.
+var mood_seconds := 0.0
+var mood_weighted_sum := 0.0
+
+# Rooms (a hub badge, say) can listen for this to react to new mail.
+signal mail_received(letter: Dictionary)
 
 # Which skin the Cat has active, which affects his coloring
 # CRISPY is the default skin
@@ -144,6 +174,8 @@ func _ready() -> void:
 	if not save_available:
 		push_warning("Cat Game: persistent storage unavailable; progress will not be saved.")
 	load_game()
+	_start_mail_if_new()
+	check_payday()
 
 	# Reskin every cat sprite as it is spawned, in whatever room it lives in.
 	get_tree().node_added.connect(_apply_skin_to_node)
@@ -172,6 +204,7 @@ func _input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	_update_touch_cursor()
+	_track_mood(mood, delta)
 
 	# Autosave on a timer rather than only on quit. A browser tab can be closed
 	# without ever delivering a close notification, so the timer is the real
@@ -179,6 +212,9 @@ func _process(delta: float) -> void:
 	_autosave_countdown -= delta
 	if _autosave_countdown <= 0.0:
 		_autosave_countdown = AUTOSAVE_INTERVAL
+		# Piggybacks on the autosave timer so a paycheck still arrives if the
+		# game is left open past midnight into Friday.
+		check_payday()
 		save_game()
 
 
@@ -242,6 +278,11 @@ func feed_cat(hunger_amount:int = 30) -> void:
 func _register_skin_commands() -> void:
 	Console.add_command("charles", set_skin.bind(skins.CRISPY))
 	Console.add_command("051426", set_skin.bind(skins.COLTRANE))
+	# Debug helpers until the hub has a way into the inbox.
+	Console.add_command("inbox", func(): get_tree().change_scene_to_file("res://scenes/inbox.tscn"))
+	Console.add_command("payday", func():
+		last_payday_unix = 0.0
+		check_payday())
 
 
 ## Switches the cat's skin, reskins the current room immediately, and saves so
@@ -347,6 +388,14 @@ func save_game() -> void:
 
 	cfg.set_value("cosmetic", "skin", skin)
 
+	cfg.set_value("wallet", "kitcoins", kitcoins)
+
+	cfg.set_value("mail", "letters", mail)
+	cfg.set_value("mail", "next_id", _next_mail_id)
+	cfg.set_value("mail", "last_payday_unix", last_payday_unix)
+	cfg.set_value("mail", "mood_seconds", mood_seconds)
+	cfg.set_value("mail", "mood_weighted_sum", mood_weighted_sum)
+
 	var err := cfg.save(SAVE_PATH)
 	if err != OK:
 		push_warning("Cat Game: could not write save (error %d)." % err)
@@ -388,6 +437,15 @@ func load_game() -> void:
 
 	var saved_skin := int(cfg.get_value("cosmetic", "skin", skin))
 	skin = saved_skin if saved_skin in skins.values() else skins.CRISPY
+
+	kitcoins = maxi(0, int(cfg.get_value("wallet", "kitcoins", kitcoins)))
+
+	var saved_mail = cfg.get_value("mail", "letters", [])
+	mail = saved_mail if saved_mail is Array else []
+	_next_mail_id = int(cfg.get_value("mail", "next_id", _next_mail_id))
+	last_payday_unix = float(cfg.get_value("mail", "last_payday_unix", last_payday_unix))
+	mood_seconds = float(cfg.get_value("mail", "mood_seconds", mood_seconds))
+	mood_weighted_sum = float(cfg.get_value("mail", "mood_weighted_sum", mood_weighted_sum))
 
 	var last_played := float(cfg.get_value("meta", "last_played_unix", 0.0))
 	if last_played > 0.0:
@@ -436,6 +494,11 @@ func _apply_offline_decay(seconds: float) -> void:
 	else:
 		mood = minf(NEUTRAL_MOOD, mood + drift)
 
+	# Time away still counts toward the paycheck's average mood. Uses the real
+	# absence rather than the capped one, at roughly the mood the cat drifted
+	# through, so a neglected week pulls the bonus toward neutral.
+	_track_mood((old_mood + mood) / 2.0, seconds)
+
 	offline_summary = {
 		"hours_away": hours,
 		"was_capped": (seconds / 3600.0) > MAX_OFFLINE_HOURS,
@@ -462,7 +525,150 @@ func reset_save() -> void:
 	poop_in_litterbox = 0
 	playroom_difficulty = 0.15
 	offline_summary = {}
+	kitcoins = 0
+	mail = []
+	_next_mail_id = 1
+	last_payday_unix = 0.0
+	mood_seconds = 0.0
+	mood_weighted_sum = 0.0
 
 	var dir := DirAccess.open("user://")
 	if dir != null:
 		dir.remove(SAVE_PATH)
+
+	_start_mail_if_new()
+
+
+## ---------------------------------------------------------------------------
+## Mail / paychecks
+## ---------------------------------------------------------------------------
+
+## Adds a letter to the inbox and returns it. Anything that delivers mail
+## (paychecks now, other players later) should come through here.
+func receive_mail(kind: mail_kinds, from: String, subject: String, body: String,
+		kitcoins_attached: int = 0) -> Dictionary:
+	var letter := {
+		"id": _next_mail_id,
+		"kind": kind,
+		"from": from,
+		"to": MAIL_RECIPIENT,
+		"subject": subject,
+		"body": body,
+		"kitcoins": maxi(0, kitcoins_attached),
+		"sent_unix": Time.get_unix_time_from_system(),
+		"read": false,
+		"delivered": false, # set once the inbox has been visited after it arrived
+	}
+	_next_mail_id += 1
+	mail.append(letter)
+
+	while mail.size() > MAX_MAIL:
+		# Never let money vanish just because the inbox overflowed.
+		open_mail(mail.pop_front())
+
+	mail_received.emit(letter)
+	return letter
+
+
+## Marks a letter read and deposits any Kitcoins attached to it the first time
+## it is opened. Returns how many Kitcoins were deposited just now.
+func open_mail(letter: Dictionary) -> int:
+	if letter.get("read", false):
+		return 0
+	letter["read"] = true
+	var amount := int(letter.get("kitcoins", 0))
+	kitcoins += amount
+	return amount
+
+
+func unread_mail_count() -> int:
+	return mail.filter(func(l): return not l.get("read", false)).size()
+
+
+## Mail that arrived since the inbox was last visited. The hub sends the player
+## to the inbox while this is non-zero. Letters from saves made before the flag
+## existed count as delivered once read.
+func undelivered_mail_count() -> int:
+	return mail.filter(func(l): return not l.get("delivered", l.get("read", false))).size()
+
+
+## Called on entering the inbox, so backing out with letters still unread does
+## not bounce the player straight back in.
+func mark_mail_delivered() -> void:
+	for letter in mail:
+		letter["delivered"] = true
+
+
+## The inbox's reading order: unread paychecks first, then other unread mail,
+## then everything already read. Newest first within each group.
+func sorted_mail() -> Array:
+	var sorted := mail.duplicate()
+	sorted.sort_custom(func(a, b):
+		var ra := _mail_rank(a)
+		var rb := _mail_rank(b)
+		if ra != rb:
+			return ra < rb
+		return float(a.get("sent_unix", 0.0)) > float(b.get("sent_unix", 0.0)))
+	return sorted
+
+
+func _mail_rank(letter: Dictionary) -> int:
+	if letter.get("read", false):
+		return 2
+	return 0 if int(letter.get("kind", mail_kinds.LETTER)) == mail_kinds.PAYCHECK else 1
+
+
+## Sends this week's paycheck if a Friday has started since the last one.
+## Missing several Fridays still pays out once, so time away is not farmed.
+func check_payday() -> void:
+	var payday := _current_payday_start()
+	if last_payday_unix >= payday:
+		return
+
+	var average_mood := clampf(
+		mood_weighted_sum / mood_seconds if mood_seconds > 0.0 else float(mood),
+		0.0, 100.0)
+	var bonus := roundi(PAYCHECK_MAX_BONUS * average_mood / 100.0)
+	var total := PAYCHECK_BASE_PAY + bonus
+
+	receive_mail(mail_kinds.PAYCHECK, PAYCHECK_SENDER, "Your weekly pay",
+		("Thank you for taking care of Crispy this week.\n\n"
+		+ "Base pay: %d Kitcoins\n" % PAYCHECK_BASE_PAY
+		+ "Mood bonus: %d Kitcoins (Crispy's average mood: %d)\n\n" % [bonus, roundi(average_mood)]
+		+ "Total: %d Kitcoins\n\n" % total
+		+ "Please keep taking care of Crispy."),
+		total)
+
+	last_payday_unix = payday
+	mood_seconds = 0.0
+	mood_weighted_sum = 0.0
+	save_game()
+
+
+## First run of the mail system for this save: start the pay period now, so the
+## first paycheck arrives on the coming Friday, and leave a note explaining it.
+func _start_mail_if_new() -> void:
+	if last_payday_unix > 0.0:
+		return
+	last_payday_unix = _current_payday_start()
+	receive_mail(mail_kinds.LETTER, "???", "Crispy",
+		("You came. Thank you.\n\n"
+		+ "Please take care of Crispy. Keep him fed, clean and happy.\n\n"
+		+ "I will send your pay here every Friday. The happier he is, "
+		+ "the more you will get."))
+
+
+## Unix time (UTC) of the most recent local midnight that started a payday,
+## today included if today is payday.
+func _current_payday_start() -> float:
+	var bias := float(Time.get_time_zone_from_system().get("bias", 0)) * 60.0
+	var local_now := Time.get_unix_time_from_system() + bias
+	var local_midnight := floorf(local_now / 86400.0) * 86400.0
+	var weekday: int = Time.get_datetime_dict_from_unix_time(int(local_now)).weekday
+	var days_since := posmod(weekday - PAYDAY_WEEKDAY, 7)
+	return local_midnight - days_since * 86400.0 - bias
+
+
+func _track_mood(value: float, seconds: float) -> void:
+	mood_weighted_sum += value * seconds
+	mood_seconds += seconds

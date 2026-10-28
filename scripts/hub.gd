@@ -14,6 +14,7 @@ var room_litter = "res://scenes/litter_room.tscn"
 var room_bed = "res://scenes/bedroom.tscn"
 var room_play = "res://scenes/playroom.tscn"
 var room_secret = "res://scenes/secret_scene.tscn"
+var room_inbox = "res://scenes/inbox.tscn"
 
 ## DEFAULT FUNCTIONS
 func _ready() -> void:
@@ -21,6 +22,13 @@ func _ready() -> void:
 		Input.set_custom_mouse_cursor(Global.smcursor_default)
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_default)
+
+	# New mail (a paycheck, say) goes straight to the inbox. Checked before the
+	# welcome-back popup so that summary is kept for when we return here.
+	if Global.undelivered_mail_count() > 0:
+		_go_to_inbox.call_deferred()
+		return
+	Global.mail_received.connect(_on_mail_received)
 
 	# Only populated when load_game() measured real time away, so returning
 	# from a minigame room will not re-trigger it. Cleared once shown.
@@ -106,6 +114,12 @@ func _on_cat_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) ->
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if Global.mood >= 95:
 			get_tree().change_scene_to_file(room_secret)
+
+func _on_mail_received(_letter: Dictionary) -> void:
+	_go_to_inbox.call_deferred()
+
+func _go_to_inbox() -> void:
+	get_tree().change_scene_to_file(room_inbox)
 
 func _on_door_1_pressed() -> void:
 	get_tree().change_scene_to_file(room_kitchen)
