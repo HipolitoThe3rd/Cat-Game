@@ -19,3 +19,4 @@ mono_crash.*.json
 # Custom ignores
 builds/
 references/
+crispy_workspace.code-workspace
