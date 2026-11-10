@@ -20,8 +20,13 @@ var vsync: bool = DEFAULTS.vsync
 var check_updates: bool = DEFAULTS.check_updates
 
 
-func _ready() -> void:
+# Loaded as soon as the autoload is created rather than in _ready, so other
+# autoloads (the update checker) see the saved values whatever order they load in.
+func _init() -> void:
 	load_settings()
+
+
+func _ready() -> void:
 	apply()
 
 

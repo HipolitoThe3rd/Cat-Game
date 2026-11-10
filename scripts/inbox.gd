@@ -11,6 +11,12 @@ extends Node2D
 @onready var block_button = $UI/MailPanel/HBoxContainer/ButtonBlock
 @onready var report_button = $UI/MailPanel/HBoxContainer/ButtonReport
 
+# Letters are shown on their sender's chosen design, a little smaller than the
+# screen so the buttons fit underneath.
+const MailLetterScene := preload("res://scenes/prefabs/mail_letter.tscn")
+const LETTER_SCALE := 0.75
+var letter_view: MailLetter
+
 # Snapshot of Global.sorted_mail() taken on entering, so opening a letter (which
 # marks it read and would re-sort it) does not shuffle the pages mid-read.
 var letters: Array = []
@@ -26,7 +32,12 @@ func _ready() -> void:
 
 	# Hidden until Crispy finishes delivering the mail.
 	mail_panel.visible = false
-	mail_body.bbcode_enabled = true
+	mail_body.visible = false # replaced by the letter view
+	letter_view = MailLetterScene.instantiate()
+	letter_view.scale = Vector2.ONE * LETTER_SCALE
+	letter_view.position = Vector2(1152.0 * (1.0 - LETTER_SCALE) / 2.0, 16.0)
+	mail_panel.add_child(letter_view)
+	mail_panel.move_child(letter_view, 0)
 
 	Global.check_payday()
 	letters = Global.sorted_mail()
@@ -42,7 +53,8 @@ func _ready() -> void:
 ## CUSTOM FUNCTIONS
 func show_letter(index: int) -> void:
 	if letters.is_empty():
-		mail_body.text = "[center]No mail today.[/center]"
+		letter_view.set_pattern("default")
+		letter_view.set_text("[center]No mail today.[/center]", "")
 		counter_label.text = ""
 		prev_button.disabled = true
 		next_button.disabled = true
@@ -58,32 +70,15 @@ func show_letter(index: int) -> void:
 	if deposited > 0:
 		Global.save_game() # don't risk losing a paycheck to a closed tab
 
-	# Players are shown with their friend code, so it is clear who to write back to.
-	var from := str(letter.get("from", ""))
+	# The letter view escapes players' text and adds the sender's badge.
 	var from_code := str(letter.get("from_code", ""))
-	if not from_code.is_empty() and from != from_code:
-		from += " (%s)" % from_code
-
-	# Backers get a badge in their tier's color.
-	var from_tier := int(letter.get("from_tier", 0))
-	var badge := ""
-	if from_tier > 0:
-		badge = "  [color=#%s](%s supporter)[/color]" % [
-			Account.tier_color(from_tier).to_html(false), Account.tier_name(from_tier)]
-
-	var text := "[b]From:[/b] %s%s\n\n[b]To:[/b] %s\n\n[b]Subject:[/b] %s%s\n\n%s" % [
-		_escape(from), badge,
-		_escape(letter.get("to", "")),
-		_escape(letter.get("subject", "")),
-		"  [color=gold](new)[/color]" if was_unread else "",
-		_escape(letter.get("body", "")),
-	]
 	var attached := int(letter.get("kitcoins", 0))
+	var extra := ""
 	if deposited > 0:
-		text += "\n\n[color=gold]+%d Kitcoins deposited! (Balance: %d)[/color]" % [deposited, Global.kitcoins]
+		extra = "[color=#d4a017]+%d Kitcoins deposited! (Balance: %d)[/color]" % [deposited, Global.kitcoins]
 	elif attached > 0:
-		text += "\n\n[color=gray]%d Kitcoins (already deposited)[/color]" % attached
-	mail_body.text = text
+		extra = "[color=gray]%d Kitcoins (already deposited)[/color]" % attached
+	letter_view.show_letter(letter, was_unread, extra)
 
 	counter_label.text = "%d / %d" % [current + 1, letters.size()]
 	prev_button.disabled = current == 0

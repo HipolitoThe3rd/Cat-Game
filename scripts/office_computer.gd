@@ -181,7 +181,8 @@ func _fill_patterns() -> void:
 	for child in _patterns_grid.get_children():
 		child.queue_free()
 	for id in Global.MAIL_PATTERNS:
-		_patterns_grid.add_child(_pattern_card(id))
+		if Global.mail_pattern_available(id):
+			_patterns_grid.add_child(_pattern_card(id))
 
 
 func _pattern_card(id: String) -> Control:
@@ -198,7 +199,11 @@ func _pattern_card(id: String) -> Control:
 	card.add_child(preview)
 
 	var name_label := Label.new()
+	var min_tier := Global.mail_pattern_min_tier(id)
 	name_label.text = str(info.name)
+	if min_tier > 0:
+		name_label.text += " (%s+ supporters)" % Account.tier_name(min_tier)
+		name_label.add_theme_color_override("font_color", Account.tier_color(min_tier))
 	name_label.add_theme_font_size_override("font_size", 18)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card.add_child(name_label)
@@ -210,6 +215,11 @@ func _pattern_card(id: String) -> Control:
 		button.disabled = true
 	elif Global.owns_mail_pattern(id):
 		button = _button("Use", 16, _use_pattern.bind(id))
+	elif not Global.can_get_mail_pattern(id):
+		button = _button("For %s supporters" % Account.tier_name(min_tier), 16, Callable())
+		button.disabled = true
+	elif price == 0:
+		button = _button("Claim - free", 16, _buy_pattern.bind(id))
 	else:
 		button = _button("Buy - %d Kitcoins" % price, 16, _buy_pattern.bind(id))
 	card.add_child(button)
@@ -223,7 +233,7 @@ func _buy_pattern(id: String) -> void:
 		return
 	if Global.buy_mail_pattern(id):
 		Global.set_mail_pattern(id)
-		_say("Bought %s! Your letters will use it." % info.name, COLOR_OK)
+		_say("%s is yours! Your letters will use it." % info.name, COLOR_OK)
 	_fill_patterns()
 
 

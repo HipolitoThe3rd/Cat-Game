@@ -87,8 +87,12 @@ const FOOD_BAG_SECONDS := 7 * 24 * 3600.0
 const FOOD_BAG_MIN_HUNGER := 75.0
 var food_bag_until_unix := 0.0 # unix time the current food bag runs out
 
-# Letter designs, from res://backgrounds/Mail/mbg_<id>.jpg. Price 0 means every
-# player has it from the start.
+# Letter designs, from res://backgrounds/Mail/mbg_<id>.jpg. Price 0 (and no
+# min_tier) means every player has it from the start. min_tier designs are for
+# supporters of that tier or higher (see Account.Tier); they claim them for
+# the price, and keep them if they stop backing. A design whose image is not
+# there yet is left out of the store, so the tier ones appear once drawn.
+# Keep the ids in step with MAIL_PATTERNS in mail-api.mjs on the website.
 const MAIL_PATTERN_PATH := "res://backgrounds/Mail/mbg_%s.jpg"
 const MAIL_PATTERNS := {
 	"default": {"name": "Classic", "price": 0},
@@ -101,6 +105,10 @@ const MAIL_PATTERNS := {
 	"mintyocean": {"name": "Minty Ocean", "price": 120},
 	"strawberry": {"name": "Strawberry", "price": 120},
 	"stargrazer": {"name": "Stargrazer", "price": 120},
+	"bronze_guppy": {"name": "Bronze Guppy", "price": 0, "min_tier": 1},
+	"silver_bass": {"name": "Silver Bass", "price": 0, "min_tier": 2},
+	"golden_shark": {"name": "Golden Shark", "price": 0, "min_tier": 3},
+	"platinum_ray": {"name": "Platinum Ray", "price": 0, "min_tier": 4},
 }
 var owned_mail_patterns: Array = [] # bought ones only; free ones are implied
 var mail_pattern := "default" # the design the player has chosen
@@ -371,11 +379,30 @@ func buy_food_bag() -> bool:
 
 
 func owns_mail_pattern(id: String) -> bool:
-	return id in MAIL_PATTERNS and (int(MAIL_PATTERNS[id].price) == 0 or id in owned_mail_patterns)
+	if not id in MAIL_PATTERNS:
+		return false
+	if id in owned_mail_patterns:
+		return true
+	return int(MAIL_PATTERNS[id].price) == 0 and mail_pattern_min_tier(id) == 0
+
+
+## The supporter tier a design needs (0 for everyone).
+func mail_pattern_min_tier(id: String) -> int:
+	return int(MAIL_PATTERNS.get(id, {}).get("min_tier", 0))
+
+
+## Whether the player's current tier lets them get a design.
+func can_get_mail_pattern(id: String) -> bool:
+	return Account.supporter_tier >= mail_pattern_min_tier(id)
+
+
+## Designs whose image exists in this build.
+func mail_pattern_available(id: String) -> bool:
+	return ResourceLoader.exists(MAIL_PATTERN_PATH % id)
 
 
 func buy_mail_pattern(id: String) -> bool:
-	if not id in MAIL_PATTERNS or owns_mail_pattern(id):
+	if not id in MAIL_PATTERNS or owns_mail_pattern(id) or not can_get_mail_pattern(id):
 		return false
 	if not spend_kitcoins(int(MAIL_PATTERNS[id].price)):
 		return false

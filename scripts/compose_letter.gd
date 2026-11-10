@@ -117,10 +117,32 @@ func _build_contents(box: VBoxContainer) -> void:
 
 	_body_edit = TextEdit.new()
 	_body_edit.placeholder_text = "Write your letter here..."
-	_body_edit.custom_minimum_size = Vector2(0, 220)
+	_body_edit.custom_minimum_size = Vector2(0, 170)
 	_body_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	_body_edit.text_changed.connect(_on_body_changed)
 	box.add_child(_body_edit)
+
+	# The design this letter will be sent on (chosen in the office PC's store).
+	var design := HBoxContainer.new()
+	design.add_theme_constant_override("separation", 12)
+	var design_label := Label.new()
+	design_label.text = "Design:"
+	design_label.custom_minimum_size = Vector2(90, 0)
+	design_label.add_theme_font_size_override("font_size", 18)
+	design.add_child(design_label)
+	var preview := TextureRect.new()
+	preview.texture = Global.mail_pattern_texture()
+	preview.custom_minimum_size = Vector2(96, 54)
+	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	design.add_child(preview)
+	var design_name := Label.new()
+	var pattern_name: String = Global.MAIL_PATTERNS.get(Global.mail_pattern, {}).get("name", "Classic")
+	design_name.text = "%s  (change it in the office PC's store)" % pattern_name
+	design_name.add_theme_color_override("font_color", COLOR_HINT)
+	design_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	design.add_child(design_name)
+	box.add_child(design)
 
 	_count_label = Label.new()
 	_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
