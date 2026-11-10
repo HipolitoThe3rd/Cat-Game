@@ -1,7 +1,13 @@
-## The office: where the player logs in to their account, for now.
+## The office: the PC (account login and the online store) and the mailbox,
+## where letters wait when Crispy is not in the mood to deliver them himself.
 extends Node2D
 
-const BACKGROUND := Color(0.22745098, 0.39215687, 0.4745098, 1)
+const MAILBOX_READ := preload("res://sprites/mail/mailbox_read.png")
+const MAILBOX_UNREAD := preload("res://sprites/mail/mailbox_unread.png")
+const OfficeComputerScript := preload("res://scripts/office_computer.gd")
+
+@onready var mailbox: TextureButton = $Mailbox
+@onready var pc: TextureButton = $PC
 
 
 func _ready() -> void:
@@ -9,67 +15,70 @@ func _ready() -> void:
 		Input.set_custom_mouse_cursor(Global.smcursor_default)
 	else:
 		Input.set_custom_mouse_cursor(Global.cursor_default)
+	Global.inbox_via_mailbox = false
+	_refresh_mailbox()
+	Global.mail_received.connect(func(_letter): _refresh_mailbox())
 
-	# Placeholder until the office has art of its own.
-	var ui := CanvasLayer.new()
-	add_child(ui)
-	var background := ColorRect.new()
-	background.color = BACKGROUND
-	background.set_anchors_preset(Control.PRESET_FULL_RECT)
-	ui.add_child(background)
-	var back := Button.new()
-	back.text = "Back"
-	back.add_theme_font_size_override("font_size", 22)
-	back.position = Vector2(20, 20)
-	back.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/hub.tscn"))
-	ui.add_child(back)
 
-	add_child(AccountPanel.new())
+## The mailbox shows a letter in it while there is unread mail. Its sprite
+## covers the whole screen, so only its visible pixels take clicks.
+func _refresh_mailbox() -> void:
+	var texture: Texture2D = MAILBOX_UNREAD if Global.unread_mail_count() > 0 else MAILBOX_READ
+	mailbox.texture_normal = texture
+	var mask := BitMap.new()
+	mask.create_from_image_alpha(texture.get_image())
+	mailbox.texture_click_mask = mask
+
+
+func _open_computer() -> void:
+	add_child(OfficeComputerScript.new())
+
 
 ## SIGNALS
 # mailbox signals
 func _on_mailbox_button_down() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_mailbox_button_up() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_mailbox_pressed() -> void:
-	pass # Replace with function body.
+	Global.inbox_via_mailbox = true
+	get_tree().change_scene_to_file("res://scenes/inbox.tscn")
 
-func _on_mailbox_toggled(toggled_on: bool) -> void:
-	pass # Replace with function body.
+func _on_mailbox_toggled(_toggled_on: bool) -> void:
+	pass
 
 func _on_mailbox_mouse_entered() -> void:
-	pass # Replace with function body.	
+	mailbox.modulate = Color(1.15, 1.15, 1.15)
 
 func _on_mailbox_mouse_exited() -> void:
-	pass # Replace with function body.
+	mailbox.modulate = Color.WHITE
 
 # office pc signals
 func _on_pc_button_down() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_pc_button_up() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_pc_pressed() -> void:
-	pass # Replace with function body.
+	_open_computer()
 
-func _on_pc_toggled(toggled_on: bool) -> void:
-	pass # Replace with function body.
+func _on_pc_toggled(_toggled_on: bool) -> void:
+	pass
 
 func _on_pc_focus_entered() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_pc_focus_exited() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_pc_mouse_entered() -> void:
-	pass # Replace with function body.
+	pass
 
 func _on_pc_mouse_exited() -> void:
-	pass # Replace with function body.
+	pass
 
 # back button signals
 func _on_back_button_button_down() -> void:

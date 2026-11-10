@@ -32,6 +32,13 @@ func _ready() -> void:
 	letters = Global.sorted_mail()
 	Global.mark_mail_delivered()
 
+	# Fetched from the office mailbox: no Crispy, straight to the letters.
+	if Global.inbox_via_mailbox:
+		$Cat/AnimationPlayer.stop()
+		$Cat/SFXMail.stop()
+		$Cat.visible = false
+		_show_mail()
+
 ## CUSTOM FUNCTIONS
 func show_letter(index: int) -> void:
 	if letters.is_empty():
@@ -127,16 +134,24 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	match anim_name:
 		"mail":
 			# enable back button and show the mail after cat's mail animation plays
-			back_button.disabled = false
-			back_button.visible = true
-			mail_panel.visible = true
-			show_letter(0)
+			_show_mail()
 		_:
 			pass
 
 
+func _show_mail() -> void:
+	back_button.disabled = false
+	back_button.visible = true
+	mail_panel.visible = true
+	show_letter(0)
+
+
 func _on_back_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/hub.tscn")
+	if Global.inbox_via_mailbox:
+		Global.inbox_via_mailbox = false
+		get_tree().change_scene_to_file("res://scenes/office.tscn")
+	else:
+		get_tree().change_scene_to_file("res://scenes/hub.tscn")
 
 func _on_button_prev_pressed() -> void:
 	show_letter(current - 1)

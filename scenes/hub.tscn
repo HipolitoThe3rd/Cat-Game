@@ -331,7 +331,6 @@ offset_left = 726.0
 offset_top = 240.0
 offset_right = 871.0
 offset_bottom = 496.0
-disabled = true
 texture_normal = ExtResource("9_2hkft")
 texture_hover = ExtResource("4_lcd1r")
 
@@ -574,6 +573,8 @@ scale = Vector2(0.85, 0.85)
 [connection signal="pressed" from="HallwayStart/Doors/Door3" to="." method="_on_door_3_pressed"]
 [connection signal="pressed" from="HallwayStart/Doors/Door4" to="." method="_on_door_4_pressed"]
 [connection signal="pressed" from="HallwayStart/Doors/Door5" to="." method="_on_door_5_pressed"]
+[connection signal="pressed" from="HallwayLeft1/Doors/DoorOffice" to="." method="_on_door_office_pressed"]
+[connection signal="pressed" from="HallwayLeft1/Doors/DoorOptions" to="." method="_on_door_options_pressed"]
 [connection signal="input_event" from="Cat" to="." method="_on_cat_input_event"]
 [connection signal="mouse_entered" from="Cat" to="." method="_on_cat_mouse_entered"]
 [connection signal="mouse_entered" from="Cat" to="Cat" method="_on_mouse_entered"]

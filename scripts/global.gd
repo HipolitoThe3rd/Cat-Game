@@ -79,6 +79,32 @@ var playroom_difficulty: float = 0.15
 # a paycheck with Kitcoins is earned every week.
 var kitcoins: int = 0
 
+# Office PC store -------------------------------------------------------------
+# Food bag: while one lasts, Crispy feeds himself and hunger never drops below
+# FOOD_BAG_MIN_HUNGER. Buying another while one is active adds another week.
+const FOOD_BAG_PRICE := 40
+const FOOD_BAG_SECONDS := 7 * 24 * 3600.0
+const FOOD_BAG_MIN_HUNGER := 75.0
+var food_bag_until_unix := 0.0 # unix time the current food bag runs out
+
+# Letter designs, from res://backgrounds/Mail/mbg_<id>.jpg. Price 0 means every
+# player has it from the start.
+const MAIL_PATTERN_PATH := "res://backgrounds/Mail/mbg_%s.jpg"
+const MAIL_PATTERNS := {
+	"default": {"name": "Classic", "price": 0},
+	"inverse": {"name": "Classic Inverse", "price": 0},
+	"crispy": {"name": "Crispy", "price": 0},
+	"crispy_inv": {"name": "Crispy Inverse", "price": 0},
+	"blue": {"name": "Blue", "price": 75},
+	"green": {"name": "Green", "price": 75},
+	"red": {"name": "Red", "price": 75},
+	"mintyocean": {"name": "Minty Ocean", "price": 120},
+	"strawberry": {"name": "Strawberry", "price": 120},
+	"stargrazer": {"name": "Stargrazer", "price": 120},
+}
+var owned_mail_patterns: Array = [] # bought ones only; free ones are implied
+var mail_pattern := "default" # the design the player has chosen
+
 # Mail / paycheck system ------------------------------------------------------
 # Crispy's anonymous owner pays out once per real-world Friday (local time):
 # base pay plus a bonus scaled by the cat's average mood since the last payday.
@@ -109,6 +135,22 @@ var mood_weighted_sum := 0.0
 # Rooms (a hub badge, say) can listen for this to react to new mail.
 signal mail_received(letter: Dictionary)
 
+# Crispy only brings mail to you himself when he is in a good mood. Otherwise
+# it waits in the office mailbox until you go and get it.
+const MAIL_DELIVERY_MIN_MOOD := 75
+
+# Set by the office mailbox so the inbox skips Crispy's delivery and returns
+# to the office. Not saved.
+var inbox_via_mailbox := false
+
+# Which hallway section the hub was showing, so coming back out of a room
+# lands you in front of the same doors. Not saved.
+var hub_section := "HallwayStart"
+# Where Crispy is in the hallway. He follows you between sections unless his
+# mood is CAT_FOLLOW_MAX_GRUMPY_MOOD or lower, when he stays where he is. Not saved.
+const CAT_FOLLOW_MAX_GRUMPY_MOOD := 25
+var hub_cat_section := "HallwayStart"
+
 # Which skin the Cat has active, which affects his coloring
 # CRISPY is the default skin
 enum skins { CRISPY, COLTRANE }
@@ -125,6 +167,15 @@ const SKIN_PREFIXES := {
 	skins.CRISPY: "crispy",
 	skins.COLTRANE: "Coltrane",
 }
+# Window/taskbar icon per skin in downloaded builds; skins not listed use the
+# default. These .ico files are not imported resources, so export_presets.cfg
+# includes "*.ico" on the desktop presets to ship them.
+const DEFAULT_WINDOW_ICON := "res://sprites/cat_icon.ico"
+const SKIN_WINDOW_ICONS := {
+	skins.COLTRANE: "res://sprites/skins/Coltrane/Coltrane_icon.ico",
+}
+var _window_icon_shown := ""
+var _icon_cache := {}
 
 # Save system ---------------------------------------------------------------
 # The save for playing without an account. A logged-in player gets a separate
@@ -190,6 +241,7 @@ func _ready() -> void:
 	load_game()
 	_start_mail_if_new()
 	check_payday()
+	_update_window_icon()
 
 	# Reskin every cat sprite as it is spawned, in whatever room it lives in.
 	get_tree().node_added.connect(_apply_skin_to_node)
@@ -218,6 +270,8 @@ func _input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	_update_touch_cursor()
+	if food_bag_active():
+		hunger = maxf(hunger, FOOD_BAG_MIN_HUNGER)
 	_track_mood(mood, delta)
 
 	# Autosave on a timer rather than only on quit. A browser tab can be closed
@@ -286,6 +340,62 @@ func feed_cat(hunger_amount:int = 30) -> void:
 
 
 ## ---------------------------------------------------------------------------
+## Store
+## ---------------------------------------------------------------------------
+
+## Takes Kitcoins if the player has enough. Returns whether it did.
+func spend_kitcoins(amount: int) -> bool:
+	if amount < 0 or kitcoins < amount:
+		return false
+	kitcoins -= amount
+	return true
+
+
+func food_bag_active() -> bool:
+	return Time.get_unix_time_from_system() < food_bag_until_unix
+
+
+func food_bag_seconds_left() -> float:
+	return maxf(0.0, food_bag_until_unix - Time.get_unix_time_from_system())
+
+
+## Buys a food bag; it starts working straight away. Returns whether it worked.
+func buy_food_bag() -> bool:
+	if not spend_kitcoins(FOOD_BAG_PRICE):
+		return false
+	var start := maxf(food_bag_until_unix, Time.get_unix_time_from_system())
+	food_bag_until_unix = start + FOOD_BAG_SECONDS
+	hunger = maxf(hunger, FOOD_BAG_MIN_HUNGER)
+	save_game()
+	return true
+
+
+func owns_mail_pattern(id: String) -> bool:
+	return id in MAIL_PATTERNS and (int(MAIL_PATTERNS[id].price) == 0 or id in owned_mail_patterns)
+
+
+func buy_mail_pattern(id: String) -> bool:
+	if not id in MAIL_PATTERNS or owns_mail_pattern(id):
+		return false
+	if not spend_kitcoins(int(MAIL_PATTERNS[id].price)):
+		return false
+	owned_mail_patterns.append(id)
+	save_game()
+	return true
+
+
+func set_mail_pattern(id: String) -> void:
+	if owns_mail_pattern(id):
+		mail_pattern = id
+		save_game()
+
+
+func mail_pattern_texture(id: String = mail_pattern) -> Texture2D:
+	var path := MAIL_PATTERN_PATH % id
+	return load(path) if ResourceLoader.exists(path) else null
+
+
+## ---------------------------------------------------------------------------
 ## Skins
 ## ---------------------------------------------------------------------------
 
@@ -325,7 +435,85 @@ func set_skin(new_skin: skins) -> void:
 	skin = new_skin
 	print("Cat's skin changed to %s" % SKIN_PREFIXES[skin])
 	_apply_skin_recursive(get_tree().root)
+	_update_window_icon()
 	save_game()
+
+
+## Shows the active skin's icon on the window and taskbar. Desktop builds only:
+## the browser tab and phone home screen icons cannot change at runtime.
+func _update_window_icon() -> void:
+	if OS.has_feature("web") or OS.has_feature("mobile") or DisplayServer.get_name() == "headless":
+		return
+	var path: String = SKIN_WINDOW_ICONS.get(skin, DEFAULT_WINDOW_ICON)
+	if path == _window_icon_shown:
+		return
+	if not _icon_cache.has(path):
+		_icon_cache[path] = load_ico(path)
+	var image: Image = _icon_cache[path]
+	if image == null:
+		push_warning("Cat Game: could not load window icon %s" % path)
+		return
+	DisplayServer.set_icon(image)
+	_window_icon_shown = path
+
+
+## Reads the largest image out of a Windows .ico file. Handles both kinds of
+## entry: embedded PNG, and 32-bit BMP (what most icon tools write).
+static func load_ico(path: String) -> Image:
+	var data := FileAccess.get_file_as_bytes(path)
+	if data.size() < 6 or data.decode_u16(2) != 1:
+		return null
+	var best_offset := -1
+	var best_size := 0
+	var best_width := 0
+	for i in data.decode_u16(4):
+		var entry := 6 + 16 * i
+		if entry + 16 > data.size():
+			break
+		var width := data[entry] if data[entry] != 0 else 256
+		if width > best_width:
+			best_width = width
+			best_size = data.decode_u32(entry + 8)
+			best_offset = data.decode_u32(entry + 12)
+	if best_offset < 0 or best_offset + best_size > data.size():
+		return null
+	var blob := data.slice(best_offset, best_offset + best_size)
+
+	if blob.size() > 8 and blob[0] == 0x89 and blob[1] == 0x50 and blob[2] == 0x4E and blob[3] == 0x47:
+		var png := Image.new()
+		return png if png.load_png_from_buffer(blob) == OK else null
+
+	# BMP without its file header: BITMAPINFOHEADER, then bottom-up BGRA rows,
+	# then a 1-bit transparency mask. The header height covers both, so halve it.
+	var header := blob.decode_u32(0)
+	var w := blob.decode_s32(4)
+	var h := blob.decode_s32(8) / 2
+	if blob.decode_u16(14) != 32 or w <= 0 or h <= 0 or header + w * h * 4 > blob.size():
+		return null
+	var rgba := PackedByteArray()
+	rgba.resize(w * h * 4)
+	var any_alpha := false
+	for y in h:
+		var src := header + (h - 1 - y) * w * 4
+		var dst := y * w * 4
+		for x in w:
+			var s := src + x * 4
+			var d := dst + x * 4
+			rgba[d] = blob[s + 2]
+			rgba[d + 1] = blob[s + 1]
+			rgba[d + 2] = blob[s]
+			rgba[d + 3] = blob[s + 3]
+			any_alpha = any_alpha or blob[s + 3] != 0
+	# Old-style icons leave alpha empty and rely on the mask instead.
+	if not any_alpha:
+		var mask := header + w * h * 4
+		var stride := ((w + 31) / 32) * 4
+		for y in h:
+			for x in w:
+				var m := mask + (h - 1 - y) * stride + x / 8
+				var hidden := m < blob.size() and (blob[m] >> (7 - x % 8)) & 1 == 1
+				rgba[(y * w + x) * 4 + 3] = 0 if hidden else 255
+	return Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, rgba)
 
 
 ## Returns the active skin's version of a skinned texture. Textures that are not
@@ -435,6 +623,10 @@ func build_save() -> ConfigFile:
 
 	cfg.set_value("wallet", "kitcoins", kitcoins)
 
+	cfg.set_value("store", "food_bag_until_unix", food_bag_until_unix)
+	cfg.set_value("store", "owned_mail_patterns", owned_mail_patterns)
+	cfg.set_value("store", "mail_pattern", mail_pattern)
+
 	cfg.set_value("mail", "letters", mail)
 	cfg.set_value("mail", "next_id", _next_mail_id)
 	cfg.set_value("mail", "last_payday_unix", last_payday_unix)
@@ -492,6 +684,16 @@ func apply_save(cfg: ConfigFile) -> bool:
 
 	kitcoins = maxi(0, int(cfg.get_value("wallet", "kitcoins", kitcoins)))
 
+	food_bag_until_unix = float(cfg.get_value("store", "food_bag_until_unix", food_bag_until_unix))
+	owned_mail_patterns = []
+	var saved_patterns = cfg.get_value("store", "owned_mail_patterns", [])
+	if saved_patterns is Array:
+		for id in saved_patterns:
+			if str(id) in MAIL_PATTERNS and not str(id) in owned_mail_patterns:
+				owned_mail_patterns.append(str(id))
+	var saved_pattern := str(cfg.get_value("store", "mail_pattern", mail_pattern))
+	mail_pattern = saved_pattern if owns_mail_pattern(saved_pattern) else "default"
+
 	var saved_mail = cfg.get_value("mail", "letters", [])
 	mail = saved_mail if saved_mail is Array else []
 	_next_mail_id = int(cfg.get_value("mail", "next_id", _next_mail_id))
@@ -520,6 +722,7 @@ func switch_save(path: String, cfg: ConfigFile = null) -> void:
 	check_payday()
 	save_game()
 	_apply_skin_recursive(get_tree().root)
+	_update_window_icon()
 	if get_tree().current_scene != null:
 		get_tree().reload_current_scene()
 
@@ -544,6 +747,14 @@ func _apply_offline_decay(seconds: float) -> void:
 
 	var hours := minf(seconds / 3600.0, MAX_OFFLINE_HOURS)
 
+	# A food bag kept Crispy fed for part (or all) of the absence; he only got
+	# hungry after it ran out.
+	var left_unix := Time.get_unix_time_from_system() - seconds
+	var fed_seconds := clampf(food_bag_until_unix - left_unix, 0.0, seconds)
+	var hungry_hours := minf((seconds - fed_seconds) / 3600.0, MAX_OFFLINE_HOURS)
+	if fed_seconds > 0.0:
+		hunger = maxf(hunger, FOOD_BAG_MIN_HUNGER)
+
 	var old_hunger: float = hunger
 	var old_cleanliness: float = cleanliness
 	var old_entertainment: float = entertainment
@@ -551,7 +762,7 @@ func _apply_offline_decay(seconds: float) -> void:
 	var old_energy: float = energy
 	var old_mood: float = mood
 
-	hunger = clamp(hunger - OFFLINE_HUNGER_PER_HOUR * hours, 0.0, 100.0)
+	hunger = clamp(hunger - OFFLINE_HUNGER_PER_HOUR * hungry_hours, 0.0, 100.0)
 	cleanliness = clamp(cleanliness - OFFLINE_CLEANLINESS_PER_HOUR * hours, 0.0, 100.0)
 	entertainment = clamp(entertainment - OFFLINE_ENTERTAINMENT_PER_HOUR * hours, 0.0, 100.0)
 	affection = clamp(affection - OFFLINE_AFFECTION_PER_HOUR * hours, 0.0, 100.0)
@@ -625,6 +836,9 @@ func _reset_state() -> void:
 	mood_seconds = 0.0
 	mood_weighted_sum = 0.0
 	skin = skins.CRISPY
+	food_bag_until_unix = 0.0
+	owned_mail_patterns = []
+	mail_pattern = "default"
 
 
 ## ---------------------------------------------------------------------------
@@ -632,9 +846,12 @@ func _reset_state() -> void:
 ## ---------------------------------------------------------------------------
 
 ## Adds a letter to the inbox and returns it. Anything that delivers mail
-## (paychecks now, other players later) should come through here.
+## (paychecks, other players' letters) should come through here. pattern is the
+## letter's design (a MAIL_PATTERNS id). always_deliver letters are brought by
+## Crispy whatever his mood.
 func receive_mail(kind: mail_kinds, from: String, subject: String, body: String,
-		kitcoins_attached: int = 0) -> Dictionary:
+		kitcoins_attached: int = 0, pattern: String = "default",
+		always_deliver: bool = false) -> Dictionary:
 	var letter := {
 		"id": _next_mail_id,
 		"kind": kind,
@@ -642,10 +859,12 @@ func receive_mail(kind: mail_kinds, from: String, subject: String, body: String,
 		"to": MAIL_RECIPIENT,
 		"subject": subject,
 		"body": body,
+		"pattern": pattern if pattern in MAIL_PATTERNS else "default",
 		"kitcoins": maxi(0, kitcoins_attached),
 		"sent_unix": Time.get_unix_time_from_system(),
 		"read": false,
 		"delivered": false, # set once the inbox has been visited after it arrived
+		"always_deliver": always_deliver,
 	}
 	_next_mail_id += 1
 	mail.append(letter)
@@ -667,6 +886,28 @@ func open_mail(letter: Dictionary) -> int:
 	var amount := int(letter.get("kitcoins", 0))
 	kitcoins += amount
 	return amount
+
+
+## Whether Crispy is happy enough to bring new mail to you himself.
+func crispy_delivers_mail() -> bool:
+	return mood >= MAIL_DELIVERY_MIN_MOOD
+
+
+## Whether Crispy should bring the player their mail right now: there is new
+## mail, and he is in a good mood or one of the letters must always be delivered
+## (the very first letter, which explains the game).
+func crispy_has_mail_to_deliver() -> bool:
+	var waiting := mail.filter(func(l): return not l.get("delivered", l.get("read", false)))
+	if waiting.is_empty():
+		return false
+	return crispy_delivers_mail() or waiting.any(func(l): return l.get("always_deliver", false))
+
+
+## A letter's design, for showing it. Letters from before designs existed, or
+## with one this version does not know, use the default.
+func letter_pattern(letter: Dictionary) -> String:
+	var pattern := str(letter.get("pattern", "default"))
+	return pattern if pattern in MAIL_PATTERNS else "default"
 
 
 func unread_mail_count() -> int:
@@ -749,7 +990,8 @@ func _start_mail_if_new() -> void:
 		("You came. Thank you.\n\n"
 		+ "Please take care of Crispy. Keep him fed, clean and happy.\n\n"
 		+ "I will send your pay here every Friday. The happier he is, "
-		+ "the more you will get."))
+		+ "the more you will get."),
+		0, "default", true)
 
 
 ## Unix time (UTC) of the most recent local midnight that started a payday,

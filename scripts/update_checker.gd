@@ -25,6 +25,8 @@ var download_url := DEFAULT_URL
 func _ready() -> void:
 	if OS.has_feature("web") or OS.has_feature("editor") or current_version.is_empty():
 		return
+	if not Settings.check_updates: # turned off in the options room
+		return
 	check()
 
 

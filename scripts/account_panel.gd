@@ -18,6 +18,10 @@ var _main_button: Button
 var _second_button: Button
 var _avatar_url_shown := ""
 
+## Set before adding the panel to give it a Close button that calls this
+## (the office PC uses it to go back to its home screen).
+var on_close: Callable
+
 
 func _ready() -> void:
 	var center := CenterContainer.new()
@@ -68,6 +72,12 @@ func _ready() -> void:
 	_second_button.add_theme_font_size_override("font_size", 22)
 	_second_button.pressed.connect(_on_second_pressed)
 	buttons.add_child(_second_button)
+	if on_close.is_valid():
+		var close := Button.new()
+		close.text = "Close"
+		close.add_theme_font_size_override("font_size", 22)
+		close.pressed.connect(on_close)
+		buttons.add_child(close)
 
 	Account.changed.connect(_refresh)
 	MailClient.registered.connect(_refresh)

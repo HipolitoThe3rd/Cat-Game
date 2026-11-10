@@ -16,6 +16,17 @@ name: Release
 on:
   push:
     branches: [main]
+    # Pushes that only touch these never reach the game, so skip the release.
+    # (Run it by hand from the Actions tab after changing this workflow.)
+    paths-ignore:
+      - "**.md"
+      - "**/.gitignore"
+      - ".gitattributes"
+      - ".github/**"
+      - "references/**"
+      - "builds/**"
+      - "*.code-workspace"
+      - "LICENSE*"
   workflow_dispatch:
 
 # Let releases finish in order rather than racing each other to itch.
@@ -28,6 +39,7 @@ env:
   ITCH_TARGET: steelfishstudios/crispy-the-cat
   ITCH_URL: https://steelfishstudios.itch.io/crispy-the-cat
   WEBSITE_REPO: adm-steel-fish/adm-steel-fish.github.io
+  WEBSITE_GAME_DIR: games/crispy-the-cat
   VERSION_JSON: games/crispy-the-cat/version.json
 
 jobs:
@@ -119,6 +131,36 @@ jobs:
           path: website
           sparse-checkout: games/crispy-the-cat
 
+      # The website's index.html is hand-edited (the "Play more games!" bar and
+      # canvas sizing), so it is kept. Only the engine files are replaced, and
+      # the file sizes in its GODOT_CONFIG line are updated for the loading bar.
+      - name: Update web build on website
+        working-directory: website
+        run: |
+          src="$RUNNER_TEMP/out/web"
+          dest="$WEBSITE_GAME_DIR"
+          for f in "$src"/*; do
+            [ "$(basename "$f")" = index.html ] || cp "$f" "$dest/"
+          done
+          python3 - "$src/index.html" "$dest/index.html" <<'EOF'
+          import json, re, sys
+          new_html = open(sys.argv[1], encoding="utf-8").read()
+          site_path = sys.argv[2]
+          site_html = open(site_path, encoding="utf-8").read()
+          pattern = re.compile(r"const GODOT_CONFIG = (\{.*?\});")
+          new_config = json.loads(pattern.search(new_html).group(1))
+          match = pattern.search(site_html)
+          if match is None:
+              sys.exit("No GODOT_CONFIG line in the website's index.html")
+          site_config = json.loads(match.group(1))
+          for key in ("fileSizes", "executable", "gdextensionLibs"):
+              site_config[key] = new_config[key]
+          line = "const GODOT_CONFIG = %s;" % json.dumps(site_config, separators=(",", ":"))
+          site_html = site_html[:match.start()] + line + site_html[match.end():]
+          open(site_path, "w", encoding="utf-8", newline="").write(site_html)
+          print(line)
+          EOF
+
       - name: Publish version.json
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -129,7 +171,7 @@ jobs:
           cat "$VERSION_JSON"
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add "$VERSION_JSON"
+          git add "$WEBSITE_GAME_DIR"
           git commit -m "Crispy the Cat $VERSION"
           # Someone may have pushed to the website meanwhile; retry on top of it.
           for attempt in 1 2 3; do

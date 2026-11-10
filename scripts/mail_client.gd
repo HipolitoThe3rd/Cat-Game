@@ -82,7 +82,7 @@ func send(to_code: String, subject: String, body: String) -> String:
 	if not is_registered():
 		return "Mail isn't set up yet. Check your internet connection."
 	var res := await _request(HTTPClient.METHOD_POST, "send",
-		{"to": to_code, "subject": subject, "body": body})
+		{"to": to_code, "subject": subject, "body": body, "pattern": Global.mail_pattern})
 	return "" if res.ok else res.error
 
 
@@ -185,7 +185,7 @@ func _fetch_inbox() -> void:
 			continue
 		var letter := Global.receive_mail(Global.mail_kinds.PLAYER,
 			str(item.get("from_name", "")), str(item.get("subject", "")),
-			str(item.get("body", "")))
+			str(item.get("body", "")), 0, str(item.get("pattern", "default")))
 		letter["server_id"] = server_id
 		letter["from_code"] = str(item.get("from_code", ""))
 		letter["sent_unix"] = float(item.get("sent_unix", letter["sent_unix"]))
