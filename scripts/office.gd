@@ -25,3 +25,52 @@ func _ready() -> void:
 	ui.add_child(back)
 
 	add_child(AccountPanel.new())
+
+## SIGNALS
+# mailbox signals
+func _on_mailbox_button_down() -> void:
+	pass # Replace with function body.
+
+func _on_mailbox_button_up() -> void:
+	pass # Replace with function body.
+
+func _on_mailbox_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_mailbox_toggled(toggled_on: bool) -> void:
+	pass # Replace with function body.
+
+func _on_mailbox_mouse_entered() -> void:
+	pass # Replace with function body.	
+
+func _on_mailbox_mouse_exited() -> void:
+	pass # Replace with function body.
+
+# office pc signals
+func _on_pc_button_down() -> void:
+	pass # Replace with function body.
+
+func _on_pc_button_up() -> void:
+	pass # Replace with function body.
+
+func _on_pc_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_pc_toggled(toggled_on: bool) -> void:
+	pass # Replace with function body.
+
+func _on_pc_focus_entered() -> void:
+	pass # Replace with function body.
+
+func _on_pc_focus_exited() -> void:
+	pass # Replace with function body.
+
+func _on_pc_mouse_entered() -> void:
+	pass # Replace with function body.
+
+func _on_pc_mouse_exited() -> void:
+	pass # Replace with function body.
+
+# back button signals
+func _on_back_button_button_down() -> void:
+	get_tree().change_scene_to_file("res://scenes/hub.tscn")

@@ -1,6 +1,59 @@
-[gd_scene load_steps=2 format=3 uid="uid://wn3gbtlmrtko"]
+[gd_scene load_steps=10 format=3 uid="uid://wn3gbtlmrtko"]
 
-[ext_resource type="Script" path="res://scripts/office.gd" id="1_office"]
+[ext_resource type="Script" uid="uid://bsa0cr3lsqfl7" path="res://scripts/office.gd" id="1_office"]
+[ext_resource type="Texture2D" uid="uid://dt4126ofgy34o" path="res://backgrounds/Other Rooms/Office.jpg" id="2_hub07"]
+[ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="3_2knxt"]
+[ext_resource type="Texture2D" uid="uid://chh237kv5fgim" path="res://sprites/ui/IconBackPressed.png" id="4_fmddn"]
+[ext_resource type="Texture2D" uid="uid://04cvwqakiqcc" path="res://sprites/office/officepc.png" id="4_gdafm"]
+[ext_resource type="Texture2D" uid="uid://dv7ykceyk2ka1" path="res://sprites/ui/IconBackHover.png" id="5_gdafm"]
+[ext_resource type="Texture2D" uid="uid://clavslyc7deoa" path="res://sprites/office/officepc_pressed.png" id="5_in4ui"]
+[ext_resource type="Texture2D" uid="uid://drkoeg7k6fxui" path="res://sprites/office/officepc_hover.png" id="6_6hbky"]
+[ext_resource type="Texture2D" uid="uid://bmoyetbymlyrj" path="res://sprites/mail/mailbox_read.png" id="6_in4ui"]
 
 [node name="Office" type="Node2D"]
 script = ExtResource("1_office")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_hub07")
+
+[node name="Mailbox" type="TextureButton" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+texture_normal = ExtResource("6_in4ui")
+
+[node name="PC" type="TextureButton" parent="."]
+offset_left = 19.0
+offset_top = 366.0
+offset_right = 352.0
+offset_bottom = 632.0
+texture_normal = ExtResource("4_gdafm")
+texture_pressed = ExtResource("5_in4ui")
+texture_hover = ExtResource("6_6hbky")
+
+[node name="BackButton" type="TextureButton" parent="."]
+offset_left = 970.0
+offset_top = 18.0
+offset_right = 1281.0
+offset_bottom = 281.0
+scale = Vector2(0.5, 0.5)
+texture_normal = ExtResource("3_2knxt")
+texture_pressed = ExtResource("4_fmddn")
+texture_hover = ExtResource("5_gdafm")
+
+[connection signal="button_down" from="Mailbox" to="." method="_on_mailbox_button_down"]
+[connection signal="button_up" from="Mailbox" to="." method="_on_mailbox_button_up"]
+[connection signal="mouse_entered" from="Mailbox" to="." method="_on_mailbox_mouse_entered"]
+[connection signal="mouse_exited" from="Mailbox" to="." method="_on_mailbox_mouse_exited"]
+[connection signal="pressed" from="Mailbox" to="." method="_on_mailbox_pressed"]
+[connection signal="toggled" from="Mailbox" to="." method="_on_mailbox_toggled"]
+[connection signal="button_down" from="PC" to="." method="_on_pc_button_down"]
+[connection signal="button_up" from="PC" to="." method="_on_pc_button_up"]
+[connection signal="focus_entered" from="PC" to="." method="_on_pc_focus_entered"]
+[connection signal="focus_exited" from="PC" to="." method="_on_pc_focus_exited"]
+[connection signal="mouse_entered" from="PC" to="." method="_on_pc_mouse_entered"]
+[connection signal="mouse_exited" from="PC" to="." method="_on_pc_mouse_exited"]
+[connection signal="pressed" from="PC" to="." method="_on_pc_pressed"]
+[connection signal="toggled" from="PC" to="." method="_on_pc_toggled"]
+[connection signal="button_down" from="BackButton" to="." method="_on_back_button_button_down"]

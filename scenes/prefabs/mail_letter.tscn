@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqsihu6wux7m7"]
+
+[ext_resource type="Script" uid="uid://cssecpsrup877" path="res://scripts/mail_letter.gd" id="1_op2jt"]
+[ext_resource type="Texture2D" uid="uid://c7dp44qq8s578" path="res://backgrounds/Mail/mbg_default.jpg" id="2_q7b4q"]
+
+[node name="MailLetter" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_op2jt")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(1.8, 1.8)
+texture = ExtResource("2_q7b4q")
+
+[node name="PanelBody" type="Panel" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 40.0
+offset_top = 51.0
+offset_right = 80.0
+offset_bottom = 91.0
+scale = Vector2(26.758692, 10.291162)
+
+[node name="VSBBody" type="VScrollBar" parent="PanelBody"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -4.3750153
+offset_right = 3.6249847
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.5, 1)
+
+[node name="PanelSender" type="Panel" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = 482.00003
+offset_top = 507.0
+offset_right = 522.0
+offset_bottom = 547.0
+scale = Vector2(15.280797, 1.7134386)

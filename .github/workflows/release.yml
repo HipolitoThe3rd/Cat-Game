@@ -1,0 +1,139 @@
+# Builds Crispy the Cat on every push to main, uploads it to itch.io with
+# butler, then publishes version.json on steelfishstudios.com so downloaded
+# copies of the game know an update is out (see scripts/update_checker.gd).
+#
+# Required repository secrets (Settings > Secrets and variables > Actions):
+#   BUTLER_API_KEY  - from https://itch.io/user/settings/api-keys
+#   WEBSITE_TOKEN   - fine-grained GitHub token with "Contents: Read and write"
+#                     on adm-steel-fish/adm-steel-fish.github.io
+#
+# Version numbers: application/config/version in project.godot is the base
+# (e.g. "1.0"); each run appends the run number, giving 1.0.1, 1.0.2, ...
+# Bump the base by hand for a bigger release.
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Let releases finish in order rather than racing each other to itch.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  GODOT_VERSION: "4.5"
+  ITCH_TARGET: steelfishstudios/crispy-the-cat
+  ITCH_URL: https://steelfishstudios.itch.io/crispy-the-cat
+  WEBSITE_REPO: adm-steel-fish/adm-steel-fish.github.io
+  VERSION_JSON: games/crispy-the-cat/version.json
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stamp version
+        id: version
+        run: |
+          base=$(sed -n 's|^config/version="\(.*\)"$|\1|p' project.godot)
+          version="${base:-1.0}.${GITHUB_RUN_NUMBER}"
+          sed -i "s|^config/version=.*|config/version=\"$version\"|" project.godot
+          grep -q "^config/version=\"$version\"" project.godot
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building version $version"
+
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot-bin
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-stable
+
+      - name: Install Godot and export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          url="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o godot.zip "$url/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mkdir -p ~/godot-bin
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" ~/godot-bin/godot
+          curl -fsSL -o templates.tpz "$url/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q templates.tpz
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          mv templates/* "$dest/"
+
+      - name: Import project
+        run: |
+          echo ~/godot-bin >> "$GITHUB_PATH"
+          ~/godot-bin/godot --headless --import
+
+      - name: Export builds
+        run: |
+          out="$RUNNER_TEMP/out"
+          mkdir -p "$out/windows" "$out/linux" "$out/mac" "$out/web"
+          godot --headless --export-release "Windows Desktop" "$out/windows/Crispy the Cat.exe"
+          godot --headless --export-release "Linux" "$out/linux/Crispy the Cat.x86_64"
+          godot --headless --export-release "macOS" "$out/mac/Crispy the Cat.zip"
+          godot --headless --export-release "Web" "$out/web/index.html"
+          # Godot sometimes reports success without writing anything.
+          for f in "windows/Crispy the Cat.exe" "linux/Crispy the Cat.x86_64" \
+                   "mac/Crispy the Cat.zip" "web/index.html"; do
+            test -s "$out/$f" || { echo "::error::Export missing: $f"; exit 1; }
+          done
+          ls -lR "$out"
+
+      - name: Install butler
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          mkdir -p butler && unzip -q butler.zip -d butler
+          chmod +x butler/butler
+          echo "$RUNNER_TEMP/butler" >> "$GITHUB_PATH"
+
+      - name: Push to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          butler -V
+          out="$RUNNER_TEMP/out"
+          butler push "$out/windows"               "$ITCH_TARGET:windows" --userversion "$VERSION"
+          butler push "$out/linux"                 "$ITCH_TARGET:linux"   --userversion "$VERSION"
+          butler push "$out/mac/Crispy the Cat.zip" "$ITCH_TARGET:mac"    --userversion "$VERSION"
+          butler push "$out/web"                   "$ITCH_TARGET:html5"   --userversion "$VERSION"
+
+      # Only announce the update once every build is actually on itch.
+      - name: Check out website
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.WEBSITE_REPO }}
+          token: ${{ secrets.WEBSITE_TOKEN }}
+          path: website
+          sparse-checkout: games/crispy-the-cat
+
+      - name: Publish version.json
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        working-directory: website
+        run: |
+          jq -n --arg version "$VERSION" --arg url "$ITCH_URL" \
+            '{version: $version, url: $url, released: (now | todate)}' > "$VERSION_JSON"
+          cat "$VERSION_JSON"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add "$VERSION_JSON"
+          git commit -m "Crispy the Cat $VERSION"
+          # Someone may have pushed to the website meanwhile; retry on top of it.
+          for attempt in 1 2 3; do
+            git push && exit 0
+            git pull --rebase
+          done
+          exit 1
