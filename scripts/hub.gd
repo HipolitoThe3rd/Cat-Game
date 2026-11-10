@@ -28,7 +28,6 @@ const EDGE_WIDTH := 40.0 # px at each side of the screen that switch sections
 const SLIDE_TIME := 0.35
 const SWIPE_COMMIT := 0.25 # fraction of the screen a swipe must cover to switch
 const SWIPE_FLICK_SPEED := 900.0 # px/s; a quick flick switches even if short
-const EDGE_TINT := Color(0.55, 0.85, 1.0, 0.75) # edge cursor: tinted and see-through
 
 var _home_x := {} # section name -> its x while HallwayStart is on screen
 var _section_width := 1152.0
@@ -41,7 +40,7 @@ var _swipe_side := 0
 var _swipe_start := Vector2.ZERO
 var _swipe_velocity := 0.0
 var _edge_glow := {} # side -> Control shown while that edge is hovered/swiped
-var _edge_cursors := {} # default cursor texture -> its tinted edge version
+var _edge_cursors := {} # shift cursor texture -> its left-pointing (flipped) version
 var _delivery_check := 0.0
 @onready var _cat: CharacterBody2D = $Cat
 var _cat_section := "HallwayStart" # the section Crispy is in
@@ -369,11 +368,20 @@ func _update_edge_hover() -> void:
 		if get_viewport().get_visible_rect().has_point(mouse):
 			side = _edge_at(mouse)
 	if side == _hover_side:
+		
 		return
 	_hover_side = side
 	_show_edge_glow(side)
-	var normal: Texture2D = Global.smcursor_default if Global.web_version else Global.cursor_default
-	Input.set_custom_mouse_cursor(_edge_cursor(normal) if side != 0 else normal)
+	if side == 0:
+		Input.set_custom_mouse_cursor(Global.smcursor_default if Global.web_version else Global.cursor_default)
+		return
+	var shift: Texture2D = Global.smcursor_shift if Global.web_version else Global.cursor_shift
+	if side == -1:
+		Input.set_custom_mouse_cursor(_edge_cursor(shift))
+	else:
+		# Anchor the right edge's cursor by its top-right corner so the image
+		# hangs to the left of the pointer and stays inside the window.
+		Input.set_custom_mouse_cursor(shift, Input.CURSOR_ARROW, Vector2(shift.get_width() - 1, 0))
 
 
 func _show_edge_glow(side: int) -> void:
@@ -381,19 +389,15 @@ func _show_edge_glow(side: int) -> void:
 		_edge_glow[s].visible = s == side
 
 
-## The normal cursor, tinted and partly see-through, so it is obvious a click
-## here changes the view rather than pressing whatever is underneath.
-func _edge_cursor(normal: Texture2D) -> Texture2D:
-	if not _edge_cursors.has(normal):
-		var image := normal.get_image()
+## The shift cursor mirrored so it points left, for the left edge.
+func _edge_cursor(shift: Texture2D) -> Texture2D:
+	if not _edge_cursors.has(shift):
+		var image := shift.get_image()
 		if image.is_compressed():
 			image.decompress()
-		image.convert(Image.FORMAT_RGBA8)
-		for y in image.get_height():
-			for x in image.get_width():
-				image.set_pixel(x, y, image.get_pixel(x, y) * EDGE_TINT)
-		_edge_cursors[normal] = ImageTexture.create_from_image(image)
-	return _edge_cursors[normal]
+		image.flip_x()
+		_edge_cursors[shift] = ImageTexture.create_from_image(image)
+	return _edge_cursors[shift]
 
 
 ## A soft glow with an arrow on each edge, shown while it is hovered or swiped.

@@ -5,6 +5,7 @@ extends Node
 
 var cursor_default = load("res://sprites/cursors/cursor_default.png")
 var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
+var cursor_shift = load("res://sprites/cursors/cursor_shift.png")
 var cursor_shower = load("res://sprites/cursors/cursor_shower-head.png")
 var cursor_shower_pour = load("res://sprites/cursors/cursor_shower-head_pressed.png")
 var cursor_scooper = load("res://sprites/cursors/cursor_scooper.png")
@@ -16,6 +17,7 @@ var cursor_secret = load("res://sprites/cursors/cursor_secret.png")
 # small cursors for web version
 var smcursor_default = load("res://sprites/cursors/smcursor_default.png")
 var smcursor_pet = load("res://sprites/cursors/smcursor_pet.png")
+var smcursor_shift = load("res://sprites/cursors/smcursor_shift.png")
 var smcursor_shower = load("res://sprites/cursors/smcursor_shower-head.png")
 var smcursor_shower_pour = load("res://sprites/cursors/smcursor_shower-head_pressed.png")
 var smcursor_scooper = load("res://sprites/cursors/smcursor_scooper.png")
@@ -119,7 +121,9 @@ var mail_pattern := "default" # the design the player has chosen
 const PAYDAY_WEEKDAY := 5 # Time.WEEKDAY_FRIDAY
 const PAYCHECK_BASE_PAY := 50
 const PAYCHECK_MAX_BONUS := 50 # paid in full at an average mood of 100
-const PAYCHECK_SENDER := "Anonymous"
+# The mysterious owner signs every letter they send the same way.
+const OWNER_SENDER := "???"
+const PAYCHECK_SENDER := OWNER_SENDER
 const MAIL_RECIPIENT := "Crispy's Caretaker"
 
 # Oldest letters are dropped past this so the save file stays small.
@@ -723,6 +727,11 @@ func apply_save(cfg: ConfigFile) -> bool:
 
 	var saved_mail = cfg.get_value("mail", "letters", [])
 	mail = saved_mail if saved_mail is Array else []
+	# Paychecks used to be signed "Anonymous"; the owner signs as ??? now.
+	for letter in mail:
+		if letter is Dictionary and int(letter.get("kind", -1)) == mail_kinds.PAYCHECK \
+				and letter.get("from", "") == "Anonymous":
+			letter["from"] = OWNER_SENDER
 	_next_mail_id = int(cfg.get_value("mail", "next_id", _next_mail_id))
 	last_payday_unix = float(cfg.get_value("mail", "last_payday_unix", last_payday_unix))
 	mood_seconds = float(cfg.get_value("mail", "mood_seconds", mood_seconds))
@@ -1013,7 +1022,7 @@ func _start_mail_if_new() -> void:
 	if last_payday_unix > 0.0:
 		return
 	last_payday_unix = _current_payday_start()
-	receive_mail(mail_kinds.LETTER, "???", "Crispy",
+	receive_mail(mail_kinds.LETTER, OWNER_SENDER, "Crispy",
 		("You came. Thank you.\n\n"
 		+ "Please take care of Crispy. Keep him fed, clean and happy.\n\n"
 		+ "I will send your pay here every Friday. The happier he is, "

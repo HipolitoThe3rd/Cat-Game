@@ -27,6 +27,9 @@ var _count_label: Label
 var _status_label: Label
 var _send_button: Button
 var _cancel_button: Button
+var _design_button: TextureButton
+var _design_name: Label
+var _design_picker: PopupPanel
 
 
 ## Pass a friend code and subject to start a reply.
@@ -122,7 +125,8 @@ func _build_contents(box: VBoxContainer) -> void:
 	_body_edit.text_changed.connect(_on_body_changed)
 	box.add_child(_body_edit)
 
-	# The design this letter will be sent on (chosen in the office PC's store).
+	# The design this letter will be sent on. Click the thumbnail to pick another
+	# one you own; new ones come from the office PC's store.
 	var design := HBoxContainer.new()
 	design.add_theme_constant_override("separation", 12)
 	var design_label := Label.new()
@@ -130,19 +134,22 @@ func _build_contents(box: VBoxContainer) -> void:
 	design_label.custom_minimum_size = Vector2(90, 0)
 	design_label.add_theme_font_size_override("font_size", 18)
 	design.add_child(design_label)
-	var preview := TextureRect.new()
-	preview.texture = Global.mail_pattern_texture()
-	preview.custom_minimum_size = Vector2(96, 54)
-	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	design.add_child(preview)
-	var design_name := Label.new()
-	var pattern_name: String = Global.MAIL_PATTERNS.get(Global.mail_pattern, {}).get("name", "Classic")
-	design_name.text = "%s  (change it in the office PC's store)" % pattern_name
-	design_name.add_theme_color_override("font_color", COLOR_HINT)
-	design_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	design.add_child(design_name)
+	_design_button = TextureButton.new()
+	_design_button.custom_minimum_size = Vector2(96, 54)
+	_design_button.ignore_texture_size = true
+	_design_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_design_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_design_button.tooltip_text = "Change design"
+	_design_button.pressed.connect(_open_design_picker)
+	_design_button.mouse_entered.connect(func(): _design_button.modulate = Color(1.2, 1.2, 1.2))
+	_design_button.mouse_exited.connect(func(): _design_button.modulate = Color.WHITE)
+	design.add_child(_design_button)
+	_design_name = Label.new()
+	_design_name.add_theme_color_override("font_color", COLOR_HINT)
+	_design_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	design.add_child(_design_name)
 	box.add_child(design)
+	_show_design()
 
 	_count_label = Label.new()
 	_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -170,6 +177,75 @@ func _build_contents(box: VBoxContainer) -> void:
 	box.add_child(buttons)
 
 	_on_body_changed()
+
+
+func _show_design() -> void:
+	_design_button.texture_normal = Global.mail_pattern_texture()
+	var pattern_name: String = Global.MAIL_PATTERNS.get(Global.mail_pattern, {}).get("name", "Classic")
+	_design_name.text = "%s  (click to change)" % pattern_name
+
+
+## A grid of the designs the player owns; picking one switches to it.
+func _open_design_picker() -> void:
+	if _design_picker != null:
+		_design_picker.queue_free()
+	_design_picker = PopupPanel.new()
+	# Solid like the compose window, so the form underneath doesn't show through.
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.13, 0.2, 0.25)
+	style.border_color = Color(0.35, 0.5, 0.58)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	_design_picker.add_theme_stylebox_override("panel", style)
+	add_child(_design_picker)
+
+	var margin := MarginContainer.new()
+	for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+		margin.add_theme_constant_override(side, 16)
+	_design_picker.add_child(margin)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	margin.add_child(box)
+
+	var title := Label.new()
+	title.text = "Choose a design"
+	title.add_theme_font_size_override("font_size", 24)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 12)
+	box.add_child(grid)
+	for id in Global.MAIL_PATTERNS:
+		if not Global.owns_mail_pattern(id) or not Global.mail_pattern_available(id):
+			continue
+		var option := Button.new()
+		option.icon = Global.mail_pattern_texture(id)
+		option.expand_icon = true
+		option.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		option.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+		option.text = str(Global.MAIL_PATTERNS[id].name)
+		option.custom_minimum_size = Vector2(176, 128)
+		option.toggle_mode = true
+		option.button_pressed = id == Global.mail_pattern
+		option.pressed.connect(_pick_design.bind(id))
+		grid.add_child(option)
+
+	var hint := Label.new()
+	hint.text = "Get more designs in the office PC's store."
+	hint.add_theme_color_override("font_color", COLOR_HINT)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(hint)
+
+	_design_picker.popup_centered()
+
+
+func _pick_design(id: String) -> void:
+	Global.set_mail_pattern(id)
+	_show_design()
+	_design_picker.hide()
 
 
 func _labeled(text: String, field: Control) -> HBoxContainer:
