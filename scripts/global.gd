@@ -1,7 +1,9 @@
 ## Global variables
 extends Node
 
-@onready var web_version = false # whether or not this is the web version
+# Browsers ignore cursor images larger than 128x128, so web builds use the
+# small smcursor_* set. Detected from the export so it can't be left wrong.
+var web_version: bool = OS.has_feature("web")
 
 var cursor_default = load("res://sprites/cursors/cursor_default.png")
 var cursor_pet = load("res://sprites/cursors/cursor_pet.png")
