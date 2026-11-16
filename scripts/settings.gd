@@ -6,7 +6,7 @@ extends Node
 const PATH := "user://settings.cfg"
 
 const DEFAULTS := {
-	"master_volume": 1.0, # 0 to 1
+	"master_volume": 0.5, # 0 to 1
 	"muted": false,
 	"fullscreen": false,
 	"vsync": true,
