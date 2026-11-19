@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cwf1lqhdr7f41"
-path="res://.godot/imported/bladder.png-fb4d0443ddc52f48e9e07200797dd058.ctex"
+uid="uid://ufgbaug4mt2g"
+path="res://.godot/imported/hygiene.png-6e4a9d14d782835d6cc65ec80f03feea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mood_icons/bladder.png"
-dest_files=["res://.godot/imported/bladder.png-fb4d0443ddc52f48e9e07200797dd058.ctex"]
+source_file="res://sprites/mood_and_room_icons/hygiene.png"
+dest_files=["res://.godot/imported/hygiene.png-6e4a9d14d782835d6cc65ec80f03feea.ctex"]
 
 [params]
 

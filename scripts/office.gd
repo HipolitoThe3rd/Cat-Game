@@ -63,6 +63,7 @@ func _on_pc_button_up() -> void:
 	pass
 
 func _on_pc_pressed() -> void:
+	$SFX/PCOn.play()
 	_open_computer()
 
 func _on_pc_toggled(_toggled_on: bool) -> void:

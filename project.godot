@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Cat Game"
+config/name="Crispy the Cat"
 config/version="1.0"
 run/main_scene="uid://cax4rbxu3xl4m"
 config/features=PackedStringArray("4.5", "GL Compatibility")

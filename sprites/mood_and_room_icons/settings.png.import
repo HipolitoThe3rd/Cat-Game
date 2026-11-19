@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ufgbaug4mt2g"
-path="res://.godot/imported/hygiene.png-06ba91a81f8ed54651430341a2bbee3d.ctex"
+uid="uid://dccd74fwr3o6a"
+path="res://.godot/imported/settings.png-5f9a3218829995ff6e4e011f4473adad.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mood_icons/hygiene.png"
-dest_files=["res://.godot/imported/hygiene.png-06ba91a81f8ed54651430341a2bbee3d.ctex"]
+source_file="res://sprites/mood_and_room_icons/settings.png"
+dest_files=["res://.godot/imported/settings.png-5f9a3218829995ff6e4e011f4473adad.ctex"]
 
 [params]
 

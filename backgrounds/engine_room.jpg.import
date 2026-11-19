@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c3ybbv0khnqaj"
-path="res://.godot/imported/hunger.png-55ef04b0d9b9eb7351921ce60abcfdcd.ctex"
+uid="uid://400kqn8vw8a1"
+path="res://.godot/imported/engine_room.jpg-93d60142f0736df28559cc175ea6029a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mood_icons/hunger.png"
-dest_files=["res://.godot/imported/hunger.png-55ef04b0d9b9eb7351921ce60abcfdcd.ctex"]
+source_file="res://backgrounds/engine_room.jpg"
+dest_files=["res://.godot/imported/engine_room.jpg-93d60142f0736df28559cc175ea6029a.ctex"]
 
 [params]
 

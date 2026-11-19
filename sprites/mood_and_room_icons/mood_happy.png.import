@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wdc52mf2vml1"
-path="res://.godot/imported/energy.png-44ffcfa126506d429ff0f3a671572ab7.ctex"
+uid="uid://ckiatqntb8oem"
+path="res://.godot/imported/mood_happy.png-e1f09352afee666fcf58f8203b12c97a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mood_icons/energy.png"
-dest_files=["res://.godot/imported/energy.png-44ffcfa126506d429ff0f3a671572ab7.ctex"]
+source_file="res://sprites/mood_and_room_icons/mood_happy.png"
+dest_files=["res://.godot/imported/mood_happy.png-e1f09352afee666fcf58f8203b12c97a.ctex"]
 
 [params]
 

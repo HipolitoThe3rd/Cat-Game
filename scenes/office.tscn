@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://wn3gbtlmrtko"]
+[gd_scene load_steps=13 format=3 uid="uid://wn3gbtlmrtko"]
 
 [ext_resource type="Script" uid="uid://bsa0cr3lsqfl7" path="res://scripts/office.gd" id="1_office"]
 [ext_resource type="Texture2D" uid="uid://dt4126ofgy34o" path="res://backgrounds/Other Rooms/Office.jpg" id="2_hub07"]
@@ -9,6 +9,9 @@
 [ext_resource type="Texture2D" uid="uid://clavslyc7deoa" path="res://sprites/office/officepc_pressed.png" id="5_in4ui"]
 [ext_resource type="Texture2D" uid="uid://drkoeg7k6fxui" path="res://sprites/office/officepc_hover.png" id="6_6hbky"]
 [ext_resource type="Texture2D" uid="uid://bmoyetbymlyrj" path="res://sprites/mail/mailbox_read.png" id="6_in4ui"]
+[ext_resource type="AudioStream" uid="uid://dh3wpvfyc0niu" path="res://sfx/pc_on.wav" id="10_o23kw"]
+[ext_resource type="AudioStream" uid="uid://c17767pv8nxie" path="res://sfx/pc_off.wav" id="11_wruke"]
+[ext_resource type="AudioStream" uid="uid://p2rsc60d2wl2" path="res://sfx/mouse_click.wav" id="12_ujkv6"]
 
 [node name="Office" type="Node2D"]
 script = ExtResource("1_office")
@@ -24,10 +27,10 @@ offset_bottom = 40.0
 texture_normal = ExtResource("6_in4ui")
 
 [node name="PC" type="TextureButton" parent="."]
-offset_left = 19.0
-offset_top = 366.0
-offset_right = 352.0
-offset_bottom = 632.0
+offset_left = -64.0
+offset_top = 300.0
+offset_right = 436.0
+offset_bottom = 699.0
 texture_normal = ExtResource("4_gdafm")
 texture_pressed = ExtResource("5_in4ui")
 texture_hover = ExtResource("6_6hbky")
@@ -41,6 +44,17 @@ scale = Vector2(0.5, 0.5)
 texture_normal = ExtResource("3_2knxt")
 texture_pressed = ExtResource("4_fmddn")
 texture_hover = ExtResource("5_gdafm")
+
+[node name="SFX" type="Node" parent="."]
+
+[node name="PCOn" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("10_o23kw")
+
+[node name="PCOff" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("11_wruke")
+
+[node name="Click" type="AudioStreamPlayer" parent="SFX"]
+stream = ExtResource("12_ujkv6")
 
 [connection signal="button_down" from="Mailbox" to="." method="_on_mailbox_button_down"]
 [connection signal="button_up" from="Mailbox" to="." method="_on_mailbox_button_up"]

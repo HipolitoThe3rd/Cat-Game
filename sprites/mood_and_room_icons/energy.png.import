@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccnvtv4vje8hf"
-path="res://.godot/imported/love.png-2ba53bead6e9121c035067c70d0aee2f.ctex"
+uid="uid://wdc52mf2vml1"
+path="res://.godot/imported/energy.png-a8121038242b215d0334d52fb2f41a00.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mood_icons/love.png"
-dest_files=["res://.godot/imported/love.png-2ba53bead6e9121c035067c70d0aee2f.ctex"]
+source_file="res://sprites/mood_and_room_icons/energy.png"
+dest_files=["res://.godot/imported/energy.png-a8121038242b215d0334d52fb2f41a00.ctex"]
 
 [params]
 
