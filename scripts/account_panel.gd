@@ -22,6 +22,10 @@ var _avatar_url_shown := ""
 ## (the office PC uses it to go back to its home screen).
 var on_close: Callable
 
+## Set before adding the panel to have every button call this when pressed
+## (the office PC uses it for its click sound).
+var on_click: Callable
+
 
 func _ready() -> void:
 	var center := CenterContainer.new()
@@ -66,16 +70,19 @@ func _ready() -> void:
 	box.add_child(buttons)
 	_main_button = Button.new()
 	_main_button.add_theme_font_size_override("font_size", 22)
+	_connect_click(_main_button)
 	_main_button.pressed.connect(_on_main_pressed)
 	buttons.add_child(_main_button)
 	_second_button = Button.new()
 	_second_button.add_theme_font_size_override("font_size", 22)
+	_connect_click(_second_button)
 	_second_button.pressed.connect(_on_second_pressed)
 	buttons.add_child(_second_button)
 	if on_close.is_valid():
 		var close := Button.new()
 		close.text = "Close"
 		close.add_theme_font_size_override("font_size", 22)
+		_connect_click(close)
 		close.pressed.connect(on_close)
 		buttons.add_child(close)
 
@@ -84,6 +91,11 @@ func _ready() -> void:
 	_refresh()
 	# Opening the panel is when a new backer would look for their perks.
 	Account.refresh_supporter(true)
+
+
+func _connect_click(button: Button) -> void:
+	if on_click.is_valid():
+		button.pressed.connect(on_click)
 
 
 func _label(box: VBoxContainer, font_size: int) -> Label:

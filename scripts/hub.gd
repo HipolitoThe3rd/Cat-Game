@@ -1,6 +1,9 @@
 extends Node2D
 
 @onready var pb_moodbar = $Control/MoodBar
+@onready var mood_icon_happy = $Control/HappyMoodIcon
+@onready var mood_icon_neutral = $Control/NeutralMoodIcon
+@onready var mood_icon_sad = $Control/SadMoodIcon
 @onready var pb_hungerbar = $Control/HungerBar
 @onready var pb_energybar = $Control/EnergyBar
 @onready var pb_cleanbar = $Control/CleanlinessBar
@@ -88,6 +91,10 @@ func  _process(delta: float) -> void:
 		pb_moodbar.modulate = Color(1, 1, 0) # yellow for high values
 	else:
 		pb_moodbar.modulate = Color(0.333, 0.333, 0.333) # gray for neutral range
+	# the icon follows the same ranges as the bar's color
+	mood_icon_happy.visible = pb_moodbar.value > 75
+	mood_icon_sad.visible = pb_moodbar.value < 25
+	mood_icon_neutral.visible = not (mood_icon_happy.visible or mood_icon_sad.visible)
 	pb_hungerbar.value = Global.hunger
 	if pb_hungerbar.value < 25:
 		pb_hungerbar.modulate = Color(1, 0, 0) # red for low values

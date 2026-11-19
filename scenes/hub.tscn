@@ -15,17 +15,17 @@
 [ext_resource type="Texture2D" uid="uid://c252t8ci8e7vt" path="res://sprites/office/office_icon.png" id="10_7boss"]
 [ext_resource type="Texture2D" uid="uid://brsvrtxbbyqnf" path="res://sprites/litter_room/stink_0.png" id="11_jjmck"]
 [ext_resource type="Texture2D" uid="uid://dccd74fwr3o6a" path="res://sprites/mood_and_room_icons/settings.png" id="11_njkjy"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/hunger.png" id="12_s6eg2"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/energy.png" id="13_5ox4q"]
+[ext_resource type="Texture2D" uid="uid://c3ybbv0khnqaj" path="res://sprites/mood_and_room_icons/hunger.png" id="12_s6eg2"]
+[ext_resource type="Texture2D" uid="uid://wdc52mf2vml1" path="res://sprites/mood_and_room_icons/energy.png" id="13_5ox4q"]
 [ext_resource type="AudioStream" uid="uid://dbtdyief021cq" path="res://sfx/purr.mp3" id="13_7t3s2"]
 [ext_resource type="Texture2D" uid="uid://db45jf4eu42sg" path="res://sprites/skins/Crispy/crispy_hungry_0.png" id="14_0vypl"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/hygiene.png" id="14_mw5nc"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/fun.png" id="15_7t3s2"]
+[ext_resource type="Texture2D" uid="uid://ufgbaug4mt2g" path="res://sprites/mood_and_room_icons/hygiene.png" id="14_mw5nc"]
+[ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_and_room_icons/fun.png" id="15_7t3s2"]
 [ext_resource type="Texture2D" uid="uid://cj8dr7vl3mkgn" path="res://sprites/skins/Crispy/crispy_hungry_1.png" id="15_fm13a"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/love.png" id="16_7n2o6"]
+[ext_resource type="Texture2D" uid="uid://ccnvtv4vje8hf" path="res://sprites/mood_and_room_icons/love.png" id="16_7n2o6"]
 [ext_resource type="Texture2D" uid="uid://copi53piwhg22" path="res://sprites/skins/Crispy/crispy_hungry_2.png" id="16_tmir4"]
 [ext_resource type="Texture2D" uid="uid://eqmk6abeeg0g" path="res://sprites/skins/Crispy/crispy_hungry_3.png" id="17_bb8k7"]
-[ext_resource type="Texture2D" path="res://sprites/mood_icons/bladder.png" id="17_rtbv5"]
+[ext_resource type="Texture2D" uid="uid://cwf1lqhdr7f41" path="res://sprites/mood_and_room_icons/bladder.png" id="17_rtbv5"]
 [ext_resource type="Texture2D" uid="uid://r3ne6bpbdtbw" path="res://sprites/skins/Crispy/crispy_clothespin.png" id="18_tmir4"]
 [ext_resource type="Texture2D" uid="uid://b8easxaj21soe" path="res://sprites/skins/Crispy/crispy_awoken.png" id="19_bb8k7"]
 [ext_resource type="Texture2D" uid="uid://coct5sw1q7p2" path="res://sprites/litter_room/stink_1.png" id="20_7boss"]
@@ -461,32 +461,32 @@ offset_top = 587.0
 offset_right = 769.0
 offset_bottom = 614.0
 
-[node name="HappyMoodIcon" type="TextureRect" parent="Control/MoodBar"]
+[node name="HappyMoodIcon" type="TextureRect" parent="Control"]
 visible = false
 layout_mode = 0
-offset_left = -86.25003
-offset_top = -19.649963
-offset_right = 247.75
-offset_bottom = 298.35004
+offset_left = 268.74997
+offset_top = 567.35004
+offset_right = 602.75
+offset_bottom = 885.35004
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("31_gpsrd")
 
-[node name="NeutralMoodIcon" type="TextureRect" parent="Control/MoodBar"]
+[node name="NeutralMoodIcon" type="TextureRect" parent="Control"]
 layout_mode = 0
-offset_left = -86.25003
-offset_top = -19.649963
-offset_right = 247.75
-offset_bottom = 298.35004
+offset_left = 268.74997
+offset_top = 567.35004
+offset_right = 602.75
+offset_bottom = 885.35004
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("31_m0pb7")
 
-[node name="SadMoodIcon" type="TextureRect" parent="Control/MoodBar"]
+[node name="SadMoodIcon" type="TextureRect" parent="Control"]
 visible = false
 layout_mode = 0
-offset_left = -86.25003
-offset_top = -19.649963
-offset_right = 247.75
-offset_bottom = 298.35004
+offset_left = 268.74997
+offset_top = 567.35004
+offset_right = 602.75
+offset_bottom = 885.35004
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("33_i5mx8")
 

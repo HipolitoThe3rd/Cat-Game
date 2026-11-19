@@ -9,7 +9,7 @@ const COLOR_GOLD := Color(1.0, 0.84, 0.3)
 const COLOR_ERROR := Color(0.95, 0.5, 0.45)
 const COLOR_OK := Color(0.4, 0.85, 0.4)
 const COLOR_HINT := Color(0.7, 0.7, 0.7)
-const FOOD_BAG_ICON := "res://sprites/mood_icons/hunger.png"
+const FOOD_BAG_ICON := "res://sprites/mood_and_room_icons/hunger.png"
 
 var _panel: PanelContainer
 var _title: Label
@@ -72,7 +72,9 @@ func _ready() -> void:
 	_wallet.add_theme_font_size_override("font_size", 22)
 	_wallet.add_theme_color_override("font_color", COLOR_GOLD)
 	bar.add_child(_wallet)
-	bar.add_child(_button("Close", 18, queue_free))
+	var close := _button("Close", 18, _turn_off)
+	close.pressed.disconnect(_play_click) # turning off has its own sound
+	bar.add_child(close)
 
 	box.add_child(HSeparator.new())
 
@@ -90,8 +92,14 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and _panel.visible:
-		queue_free()
+		_turn_off()
 		get_viewport().set_input_as_handled()
+
+
+## Leaving the PC sounds like switching it off.
+func _turn_off() -> void:
+	_play_sfx("PCOff")
+	queue_free()
 
 
 func _process(_delta: float) -> void:
@@ -127,6 +135,7 @@ func _app_button(label: String, blurb: String, action: Callable) -> Button:
 	button.custom_minimum_size = Vector2(320, 220)
 	button.add_theme_font_size_override("font_size", 22)
 	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.pressed.connect(_play_click)
 	button.pressed.connect(action)
 	return button
 
@@ -135,6 +144,7 @@ func _app_button(label: String, blurb: String, action: Callable) -> Button:
 func _show_account() -> void:
 	var account := AccountPanel.new()
 	account.layer = layer + 1
+	account.on_click = _play_click
 	account.on_close = func():
 		account.queue_free()
 		_panel.visible = true
@@ -145,6 +155,7 @@ func _show_account() -> void:
 func _show_store() -> void:
 	var tabs := TabContainer.new()
 	tabs.add_theme_font_size_override("font_size", 20)
+	tabs.tab_clicked.connect(func(_tab): _play_click())
 	tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 	var patterns := ScrollContainer.new()
@@ -321,9 +332,22 @@ func _button(text: String, font_size: int, action: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.add_theme_font_size_override("font_size", font_size)
+	button.pressed.connect(_play_click)
 	if action.is_valid():
 		button.pressed.connect(action)
 	return button
+
+
+func _play_click() -> void:
+	_play_sfx("Click")
+
+
+## The sounds live in the office scene (Office/SFX), so they keep playing after
+## the PC closes.
+func _play_sfx(sound: String) -> void:
+	var player := get_parent().get_node_or_null("SFX/" + sound) as AudioStreamPlayer
+	if player != null:
+		player.play()
 
 
 func _say(text: String, color: Color) -> void:

@@ -17,7 +17,7 @@ const ROWS := [
 # Changes smaller than this are not worth a line of their own.
 const MIN_INTERESTING_CHANGE := 0.5
 
-const ICON_DIR := "res://sprites/mood_icons/%s.png"
+const ICON_DIR := "res://sprites/mood_and_room_icons/%s.png"
 const ICON_SIZE := Vector2(30, 30)
 
 var _summary: Dictionary

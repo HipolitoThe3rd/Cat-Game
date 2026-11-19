@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c8m6x6widpgdf" path="res://scripts/playroom.gd" id="1_lwduy"]
 [ext_resource type="Texture2D" uid="uid://dw5w7ut45qtdi" path="res://backgrounds/playroom_alt_outline.jpg" id="2_lrjy8"]
-[ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_icons/fun.png" id="3_lrjy8"]
+[ext_resource type="Texture2D" uid="uid://dbdv28odkdk47" path="res://sprites/mood_and_room_icons/fun.png" id="3_lrjy8"]
 [ext_resource type="Texture2D" uid="uid://cpf0xt4tjp8vg" path="res://sprites/ui/IconBack.png" id="4_4kfa6"]
 [ext_resource type="Texture2D" uid="uid://beyklh3y4hfbd" path="res://sprites/ui/IconReplay.png" id="4_ryj4h"]
 [ext_resource type="Texture2D" uid="uid://30iqvkdrd1j2" path="res://sprites/ui/IconReplayPressed.png" id="5_4kfa6"]

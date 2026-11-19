@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d1agtod50bily" path="res://scripts/bath.gd" id="1_drku7"]
 [ext_resource type="Texture2D" uid="uid://1yl0pkp0y23r" path="res://backgrounds/bath.jpg" id="2_xm1lt"]
-[ext_resource type="Texture2D" uid="uid://ufgbaug4mt2g" path="res://sprites/mood_icons/hygiene.png" id="3_60cpj"]
+[ext_resource type="Texture2D" uid="uid://ufgbaug4mt2g" path="res://sprites/mood_and_room_icons/hygiene.png" id="3_60cpj"]
 [ext_resource type="AudioStream" uid="uid://nessqm2ljwv2" path="res://sfx/meow_angry.wav" id="3_ac3d7"]
 [ext_resource type="Texture2D" uid="uid://d4d7kw5fm0ec2" path="res://sprites/skins/Crispy/crispy_bath_idle.png" id="3_i4q2v"]
 [ext_resource type="Script" uid="uid://b44goybto0h0i" path="res://scripts/cat_bath.gd" id="3_v7xm0"]

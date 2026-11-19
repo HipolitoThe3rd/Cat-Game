@@ -62,7 +62,7 @@ var _touch_cursor: Sprite2D
 var _touches := {} # finger index -> screen position
 
 # Cat mood system globals
-var mood = 50 # how happy the cat is; 0 is minimum and 100 is maximum, default 50
+var mood = 50 # how happy the cat is, 0 to 100: the average of the six needs below (see update_mood())
 
 # Cat mood contributors
 var hunger = 30 # 0 to 100, affects mood and behavior, default 30
@@ -227,9 +227,6 @@ const OFFLINE_ENERGY_PER_HOUR := 10.0        # goes UP: the cat naps while away
 const OFFLINE_ACCIDENT_CLEANLINESS_COST := 30.0
 const OFFLINE_MAX_ACCIDENTS := 2
 
-const OFFLINE_MOOD_DRIFT_PER_HOUR := 2.0
-const NEUTRAL_MOOD := 50.0
-
 # Every absence longer than this is treated identically. Two days away should
 # not be meaningfully worse than two weeks away.
 const MAX_OFFLINE_HOURS := 48.0
@@ -253,6 +250,7 @@ func _ready() -> void:
 		push_warning("Cat Game: persistent storage unavailable; progress will not be saved.")
 	save_path = _startup_save_path()
 	load_game()
+	update_mood() # a brand new save never reaches apply_save()
 	_start_mail_if_new()
 	check_payday()
 	_update_window_icon()
@@ -286,6 +284,7 @@ func _process(delta: float) -> void:
 	_update_touch_cursor()
 	if food_bag_active():
 		hunger = maxf(hunger, FOOD_BAG_MIN_HUNGER)
+	update_mood()
 	_track_mood(mood, delta)
 
 	# Autosave on a timer rather than only on quit. A browser tab can be closed
@@ -347,6 +346,12 @@ func pointer_position(tool: String, hitbox_offset := Vector2.ZERO) -> Vector2:
 	size *= TOUCH_CURSOR_SIZE / maxf(size.x, size.y)
 	var t: Dictionary = TOUCH_TOOLS[tool]
 	return _touch_position() + (t.tip - t.grip) * size - hitbox_offset
+
+
+## Mood is simply how well Crispy's needs are met on average, so it rises the
+## moment you look after him and falls as his needs run down.
+func update_mood() -> void:
+	mood = clampf((hunger + energy + cleanliness + entertainment + affection + bladder) / 6.0, 0.0, 100.0)
 
 
 func feed_cat(hunger_amount:int = 30) -> void:
@@ -708,6 +713,7 @@ func apply_save(cfg: ConfigFile) -> bool:
 	entertainment = clamp(float(cfg.get_value("cat", "entertainment", entertainment)), 0.0, 100.0)
 	affection = clamp(float(cfg.get_value("cat", "affection", affection)), 0.0, 100.0)
 	bladder = clamp(float(cfg.get_value("cat", "bladder", bladder)), 0.0, 100.0)
+	update_mood()
 
 	poop_in_litterbox = int(cfg.get_value("world", "poop_in_litterbox", poop_in_litterbox))
 	playroom_difficulty = float(cfg.get_value("world", "playroom_difficulty", playroom_difficulty))
@@ -819,18 +825,11 @@ func _apply_offline_decay(seconds: float) -> void:
 		accidents += 1
 	bladder = clamp(bladder - drained, 0.0, 100.0)
 
-	# Mood eases toward neutral instead of free-falling, so an abandoned cat is
-	# not miserable forever but also does not keep the 95-mood secret scene
-	# unlocked for free.
-	var drift := OFFLINE_MOOD_DRIFT_PER_HOUR * hours
-	if mood > NEUTRAL_MOOD:
-		mood = maxf(NEUTRAL_MOOD, mood - drift)
-	else:
-		mood = minf(NEUTRAL_MOOD, mood + drift)
+	update_mood()
 
 	# Time away still counts toward the paycheck's average mood. Uses the real
 	# absence rather than the capped one, at roughly the mood the cat drifted
-	# through, so a neglected week pulls the bonus toward neutral.
+	# through, so a neglected week pulls the bonus down.
 	_track_mood((old_mood + mood) / 2.0, seconds)
 
 	offline_summary = {
@@ -857,13 +856,13 @@ func reset_save() -> void:
 
 
 func _reset_state() -> void:
-	mood = 50
 	hunger = 30
 	energy = 80
 	cleanliness = 95
 	entertainment = 50
 	affection = 40
 	bladder = 100
+	update_mood()
 	poop_in_litterbox = 0
 	playroom_difficulty = 0.15
 	offline_summary = {}

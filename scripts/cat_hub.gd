@@ -54,7 +54,6 @@ func _physics_process(delta: float) -> void:
 	if is_autonomous and is_on_floor():
 		update_autonomous_behavior(delta)
 		update_timers(delta)
-		update_mood_stats(delta)
 		update_stat_animations(delta)
 	
 	# Determine direction: player input overrides autonomous behavior
@@ -134,45 +133,6 @@ func update_timers(delta: float) -> void:
 			Global.bladder = 100
 		
 		stat_decay_timer = 1.0
-
-
-func update_mood_stats(delta: float) -> void:
-	# Calculate mood based on all factors
-	var mood_modifiers = 0
-	
-	# Hunger strongly affects mood
-	if Global.hunger < 70:
-		mood_modifiers -= 0.20
-	elif Global.hunger < 50:
-		mood_modifiers -= 0.10
-	
-	# Cleanliness affects mood
-	if Global.cleanliness < 30:
-		mood_modifiers -= 0.15
-	elif Global.cleanliness < 50:
-		mood_modifiers -= 0.8
-	
-	# Entertainment/boredom affects mood
-	if Global.entertainment < 20:
-		mood_modifiers -= 0.15
-	elif Global.entertainment < 40:
-		mood_modifiers -= 0.8
-	
-	# Energy affects mood
-	if Global.energy < 20:
-		mood_modifiers -= 0.12
-	
-	# Affection affects mood
-	if Global.affection < 30:
-		mood_modifiers -= 0.10
-	elif Global.affection > 70:
-		mood_modifiers += 0.15
-	
-	# Contentment bonus (all stats in good range)
-	if Global.hunger > 50 and Global.cleanliness > 50 and Global.entertainment > 50 and Global.energy > 50 and Global.affection > 50:
-		mood_modifiers += 5
-	
-	Global.mood = clamp(Global.mood + mood_modifiers * 0.01, 0, 100)
 
 
 func update_stat_animations(delta: float) -> void:
